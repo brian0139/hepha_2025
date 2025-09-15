@@ -22,10 +22,11 @@ public class Pathfinding {
                         }
                         //set x value
                         artifactColorReference[i][j].x=28*(i-1)-14;
+                        //TO-DO: set y values
                     }
                 }
             }
-
+            //TO-DO: write pathing algorithm
             public int[] optimal_path_DFS() {
                 int[] x = new int[1];
                 return x;
