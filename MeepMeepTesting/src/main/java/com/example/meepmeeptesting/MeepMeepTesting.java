@@ -26,7 +26,7 @@ public class MeepMeepTesting {
                 .splineToConstantHeading(new Vector2d(-24,-6), Math.toRadians(-45))
                 .build());
 
-        meepMeep.setBackground(MeepMeep.Background.FIELD_INTO_THE_DEEP_OFFICIAL)
+        meepMeep.setBackground(MeepMeep.Background.FIELD_DECODE_JUICE_DARK)
                 .setDarkMode(true)
                 .setBackgroundAlpha(0.95f)
                 .addEntity(myBot)
