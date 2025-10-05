@@ -15,18 +15,26 @@ public class MeepMeepTesting {
                 .setConstraints(60, 60, Math.toRadians(180), Math.toRadians(180), 15)
                 .build();
 
-        myBot.runAction(myBot.getDrive().actionBuilder(new Pose2d(0, -60, 90))
-                .strafeToLinearHeading(new Vector2d(-54,-53),Math.toRadians(225))
-                .strafeToLinearHeading(new Vector2d(-48.5,-33), Math.toRadians(90))
-                .strafeToLinearHeading(new Vector2d(-54,-53), Math.toRadians(225))
-                .strafeToLinearHeading(new Vector2d(-57.7,-33), Math.toRadians(90))
-                .strafeToLinearHeading(new Vector2d(-54,-53), Math.toRadians(225))
-                .strafeToLinearHeading(new Vector2d(-67,-33), Math.toRadians(90))
-                .strafeToLinearHeading(new Vector2d(-54,-53), Math.toRadians(225))
-                .splineToConstantHeading(new Vector2d(-24,-6), Math.toRadians(-45))
-                .build());
+        myBot.runAction(myBot.getDrive().actionBuilder(new Pose2d(-60, 0, 0))
+                        .strafeToLinearHeading(new Vector2d(-40,-37.6),Math.toRadians(225))
+                        .waitSeconds(1.5)
+                        .strafeToLinearHeading(new Vector2d(-12,-30),Math.toRadians(270))
+                        .waitSeconds(.5)
+                        .strafeToLinearHeading(new Vector2d(-40,-37.6),Math.toRadians(225))
+                        .waitSeconds(1.5)
+                        .strafeToLinearHeading(new Vector2d(10,-30),Math.toRadians(270))
+                        .waitSeconds(.5)
+                        .strafeToLinearHeading(new Vector2d(-40,-37.6),Math.toRadians(225))
+                        .waitSeconds(1.5)
+                        .strafeToLinearHeading(new Vector2d(34.6,-30),Math.toRadians(270))
+                        .waitSeconds(.5)
+                        .strafeToLinearHeading(new Vector2d(-40,-37.6),Math.toRadians(225))
+                        .waitSeconds(1.5)
+                        .strafeToLinearHeading(new Vector2d(37,-33),Math.toRadians(270))
 
-        meepMeep.setBackground(MeepMeep.Background.FIELD_DECODE_JUICE_DARK)
+                        .build());
+
+        meepMeep.setBackground(MeepMeep.Background.FIELD_DECODE_OFFICIAL)
                 .setDarkMode(true)
                 .setBackgroundAlpha(0.95f)
                 .addEntity(myBot)
