@@ -10,43 +10,28 @@ import com.qualcomm.hardware.limelightvision.LLResultTypes;
 import com.qualcomm.hardware.limelightvision.LLStatus;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
 
+import org.firstinspires.ftc.teamcode.Alvin.intake;
+
 
 @TeleOp(name="spindexer", group="FTC")
 public class spindexer extends LinearOpMode {
-    public void checkStatus() {
-        if (gamepad1.a) {
-            for (int slot = 0; slot <3; slot++) {
-                if (status[slot] == )
-            }
-
-        }
-    }
 
     // Declare motor variable
     private DcMotor spindexerMotor = null;
 
     @Override
-    public void runOpMode() {
+    public void checkSpindexer() {
         // initialize motor
         spindexerMotor = hardwareMap.get(DcMotor.class, "spindexerMotor");
         spindexerMotor.setDirection(DcMotor.Direction.FORWARD);
-
-        int[] status = {0,0,0};
-
-
 
         telemetry.addData("Status", "Initialized");
         telemetry.update();
 
         waitForStart();
+        intake slotStatus = new intake();
+        int[] tmp=slotStatus.slots;
 
-        while (opModeIsActive()) {
-
-            if (gamepad1.a) {
-                spindexerMotor.setPower(1.0);
-            } else {
-                spindexerMotor.setPower(0.0);
-            }
 
             telemetry.addData("Status", "Running");
             telemetry.addData("Motor Power", spindexerMotor.getPower());
