@@ -8,8 +8,11 @@ import static java.lang.Thread.sleep;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.ExposureControl;
+import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.GainControl;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Position;
@@ -19,6 +22,7 @@ import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 public class outtake {
     //Camera position info
@@ -30,7 +34,17 @@ public class outtake {
     AprilTagProcessor apriltag;
     //Vision portal
     VisionPortal visionPortal;
-
+    public void wait(double time){
+        ElapsedTime timer=new ElapsedTime();
+        timer.reset();
+        while (timer.seconds()<time){
+            try{
+                sleep(1);
+            } catch(InterruptedException e){
+                throw new RuntimeException(e);
+            }
+        }
+    }
     public void init(){
         //Init processor
         this.apriltag=new AprilTagProcessor.Builder().build();
@@ -42,14 +56,21 @@ public class outtake {
                 .build();
         //wait for camera to begin streaming
         while(this.visionPortal.getCameraState()!=VisionPortal.CameraState.STREAMING){
-            try {
-                sleep(20);
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
-            }
+            wait(0.2);
         }
         //set camera exposure settings
-
+        int exposureMS=6;
+        int gain=250;
+        ExposureControl exposureControl = visionPortal.getCameraControl(ExposureControl.class);
+        if (exposureControl.getMode() != ExposureControl.Mode.Manual) {
+            exposureControl.setMode(ExposureControl.Mode.Manual);
+            wait(0.5);
+        }
+        exposureControl.setExposure((long)exposureMS, TimeUnit.MILLISECONDS);
+        wait(0.2);
+        GainControl gainControl = visionPortal.getCameraControl(GainControl.class);
+        gainControl.setGain(gain);
+        wait(0.2);
     }
     /**
      * Autoaim to april tag.
@@ -61,9 +82,10 @@ public class outtake {
      * @param fr DcMotor for front-right motor
      * @param bl DcMotor for back-left motor
      * @param br DcMotor for back-right motor
+     * @return False if canceled or teamColor not found, True if successful
      */
-    public void autoaim(int targetDistance, DcMotor fl, DcMotor fr, DcMotor bl, DcMotor br){
-        int targetAprilTagNumber;
+    public boolean autoaim(int targetDistance, DcMotor fl, DcMotor fr, DcMotor bl, DcMotor br){
+        int targetAprilTagNumber=-1;
         //set target april tag number to aim at depending on team color.
         if (this.teamColor=="Red"){
             targetAprilTagNumber=24;
@@ -71,16 +93,27 @@ public class outtake {
         else if (this.teamColor=="Blue") {
             targetAprilTagNumber = 20;
         }
+        else{
+            return false;
+        }
         //List for found tags
-        List<AprilTagDetection> detections=apriltag.getDetections();
+        List<AprilTagDetection> detections;
+        AprilTagDetection desiredTag=null;
         //If target tag has been located
         boolean tagFound=false;
         //Main loop
         while (!gamepad1.b){
-            if (!tagFound){
-
+            detections=apriltag.getDetections();
+            for (AprilTagDetection detection:detections){
+                if (detection.metadata!=null){
+                    if (detection.id==targetAprilTagNumber){
+                        desiredTag=detection;
+                        break;
+                    }
+                }
             }
         }
+        return true;
     }
 
     /**
