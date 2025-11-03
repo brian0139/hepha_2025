@@ -1,34 +1,43 @@
 package org.firstinspires.ftc.teamcode.Aaron;
 
 import com.qualcomm.robotcore.hardware.HardwareMap;
-
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * AprilTag vision subsystem for DECODE
  * - Detects tags on the Obelisk to read motifs
- * - Can provide relative position/angle for aiming
+ * - Provides distance, yaw, and simplified motif code (1, 2, 3)
+ * - Maintains a list of all detected tags each scan
+ *
+ * INPUT: Webcam feed from "Webcam 1"
+ * OUTPUT: Motif code (1, 2, or 3), Tag ID, Distance, Yaw, and list of detections
  */
 public class aprilTag {
-    private final HardwareMap hardwareMap;   // <-- marked final
+    private final HardwareMap hardwareMap;
     private AprilTagProcessor tagProcessor;
     private VisionPortal visionPortal;
+
+    // List of all detections from the last scan
+    private final List<AprilTagDetection> currentDetections = new ArrayList<>();
+
+    // Store the "best" (most relevant) detection
     private AprilTagDetection lastDetection = null;
 
-    // Motif mapping (replace IDs with the actual ones from the DECODE field guide)
-    public enum Motif { MOTIF_A, MOTIF_B, MOTIF_C, UNKNOWN }
+    // Replace IDs with actual Decode field tag IDs
     private static final int TAG_ID_A = 1;
     private static final int TAG_ID_B = 2;
     private static final int TAG_ID_C = 3;
 
     /** Constructor: requires HardwareMap */
     public aprilTag(HardwareMap hwMap) {
-        hardwareMap = hwMap;   // now initialized safely
+        hardwareMap = hwMap;
     }
-
 
     /** Initialize AprilTag processor and VisionPortal */
     public void init() {
@@ -45,14 +54,25 @@ public class aprilTag {
         );
     }
 
-    /** Scan once per loop and update detection */
+    /**
+     * Scans for AprilTags once per loop.
+     * Updates lastDetection and the list of all detections.
+     */
     public void scanOnce() {
-        for (AprilTagDetection det : tagProcessor.getDetections()) {
-            // pick "best" detection — customize if needed
-            if (lastDetection == null || det.ftcPose.y < lastDetection.ftcPose.y) {
-                lastDetection = det;
-            }
+        currentDetections.clear();
+        currentDetections.addAll(tagProcessor.getDetections());
+
+        // Choose one "best" detection (could refine this later)
+        if (!currentDetections.isEmpty()) {
+            lastDetection = currentDetections.get(0);
+        } else {
+            lastDetection = null;
         }
+    }
+
+    /** Return the full list of detections from the latest scan */
+    public List<AprilTagDetection> getAllDetections() {
+        return currentDetections;
     }
 
     /** Return ID of the last detected tag */
@@ -60,12 +80,12 @@ public class aprilTag {
         return (lastDetection != null) ? lastDetection.id : -1;
     }
 
-    /** Return the full AprilTagDetection (includes ftcPose) */
+    /** Return the most recent detection object (includes ftcPose) */
     public AprilTagDetection getDetection() {
         return lastDetection;
     }
 
-    /** Return distance (m) from camera to tag (Euclidean) */
+    /** Return distance (m) from camera to tag using Euclidean distance */
     public double getDistance() {
         if (lastDetection == null) return Double.NaN;
         double x = lastDetection.ftcPose.x;
@@ -79,20 +99,21 @@ public class aprilTag {
         return (lastDetection != null) ? lastDetection.ftcPose.yaw : Double.NaN;
     }
 
-    /** Return motif based on tag ID */
-    public Motif getCurrentMotif() {
-        return mapIdToMotif(getTagId());
+    /**
+     * Return motif as an integer (1, 2, or 3)
+     * - Returns -1 if no tag is detected or unrecognized.
+     */
+    public int getMotifCode() {
+        int id = getTagId();
+        if (id == TAG_ID_A) return 1;
+        if (id == TAG_ID_B) return 2;
+        if (id == TAG_ID_C) return 3;
+        return -1;
     }
 
-    private Motif mapIdToMotif(int id) {
-        if (id == TAG_ID_A) return Motif.MOTIF_A;
-        if (id == TAG_ID_B) return Motif.MOTIF_B;
-        if (id == TAG_ID_C) return Motif.MOTIF_C;
-        return Motif.UNKNOWN;
-    }
-
-    /** Clear last detection */
+    /** Clear last detection (optional reset) */
     public void resetDetection() {
         lastDetection = null;
+        currentDetections.clear();
     }
 }
