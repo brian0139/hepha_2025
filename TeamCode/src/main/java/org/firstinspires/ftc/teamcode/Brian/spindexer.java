@@ -13,29 +13,35 @@ import org.firstinspires.ftc.teamcode.Alvin.intake;
 @TeleOp(name="spindexer", group="FTC")
 public class spindexer extends LinearOpMode {
 
-    private Servo spindexerServo = null;
+    public Servo spindexerServo = null;
 
     // TODO: Uncomment when ready to integrate
-    // private AprilTagDetector aprilTagDetector = null;
-    // private ColorDetector colorDetector = null;
+    // public AprilTagDetector aprilTagDetector = null;
+    // public ColorDetector colorDetector = null;
 
-    private int[] spindexerSlots = new int[3]; // 0=empty, 1=green, 2=purple
-    private int currentPosition = 0;
-    private int outtakePosition = 1;
+    public int[] spindexerSlots = new int[3]; // 0=empty, 1=green, 2=purple
+    public int currentPosition = 0;
+    public int outtakePosition = 1;
 
     // Motif patterns: 0=GPP, 1=PGP, 2=PPG
-    private int[][] motifPatterns = {
+    public int[][] motifPatterns = {
             {1, 2, 2},
             {2, 1, 2},
             {2, 2, 1}
     };
-    private int currentMotifPattern = -1;
-    private int[] motifPattern;
-    private int motifIndex = 0;
-    private boolean motifDetected = false;
+    public int currentMotifPattern = -1;
+    public int[] motifPattern;
+    public int motifIndex = 0;
+    public boolean motifDetected = false;
 
-    private static final double SERVO_SPEED = 0.5;
-    private static final long ROTATION_TIME_MS = 500;
+    public static final double SERVO_SPEED = 0.5;
+    public static final long ROTATION_TIME_MS = 500;
+
+    // Intake slots (servo positions)
+    public double[] intakeslots = {0.0/360, 120.0/360, 240.0/360};
+
+    // Outtake slots (servo positions)
+    public double[] outtakeslots = {60.0/360, 180.0/360, 300.0/360};
 
     @Override
     public void runOpMode() {
@@ -129,40 +135,17 @@ public class spindexer extends LinearOpMode {
         }
     }
 
-    //intake slots
-    double[] intakeslots = {0/360,120/360,240/360};
-
-    //outtake slots
-    double[] outtakeslots = {60/360,180/360,300/360};
-
-
-    //outtake slots
-    private void rotateSpindexerInput() {
-        int reqIntake = 0; //placeholder
-        //spin to required ball
+    public void rotateSpindexerInput() {
+        int reqIntake = 0; // TODO: Calculate required intake position
         spindexerServo.setPosition(intakeslots[reqIntake]);
     }
-    private void rotateSpindexerOutput(){
-        int reqOuttake = 0; //placeholder
-        //spin to required ball
+
+    public void rotateSpindexerOutput() {
+        int reqOuttake = 0; // TODO: Calculate required outtake position
         spindexerServo.setPosition(outtakeslots[reqOuttake]);
-
     }
 
-    /**
-     * TODO: Pull motif pattern from AprilTag detector
-     * Should set currentMotifPattern (0-2), motifPattern array, and motifDetected flag
-     */
-    private void detectMotifFromCamera() {
-        // Implement your AprilTag integration here
-    }
-
-    /**
-     * TODO: Pull ball color from color sensor detector
-     * @param intakeSystem - fallback source for ball detection
-     * @return 0=empty, 1=green, 2=purple
-     */
-    private int detectIncomingBall(intake intakeSystem) {
+    public int detectIncomingBall(intake intakeSystem) {
         // Implement your color sensor integration here
 
         try {
@@ -181,7 +164,7 @@ public class spindexer extends LinearOpMode {
      * @param ballType - 0=empty, 1=green, 2=purple
      * @return human-readable ball color name
      */
-    private String getBallName(int ballType) {
+    public String getBallName(int ballType) {
         switch (ballType) {
             case 0: return "Empty";
             case 1: return "Green";
@@ -194,7 +177,7 @@ public class spindexer extends LinearOpMode {
      * @param patternIndex - 0=GPP, 1=PGP, 2=PPG
      * @return human-readable pattern name
      */
-    private String getMotifName(int patternIndex) {
+    public String getMotifName(int patternIndex) {
         switch (patternIndex) {
             case 0: return "GPP (Green-Purple-Purple)";
             case 1: return "PGP (Purple-Green-Purple)";
@@ -207,7 +190,7 @@ public class spindexer extends LinearOpMode {
      * @param pattern - array of ball colors in pattern
      * @return formatted string with current position marked
      */
-    private String getPatternString(int[] pattern) {
+    public String getPatternString(int[] pattern) {
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < pattern.length; i++) {
             if (i == motifIndex) {
@@ -225,7 +208,7 @@ public class spindexer extends LinearOpMode {
     /**
      * Searches all slots to find the required ball for current motif position
      */
-    private void autoRotateToMatchMotif() {
+    public void autoRotateToMatchMotif() {
         int requiredBall = motifPattern[motifIndex];
         int rotations = 0;
 

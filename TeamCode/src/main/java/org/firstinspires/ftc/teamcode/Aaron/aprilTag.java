@@ -30,9 +30,9 @@ public class aprilTag {
     private AprilTagDetection lastDetection = null;
 
     // Replace IDs with actual Decode field tag IDs
-    private static final int TAG_ID_A = 1;
-    private static final int TAG_ID_B = 2;
-    private static final int TAG_ID_C = 3;
+    private static final int TAG_ID_A = 21; //gpp
+    private static final int TAG_ID_B = 22; //pgp
+    private static final int TAG_ID_C = 23; //ppg
 
     /** Constructor: requires HardwareMap */
     public aprilTag(HardwareMap hwMap) {
