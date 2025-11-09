@@ -43,10 +43,15 @@ public class colorSensor {
         return hsv[1] >= MIN_SAT && hsv[2] >= MIN_VAL && inRange(hsv[0], PURPLE_H_MIN, PURPLE_H_MAX);
     }
 
-    public Detected getDetected() {
-        if (isGreen())  return Detected.GREEN;
-        if (isPurple()) return Detected.PURPLE;
-        return Detected.NONE;
+    /**
+     * Returns color of artifact
+     * @return 0=no detection, 1=green, 2=purple;
+     */
+    public int getDetected() {
+        int tmp=0;
+        if (isGreen())  tmp=1;
+        if (isPurple()) tmp=2;
+        return tmp;
     }
 
     public void enableLight(boolean on) {
