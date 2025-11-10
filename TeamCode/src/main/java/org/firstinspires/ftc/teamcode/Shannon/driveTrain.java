@@ -27,8 +27,6 @@ public class driveTrain extends LinearOpMode{
         rightFront   = hardwareMap.get(DcMotor.class, "rightFront");
         rightBack   = hardwareMap.get(DcMotor.class, "rightBack");
 
-        rightFront.setDirection(DcMotor.Direction.REVERSE);
-        rightBack.setDirection(DcMotor.Direction.REVERSE);
         //telemetry message to signify robot waiting
         telemetry.addLine("Robot Ready.");
         telemetry.update();
@@ -39,26 +37,28 @@ public class driveTrain extends LinearOpMode{
             //below is drivetrain
             // Mecanum drive is controlled with three axes: drive (front-and-back),
             // strafe (left-and-right), and twist (rotating the whole chassis).
-            double drive  = gamepad1.left_stick_y*0.7;
+            //Default:0.7
+            double drive  = gamepad1.right_stick_y*0.7;
             final double strafe_speed=0.5;
-            double strafe = -gamepad1.left_stick_x*0.5;
+            //Default:0.5
+            double strafe = -gamepad1.right_stick_x*0.5;
             if (gamepad1.dpad_left){
                 strafe=strafe_speed;
             }
             else if (gamepad1.dpad_right){
                 strafe=-strafe_speed;
             }
-            double twist  = -gamepad1.right_stick_x;
+            double twist  = -gamepad1.left_stick_x*0.5;
             telemetry.addData("drive: ", drive);
             telemetry.addData("strafe: ", strafe);
             telemetry.addData("twist: ", twist);
             telemetry.update();
 
             double[] speeds = {
-                    (drive + strafe + twist), //forward-left motor(leftFront)
-                    (drive - strafe - twist), //forward-right motor(leftBack)
-                    (drive - strafe + twist), //back-left motor(rightFront)
-                    (drive + strafe - twist)  //back-right motor(rightBack)
+                    (drive - strafe + twist), //forward-left motor
+                    (drive + strafe + twist), //forward-right motor
+                    (-drive - strafe + twist), //back-left motor
+                    (-drive + strafe + twist)  //back-right motor
             };
 
             // Loop through all values in the speeds[] array and find the greatest
