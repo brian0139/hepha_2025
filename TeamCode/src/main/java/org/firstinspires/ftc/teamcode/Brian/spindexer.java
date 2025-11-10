@@ -1,7 +1,8 @@
 package org.firstinspires.ftc.teamcode.Brian;
 
-import com.qualcomm.robotcore.hardware.CRServo;
-import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.teamcode.Alvin.intake;
 
@@ -9,139 +10,141 @@ import org.firstinspires.ftc.teamcode.Alvin.intake;
 // import org.firstinspires.ftc.teamcode.YourPackage.AprilTagDetector;
 // import org.firstinspires.ftc.teamcode.YourPackage.ColorDetector;
 
-public class spindexer {
+@TeleOp(name="spindexer", group="FTC")
+public class spindexer extends LinearOpMode {
 
-    private CRServo spindexerServo = null;
+    public Servo spindexerServo = null;
 
     // TODO: Uncomment when ready to integrate
-    // private AprilTagDetector aprilTagDetector = null;
-    // private ColorDetector colorDetector = null;
+    // public AprilTagDetector aprilTagDetector = null;
+    // public ColorDetector colorDetector = null;
 
-    private int[] spindexerSlots = new int[3]; // 0=empty, 1=green, 2=purple
-    private int currentPosition = 0;
-    private int outtakePosition = 1;
+    public int[] spindexerSlots = new int[3]; // 0=empty, 1=green, 2=purple
+    public int currentPosition = 0;
+    public int outtakePosition = 1;
 
     // Motif patterns: 0=GPP, 1=PGP, 2=PPG
-    private int[][] motifPatterns = {
+    public int[][] motifPatterns = {
             {1, 2, 2},
             {2, 1, 2},
             {2, 2, 1}
     };
-    private int currentMotifPattern = -1;
-    private int[] motifPattern;
-    private int motifIndex = 0;
-    private boolean motifDetected = false;
+    public int currentMotifPattern = -1;
+    public int[] motifPattern;
+    public int motifIndex = 0;
+    public boolean motifDetected = false;
 
-    private static final double SERVO_SPEED = 0.5;
-    private static final long ROTATION_TIME_MS = 500;
+    public static final double SERVO_SPEED = 0.5;
+    public static final long ROTATION_TIME_MS = 500;
 
-    /**
-     * Initialize spindexer hardware
-     * @param hardwareMap - robot hardware map
-     */
-    public void init(HardwareMap hardwareMap) {
-        spindexerServo = hardwareMap.get(CRServo.class, "spindexerServo");
-        spindexerServo.setDirection(CRServo.Direction.FORWARD);
+    // Intake slots (servo positions)
+    public double[] intakeslots = {0.0/360, 120.0/360, 240.0/360};
+
+    // Outtake slots (servo positions)
+    public double[] outtakeslots = {60.0/360, 180.0/360, 300.0/360};
+
+    @Override
+    public void runOpMode() {
+        spindexerServo = hardwareMap.get(Servo.class, "spindexerServo");
+        spindexerServo.setDirection(Servo.Direction.FORWARD);
 
         // TODO: Initialize your AprilTag and color sensor detectors here
 
         java.util.Arrays.fill(spindexerSlots, 0);
-    }
 
-    /**
-     * Rotate spindexer by one slot position
-     */
-    public void rotate() {
-        spindexerServo.setPower(SERVO_SPEED);
-        sleep(ROTATION_TIME_MS);
-        spindexerServo.setPower(0);
+        telemetry.addData("Status", "Initialized");
+        telemetry.update();
 
-        currentPosition = (currentPosition + 1) % 3;
-        outtakePosition = (outtakePosition + 1) % 3;
-    }
+        waitForStart();
 
-    /**
-     * Load a ball into current slot
-     * @param ballColor - 0=empty, 1=green, 2=purple
-     */
-    public void loadBall(int ballColor) {
-        if (spindexerSlots[currentPosition] == 0) {
-            spindexerSlots[currentPosition] = ballColor;
-        }
-    }
+        detectMotifFromCamera();
+        intake intakeSystem = new intake();
 
-    /**
-     * Output ball from outtake position
-     * @return true if ball was outputted, false if slot was empty
-     */
-    public boolean outputBall() {
-        if (spindexerSlots[outtakePosition] != 0) {
-            spindexerSlots[outtakePosition] = 0;
-            motifIndex = (motifIndex + 1) % motifPattern.length;
-            return true;
-        }
-        return false;
-    }
-
-    /**
-     * Check if the ball at outtake matches required motif pattern
-     * @return true if ready to output
-     */
-    public boolean isReadyToOutput() {
-        if (!motifDetected || motifPattern == null) {
-            return false;
-        }
-        int ballAtOuttake = spindexerSlots[outtakePosition];
-        int requiredBall = motifPattern[motifIndex];
-        return (ballAtOuttake == requiredBall) && (ballAtOuttake != 0);
-    }
-
-    /**
-     * Automatically rotate to find the required ball for motif pattern
-     */
-    public void autoRotateToMatch() {
-        if (!motifDetected || motifPattern == null) {
-            return;
-        }
-
-        int requiredBall = motifPattern[motifIndex];
-        int rotations = 0;
-
-        while (rotations < 3) {
-            if (spindexerSlots[outtakePosition] == requiredBall) {
-                break;
+        while (opModeIsActive()) {
+            if (!motifDetected) {
+                detectMotifFromCamera();
             }
-            rotate();
-            rotations++;
+
+            if (!motifDetected || motifPattern == null) {
+                telemetry.addData("Status", "Waiting for motif");
+                telemetry.update();
+
+                if (gamepad1.x) {
+                    detectMotifFromCamera();
+                    sleep(200);
+                }
+
+                sleep(100);
+                continue;
+            }
+
+            int incomingBall = detectIncomingBall(intakeSystem);
+
+            if (incomingBall > 0 && spindexerSlots[currentPosition] == 0) {
+                spindexerSlots[currentPosition] = incomingBall;
+            }
+
+            int ballAtOuttake = spindexerSlots[outtakePosition];
+            int requiredBall = motifPattern[motifIndex];
+            boolean shouldOutput = (ballAtOuttake == requiredBall) && (ballAtOuttake != 0);
+
+            if (shouldOutput && gamepad1.a) {
+                spindexerSlots[outtakePosition] = 0;
+                motifIndex = (motifIndex + 1) % motifPattern.length;
+                sleep(300);
+
+            } else if (!shouldOutput && gamepad1.b) {
+                rotateSpindexerInput();
+                sleep(200);
+            }
+
+            if (gamepad1.dpad_right) {
+                rotateSpindexerInput();
+                sleep(200);
+            }
+
+            // Manual motif override
+            if (gamepad1.dpad_up) {
+                currentMotifPattern = (currentMotifPattern + 1) % 3;
+                motifPattern = motifPatterns[currentMotifPattern];
+                motifIndex = 0;
+                motifDetected = true;
+                sleep(300);
+            }
+            if (gamepad1.dpad_down) {
+                currentMotifPattern = (currentMotifPattern - 1 + 3) % 3;
+                motifPattern = motifPatterns[currentMotifPattern];
+                motifIndex = 0;
+                motifDetected = true;
+                sleep(300);
+            }
+
+            if (gamepad1.x) {
+                detectMotifFromCamera();
+                sleep(300);
+            }
+
+            telemetry.addData("Motif", getMotifName(currentMotifPattern));
+            telemetry.addData("Progress", motifIndex + "/" + motifPattern.length);
+            telemetry.addData("Slots", java.util.Arrays.toString(spindexerSlots));
+            telemetry.addData("Required", getBallName(requiredBall));
+            telemetry.addData("Ready", shouldOutput);
+            telemetry.update();
+
+            sleep(50);
         }
     }
 
-    /**
-     * Set motif pattern manually
-     * @param patternIndex - 0=GPP, 1=PGP, 2=PPG
-     */
-    public void setMotifPattern(int patternIndex) {
-        if (patternIndex >= 0 && patternIndex <= 2) {
-            currentMotifPattern = patternIndex;
-            motifPattern = motifPatterns[currentMotifPattern];
-            motifIndex = 0;
-            motifDetected = true;
-        }
+    public void rotateSpindexerInput() {
+        int reqIntake = 0; // TODO: Calculate required intake position
+        spindexerServo.setPosition(intakeslots[reqIntake]);
     }
 
-    /**
-     * TODO: Pull motif pattern from AprilTag detector
-     * Should set currentMotifPattern (0-2), motifPattern array, and motifDetected flag
-     */
-    public void detectMotifFromCamera() {
-        // Implement your AprilTag integration here
+    public void rotateSpindexerOutput() {
+        int reqOuttake = 0; // TODO: Calculate required outtake position
+        spindexerServo.setPosition(outtakeslots[reqOuttake]);
     }
 
-    /**
-     * TODO: Pull ball color from color sensor detector
-     * @param intakeSystem - fallback source for ball detection
-     * @return 0=empty, 1=green, 2=purple
-     */
     public int detectIncomingBall(intake intakeSystem) {
         // Implement your color sensor integration here
 
@@ -155,42 +158,6 @@ public class spindexer {
         }
 
         return 0;
-    }
-
-    // Getters
-
-    public int[] getSlots() {
-        return spindexerSlots;
-    }
-
-    public int getCurrentPosition() {
-        return currentPosition;
-    }
-
-    public int getOuttakePosition() {
-        return outtakePosition;
-    }
-
-    public int getRequiredBall() {
-        if (motifPattern != null) {
-            return motifPattern[motifIndex];
-        }
-        return 0;
-    }
-
-    public int getMotifProgress() {
-        return motifIndex;
-    }
-
-    public int getMotifLength() {
-        if (motifPattern != null) {
-            return motifPattern.length;
-        }
-        return 0;
-    }
-
-    public boolean isMotifDetected() {
-        return motifDetected;
     }
 
     /**
@@ -220,14 +187,37 @@ public class spindexer {
     }
 
     /**
-     * Helper method for sleep without requiring LinearOpMode
-     * @param milliseconds - time to sleep
+     * @param pattern - array of ball colors in pattern
+     * @return formatted string with current position marked
      */
-    private void sleep(long milliseconds) {
-        try {
-            Thread.sleep(milliseconds);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
+    public String getPatternString(int[] pattern) {
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < pattern.length; i++) {
+            if (i == motifIndex) {
+                sb.append("[").append(getBallName(pattern[i])).append("]");
+            } else {
+                sb.append(getBallName(pattern[i]));
+            }
+            if (i < pattern.length - 1) {
+                sb.append(", ");
+            }
+        }
+        return sb.toString();
+    }
+
+    /**
+     * Searches all slots to find the required ball for current motif position
+     */
+    public void autoRotateToMatchMotif() {
+        int requiredBall = motifPattern[motifIndex];
+        int rotations = 0;
+
+        while (rotations < 3 && opModeIsActive()) {
+            if (spindexerSlots[outtakePosition] == requiredBall) {
+                break;
+            }
+            rotateSpindexerInput();
+            rotations++;
         }
     }
 }
