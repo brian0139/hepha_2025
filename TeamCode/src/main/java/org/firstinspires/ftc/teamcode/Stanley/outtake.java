@@ -38,6 +38,8 @@ public class outtake {
     aprilTag apriltag;
     //Vision portal
     VisionPortal visionPortal;
+    //Outtake flywheel
+    DcMotorEx flywheelDrive;
     //auto aim vars
     //  Drive = Error * Gain
     final double SPEED_GAIN  =  0.02  ;   //  Forward Speed Control "Gain". e.g. Ramp up to 50% power at a 25 inch error.   (0.50 / 25.0)
@@ -49,9 +51,9 @@ public class outtake {
     final double MAX_AUTO_TURN  = 0.3;   //  Clip the turn speed to this max value (adjust for your robot)
     //vars
     int targetTagID=-1;
-    public outtake(HardwareMap hardwareMap){
-        this.apriltag=new aprilTag(hardwareMap);
-        this.apriltag.init();
+    public outtake(HardwareMap hardwareMap, DcMotorEx flywheelDrive, String teamColor){
+        this.flywheelDrive=flywheelDrive;
+        this.teamColor=teamColor;
         //set target april tag number to aim at depending on team color.
         if (Objects.equals(this.teamColor, "Red") && this.targetTagID!=-1){
             this.targetTagID=24;
@@ -59,6 +61,9 @@ public class outtake {
         else if (Objects.equals(this.teamColor, "Blue") && this.targetTagID!=-1) {
             this.targetTagID = 20;
         }
+        //Init apriltag instance
+        this.apriltag=new aprilTag(hardwareMap);
+        this.apriltag.init();
     }
     /**
      * Autoaim to april tag.
@@ -136,12 +141,11 @@ public class outtake {
     /**
      * Spin flywheel to speed
      * @param targetSpeed Target flywheel speed in encoder ticks/sec.
-     * @param flywheelDrive DcMotor object for flywheel motor
      * @param tolerance Tolerance in ticks/sec. from target speed to return true.
      * @return If flywheel is up to speed.
      */
-    public boolean spin_flywheel(int targetSpeed, DcMotor flywheelDrive, int tolerance){
-        DcMotorEx flywheelDriveEx=(DcMotorEx) flywheelDrive;
+    public boolean spin_flywheel(double targetSpeed, int tolerance){
+        DcMotorEx flywheelDriveEx=this.flywheelDrive;
         flywheelDriveEx.setVelocity(targetSpeed);
         if (targetSpeed-tolerance<=flywheelDriveEx.getVelocity() && flywheelDriveEx.getVelocity()<=targetSpeed+tolerance){
             return true;
