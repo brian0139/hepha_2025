@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.Brian;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.teamcode.Aaron.aprilTag;
+import org.firstinspires.ftc.teamcode.Alvin.colorSensor;
 import org.firstinspires.ftc.teamcode.Alvin.intake;
 
 
@@ -23,11 +24,12 @@ public class spindexer{
     public int currentMotifPattern = -1;
     public int[] motifPattern;
     public int motifIndex = 0; //where in the motif you are
-    public boolean motifDetected = false;
 
     public static final double SERVO_SPEED = 0.5;
     public static final long ROTATION_TIME_MS = 500;
     public double currentintake, currentouttake;
+    public int numPurple, numGreen;
+    int emptySlot;
 
     // Intake slots (servo positions)
     public double[] intakeslots = {0.0/360, 120.0/360, 240.0/360};
@@ -44,33 +46,37 @@ public class spindexer{
 
     //calling intake if intakeuntilpixel until returns true
     //if returns true then read color of ball and decide if want to spit it out or intake
-    public int detectIncomingBall(intake intakeSystem) {
-        int emptySlot;
-        if (intakeSystem.intakeUntilPixel()) { // what does timeoutMs do
-            if () { //!(two purples and intaking ball is purple) OR !(two greens and intaking ball is green)
-                for (int i = 0; i < 3; i++) {
-                    if (spindexerSlots[i] == 0) {
-                        emptySlot = i;
-                        break;
-                    }
-                }
+    public int detectIncomingBall(intake intakeSystem, colorSensor colorSensor) {
+        if (intakeSystem.intakeUntilPixel(1000)) {
+            int detectedColor = colorSensor.getDetected();
+            for (int i = 0; i < 3; i++) {
+                if (spindexerSlots[i] == 1) numGreen++;
+                else if (spindexerSlots[i] == 2) numPurple++;
+                else emptySlot = i;
+            }
+            boolean reject = false;
+
+            if ((detectedColor == 2 && numPurple >= 2) || (detectedColor == 1 && numGreen >= 2)) {
                 intakeSystem.intake();
+                spindexerSlots[emptySlot] = colorSensor.getDetected(); // update spindexer slot to color that we intake
+                return 0; //edit this later
             } else {
-                intakeSystem.outtake(); // alvin needs to write this
+                intakeSystem.reverse(); // spit out ball if color is not wanted
+                return -1; // spit out ball
             }
         }
-
-        try {
-            int[] intakeSlots = intakeSystem.slots;
-            if (intakeSlots != null && intakeSlots.length > 0) {
-                return intakeSlots[intakeSlots.length - 1];
-            }
-        } catch (Exception e) {
-            // Intake not available
-        }
-
-        return 0;
+        return -1;
     }
+//       try {
+//           int[] intakeSlots = intakeSystem.slots;
+//           if (intakeSlots != null && intakeSlots.length > 0) {
+//               return intakeSlots[intakeSlots.length - 1];
+//           }
+//       } catch (Exception e) {
+//           // Intake not available
+//       }
+//       return 0;
+
 
     public void spinToOuttake() {
         int requiredBall = motifPattern[motifIndex];
