@@ -11,7 +11,7 @@ public class spindexer{
 
     public Servo spindexerServo = null;
 
-    public int[] spindexerSlots = new int[3]; // 0=empty, 1=green, 2=purple
+    public int[] spindexerSlots = {2,2,1}; // 0=empty, 1=green, 2=purple
     public int currentPosition = 0;
     public int outtakePosition = 1;
 
@@ -56,10 +56,11 @@ public class spindexer{
             }
             boolean reject = false;
 
-            if ((detectedColor == 2 && numPurple >= 2) || (detectedColor == 1 && numGreen >= 2)) {
+            if ((detectedColor == 2 && numPurple >= 2) || (detectedColor == 1 && numGreen >= 2) && (emptySlot == 0 || emptySlot == 1 || emptySlot == 2)) {
+                rotateSpindexerInput(emptySlot);
                 intakeSystem.intake();
                 spindexerSlots[emptySlot] = colorSensor.getDetected(); // update spindexer slot to color that we intake
-                return 0; //edit this later
+                return 0; // intake ball succesfully
             } else {
                 intakeSystem.reverse(); // spit out ball if color is not wanted
                 return -1; // spit out ball
