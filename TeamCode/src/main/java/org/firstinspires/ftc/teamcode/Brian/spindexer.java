@@ -13,7 +13,8 @@ public class spindexer{
 
     public int[] spindexerSlots = {2,2,1}; // 0=empty, 1=green, 2=purple
     public int currentPosition = 0;
-    public int outtakePosition = 1;
+    public int outtakePosition = 0;
+    public int intakePosition = 0;
 
     // Motif patterns: 0=GPP, 1=PGP, 2=PPG
     public int[][] motifPatterns = {
@@ -38,14 +39,18 @@ public class spindexer{
 
     public void rotateSpindexerInput(int reqIntake) {
         spindexerServo.setPosition(intakeslots[reqIntake]);
+        intakePosition = reqIntake;
+        currentPosition = intakePosition;
     }
 
     public void rotateSpindexerOutput(int reqOuttake) {
         spindexerServo.setPosition(outtakeslots[reqOuttake]);
+        outtakePosition = reqOuttake; // set outtake position to current slot outtaking
+        currentPosition = outtakePosition; // set current position to outtaking position
     }
 
-    //calling intake if intakeuntilpixel until returns true
-    //if returns true then read color of ball and decide if want to spit it out or intake
+    // calling intake if intakeuntilpixel until returns true
+    // if returns true then read color of ball and decide if want to spit it out or intake
     public int detectIncomingBall(intake intakeSystem, colorSensor colorSensor) {
         if (intakeSystem.intakeUntilPixel(1000)) {
             int detectedColor = colorSensor.getDetected();
@@ -86,8 +91,6 @@ public class spindexer{
                 if (spindexerSlots[i] == requiredBall) {
                     rotateSpindexerOutput(i);
                 }
-            } else {
-                continue;
             }
         }
     }
@@ -118,39 +121,19 @@ public class spindexer{
         }
     }
 
-    /**
-     * @param pattern - array of ball colors in pattern
-     * @return formatted string with current position marked
-     */
-//   public String getPatternString(int[] pattern) {
-//       StringBuilder sb = new StringBuilder();
-//       for (int i = 0; i < pattern.length; i++) {
-//           if (i == motifIndex) {
-//               sb.append("[").append(getBallName(pattern[i])).append("]");
-//           } else {
-//               sb.append(getBallName(pattern[i]));
-//           }
-//           if (i < pattern.length - 1) {
-//               sb.append(", ");
-//           }
-//       }
-//       return sb.toString();
-//   }
 
     /**
      * Searches all slots to find the required ball for current motif position
      */
     public void autoRotateToMatchMotif() {
         int requiredBall = motifPattern[motifIndex];
-        int index = 0;
 
-        while (index < 3) {
-            if (spindexerSlots[outtakePosition] == requiredBall) {
+        for (int i = 0; i < 3; i++) {
+            if (spindexerSlots[i] == requiredBall) {
+                rotateSpindexerInput(i);
                 break;
             }
-
-            index++;
         }
-        rotateSpindexerInput(index);
+
     }
 }
