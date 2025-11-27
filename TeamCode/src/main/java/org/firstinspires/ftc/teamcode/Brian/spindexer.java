@@ -77,6 +77,7 @@ public class spindexer{
 
     public void spinToOuttake() {
         if (motifPattern == null) return; // No motif pattern set yet
+        if (motifIndex < 0 || motifIndex >= motifPattern.length) return; // Bounds check
         int requiredBall = motifPattern[motifIndex];
         for (int i = 0; i < 3; i++) {
             if (spindexerSlots[i] != 0) { // check if slot is empty or not
@@ -85,6 +86,25 @@ public class spindexer{
                 }
             }
         }
+    }
+
+    /**
+     * Increments motifIndex after a ball is outtaken.
+     * Resets to 0 if it reaches the end of the pattern.
+     */
+    public void incrementMotifIndex() {
+        if (motifPattern != null && motifIndex < motifPattern.length - 1) {
+            motifIndex++;
+        } else {
+            motifIndex = 0; // Reset to start of pattern
+        }
+    }
+
+    /**
+     * Resets motifIndex to 0 (start of pattern)
+     */
+    public void resetMotifIndex() {
+        motifIndex = 0;
     }
 
     /**
@@ -119,6 +139,7 @@ public class spindexer{
      */
     public void autoRotateToMatchMotif() {
         if (motifPattern == null) return; // No motif pattern set yet
+        if (motifIndex < 0 || motifIndex >= motifPattern.length) return; // Bounds check
         int requiredBall = motifPattern[motifIndex];
 
         for (int i = 0; i < 3; i++) {

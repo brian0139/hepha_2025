@@ -63,8 +63,12 @@ public class spindexerTest extends LinearOpMode{
             // motifCode: 1 = GPP (pattern index 0), 2 = PGP (pattern index 1), 3 = PPG (pattern index 2)
             if (motifCode >= 1 && motifCode <= 3) {
                 int patternIndex = motifCode - 1; // Convert 1,2,3 to 0,1,2
-                spindexer.currentMotifPattern = patternIndex;
-                spindexer.motifPattern = spindexer.motifPatterns[patternIndex];
+                // Only update if pattern changed (to avoid resetting motifIndex unnecessarily)
+                if (spindexer.currentMotifPattern != patternIndex) {
+                    spindexer.currentMotifPattern = patternIndex;
+                    spindexer.motifPattern = spindexer.motifPatterns[patternIndex];
+                    spindexer.resetMotifIndex(); // Reset to start of new pattern
+                }
             }
 
             //drivetrain
