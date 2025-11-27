@@ -66,6 +66,7 @@ public class spindexerTest extends LinearOpMode{
                 spindexer.currentMotifPattern = patternIndex;
                 spindexer.motifPattern = spindexer.motifPatterns[patternIndex];
             }
+            spindexer.rotateSpindexerInput(motifCode);
 
             //drivetrain
             double drive  = gamepad1.right_stick_y*0.7;
