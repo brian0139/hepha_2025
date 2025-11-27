@@ -23,7 +23,7 @@ public class spindexer{
             {2, 2, 1}
     };
     public int currentMotifPattern = -1;
-    public int[] motifPattern;
+    public int[] motifPattern = null; // Will be set from motifPatterns when AprilTag is detected
     public int motifIndex = 0; //where in the motif you are
 
     public static final double SERVO_SPEED = 0.5;
@@ -76,6 +76,7 @@ public class spindexer{
 
 
     public void spinToOuttake() {
+        if (motifPattern == null) return; // No motif pattern set yet
         int requiredBall = motifPattern[motifIndex];
         for (int i = 0; i < 3; i++) {
             if (spindexerSlots[i] != 0) { // check if slot is empty or not
@@ -117,6 +118,7 @@ public class spindexer{
      * Searches all slots to find the required ball for current motif position
      */
     public void autoRotateToMatchMotif() {
+        if (motifPattern == null) return; // No motif pattern set yet
         int requiredBall = motifPattern[motifIndex];
 
         for (int i = 0; i < 3; i++) {
