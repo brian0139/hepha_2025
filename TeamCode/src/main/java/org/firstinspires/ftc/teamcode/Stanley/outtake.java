@@ -1,20 +1,12 @@
 package org.firstinspires.ftc.teamcode.Stanley;
 
-import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.gamepad1;
-import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.hardwareMap;
-
-import static java.lang.Thread.sleep;
-
+import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
-import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
-import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
-import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.ExposureControl;
-import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.GainControl;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Position;
@@ -22,11 +14,9 @@ import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
 import org.firstinspires.ftc.teamcode.Aaron.aprilTag;
 import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
-import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 
 import java.util.List;
 import java.util.Objects;
-import java.util.concurrent.TimeUnit;
 
 public class outtake {
     //Camera position info
@@ -36,10 +26,15 @@ public class outtake {
     String teamColor;
     //April tag processor
     aprilTag apriltag;
-    //Vision portal
-    VisionPortal visionPortal;
     //Outtake flywheel
     DcMotorEx flywheelDrive;
+    //Outtake Hood Servo
+    CRServo hoodServo;
+    //drivetrain motors
+    DcMotor leftFront;
+    DcMotor leftBack;
+    DcMotor rightFront;
+    DcMotor rightBack;
     //auto aim vars
     //  Drive = Error * Gain
     final double SPEED_GAIN  =  0.02  ;   //  Forward Speed Control "Gain". e.g. Ramp up to 50% power at a 25 inch error.   (0.50 / 25.0)
@@ -51,9 +46,14 @@ public class outtake {
     final double MAX_AUTO_TURN  = 0.3;   //  Clip the turn speed to this max value (adjust for your robot)
     //vars
     int targetTagID=-1;
-    public outtake(HardwareMap hardwareMap, DcMotorEx flywheelDrive, String teamColor){
+    public outtake(HardwareMap hardwareMap, DcMotorEx flywheelDrive, String teamColor, DcMotor leftFront, DcMotor rightFront, DcMotor leftBack, DcMotor rightBack, CRServo hoodServo){
         this.flywheelDrive=flywheelDrive;
         this.teamColor=teamColor;
+        this.leftFront=leftFront;
+        this.rightFront=rightFront;
+        this.leftBack=leftBack;
+        this.rightBack=rightBack;
+        this.hoodServo=hoodServo;
         //set target april tag number to aim at depending on team color.
         if (Objects.equals(this.teamColor, "Red") && this.targetTagID!=-1){
             this.targetTagID=24;
@@ -71,13 +71,9 @@ public class outtake {
      * Includes drivetrain control+emergency cancel switch.
      * Target tag set by teamColor variable in class, "Red" or "Blue"
      * @param targetDistance Desired distance to tag in inches.
-     * @param leftFront DcMotor for front-left motor
-     * @param rightFront DcMotor for front-right motor
-     * @param leftBack DcMotor for back-left motor
-     * @param rightBack DcMotor for back-right motor
      * @return False if canceled or teamColor not found, True if successful
      */
-    public boolean autoaim(int targetDistance, DcMotor leftFront, DcMotor rightFront, DcMotor leftBack, DcMotor rightBack){
+    public boolean autoaim(int targetDistance){
         this.apriltag.scanOnce();
         List<AprilTagDetection> detections=this.apriltag.getAllDetections();
         AprilTagDetection targetDetection=null;
@@ -129,13 +125,13 @@ public class outtake {
 
     /**
      * Transfer artifact to flywheel
-     * @param linearActuator Servo Linear Actuator to push artifact
+     * @param actuator Servo Linear Actuator to push artifact
      */
-    public void transfer(Servo linearActuator){
+    public void transfer(Servo actuator){
         int normalPos=0;
         int transferPos=1;
-        linearActuator.setPosition(transferPos);
-        linearActuator.setPosition(normalPos);
+        actuator.setPosition(transferPos);
+        actuator.setPosition(normalPos);
     }
 
     /**
