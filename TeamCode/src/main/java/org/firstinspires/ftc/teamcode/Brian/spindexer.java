@@ -73,15 +73,6 @@ public class spindexer{
         }
         return -1;
     }
-//       try {
-//           int[] intakeSlots = intakeSystem.slots;
-//           if (intakeSlots != null && intakeSlots.length > 0) {
-//               return intakeSlots[intakeSlots.length - 1];
-//           }
-//       } catch (Exception e) {
-//           // Intake not available
-//       }
-//       return 0;
 
 
     public void spinToOuttake() {
