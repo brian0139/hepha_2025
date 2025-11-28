@@ -58,19 +58,20 @@ public final class MecanumDrive {
         // TODO: fill in these values based on
         //   see https://ftc-docs.firstinspires.org/en/latest/programming_resources/imu/imu.html?highlight=imu#physical-hub-mounting
         public RevHubOrientationOnRobot.LogoFacingDirection logoFacingDirection =
-                RevHubOrientationOnRobot.LogoFacingDirection.UP;
+                RevHubOrientationOnRobot.LogoFacingDirection.LEFT;
         public RevHubOrientationOnRobot.UsbFacingDirection usbFacingDirection =
-                RevHubOrientationOnRobot.UsbFacingDirection.LEFT;
+                RevHubOrientationOnRobot.UsbFacingDirection.UP;
 
         // drive model parameters
-        public double inPerTick = 0.02372479241;
-        public double lateralInPerTick = 0.02602714259;
-        public double trackWidthTicks = 1257.4789084828835;
+        public double inPerTick = 0.007792514319;
+        public double lateralInPerTick = 0.00488196;
+        public double trackWidthTicks = 6259.818841;
 
         // feedforward parameters (in tick units)
-        public double kS = 0.7539810433780243;
-        public double kV =  0.004328356067059889;
-        public double kA = 0.0005;
+        public double kS = 1.7834520775854656;
+        public double kV =  0.00017777047925550047;
+        //Don't go >=0.001, causes robot to run full force ahead
+        public double kA = 0.000000001;
 
         // path profile parameters (in inches)
         public double maxWheelVel = 50;
@@ -248,7 +249,7 @@ public final class MecanumDrive {
 
         voltageSensor = hardwareMap.voltageSensor.iterator().next();
 
-        localizer = new DriveLocalizer(pose);
+        localizer = new ThreeDeadWheelLocalizer(hardwareMap, PARAMS.inPerTick, pose);
 
         FlightRecorder.write("MECANUM_PARAMS", PARAMS);
     }
