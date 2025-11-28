@@ -23,8 +23,8 @@ public class spindexerTest extends LinearOpMode{
         transfer=hardwareMap.get(Servo.class,"transferServo");
         double spindexerpos=0;
         double transferPos=0.3;
-        double spindexerDialation=0.0001;
-        double transferDialation=0.0001;
+        double spindexerDialation=0.001;
+        double transferDialation=0.001;
         double[] outtakeslots = {60.0/360, 180.0/360, 300.0/360};
         int outtakePos=0;
         //telemetry message to signify robot waiting
