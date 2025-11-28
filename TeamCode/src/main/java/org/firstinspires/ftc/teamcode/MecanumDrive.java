@@ -71,7 +71,7 @@ public final class MecanumDrive {
         public double kS = 1.7834520775854656;
         public double kV =  0.00017777047925550047;
         //Don't go >=0.001, causes robot to run full force ahead
-        public double kA = 0.000000001;
+        public double kA = 0.0001;
 
         // path profile parameters (in inches)
         public double maxWheelVel = 50;
