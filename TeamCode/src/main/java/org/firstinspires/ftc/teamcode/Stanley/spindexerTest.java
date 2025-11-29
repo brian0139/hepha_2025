@@ -1,14 +1,8 @@
 package org.firstinspires.ftc.teamcode.Stanley;
-import com.qualcomm.robotcore.eventloop.opmode.OpMode;
-import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
-import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.CRServo;
-import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.Servo;
-import java.lang.Math;
+
 @TeleOp
 
 public class spindexerTest extends LinearOpMode{
@@ -26,13 +20,16 @@ public class spindexerTest extends LinearOpMode{
         double spindexerDialation=0.001;
         double transferDialation=0.001;
         double[] outtakeslots = {60.0/360, 180.0/360, 300.0/360};
+        double[] transferpositions ={0.1,0.3};
         int outtakePos=0;
+        int transferListPos=0;
         //telemetry message to signify robot waiting
         telemetry.addLine("Robot Ready.");
         telemetry.update();
         //wait for driver to press play
         waitForStart();
         boolean lasty=false;
+        boolean lastx=false;
         //repeat untill opmode ends
         //TODO:Limit transfer to 0.1<=x<=0.30
         while (opModeIsActive()){
@@ -49,10 +46,18 @@ public class spindexerTest extends LinearOpMode{
             }else if (!gamepad1.y){
                 lasty=false;
             }
+            if (gamepad1.x && !lastx){
+                lastx=true;
+                transferListPos++;
+                transferPos= transferpositions[transferListPos%2];
+            }else if (!gamepad1.x){
+                lastx=false;
+            }
             spindexer.setPosition(spindexerpos);
             transfer.setPosition(transferPos);
             telemetry.addData("spindexerPos:",spindexerpos);
             telemetry.addData("transferPos:",transferPos);
+            telemetry.addLine("transferListPos:"+transferListPos+"("+ transferpositions[transferListPos%2]+")");
             telemetry.addLine("outtakePos:"+outtakePos+"("+outtakeslots[outtakePos%3]+")");
             telemetry.update();
             
