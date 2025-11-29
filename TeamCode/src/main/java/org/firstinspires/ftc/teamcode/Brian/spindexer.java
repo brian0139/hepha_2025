@@ -11,9 +11,10 @@ public class spindexer{
 
     public Servo spindexerServo = null;
 
-    public int[] spindexerSlots = new int[3]; // 0=empty, 1=green, 2=purple
+    public int[] spindexerSlots = {2,2,1}; // 0=empty, 1=green, 2=purple
     public int currentPosition = 0;
-    public int outtakePosition = 1;
+    public int outtakePosition = 0;
+    public int intakePosition = 0;
 
     // Motif patterns: 0=GPP, 1=PGP, 2=PPG
     public int[][] motifPatterns = {
@@ -22,7 +23,7 @@ public class spindexer{
             {2, 2, 1}
     };
     public int currentMotifPattern = -1;
-    public int[] motifPattern;
+    public int[] motifPattern = null; // Will be set from motifPatterns when AprilTag is detected
     public int motifIndex = 0; //where in the motif you are
 
     public static final double SERVO_SPEED = 0.5;
@@ -38,14 +39,18 @@ public class spindexer{
 
     public void rotateSpindexerInput(int reqIntake) {
         spindexerServo.setPosition(intakeslots[reqIntake]);
+        intakePosition = reqIntake;
+        currentPosition = intakePosition;
     }
 
     public void rotateSpindexerOutput(int reqOuttake) {
         spindexerServo.setPosition(outtakeslots[reqOuttake]);
+        outtakePosition = reqOuttake; // set outtake position to current slot outtaking
+        currentPosition = outtakePosition; // set current position to outtaking position
     }
 
-    //calling intake if intakeuntilpixel until returns true
-    //if returns true then read color of ball and decide if want to spit it out or intake
+    // calling intake if intakeuntilpixel until returns true
+    // if returns true then read color of ball and decide if want to spit it out or intake
     public int detectIncomingBall(intake intakeSystem, colorSensor colorSensor) {
         if (intakeSystem.intakeUntilPixel(1000)) {
             int detectedColor = colorSensor.getDetected();
@@ -56,10 +61,11 @@ public class spindexer{
             }
             boolean reject = false;
 
-            if ((detectedColor == 2 && numPurple >= 2) || (detectedColor == 1 && numGreen >= 2)) {
+            if ((detectedColor == 2 && numPurple >= 2) || (detectedColor == 1 && numGreen >= 2) && (emptySlot == 0 || emptySlot == 1 || emptySlot == 2)) {
+                rotateSpindexerInput(emptySlot);
                 intakeSystem.intake();
                 spindexerSlots[emptySlot] = colorSensor.getDetected(); // update spindexer slot to color that we intake
-                return 0; //edit this later
+                return 0; // intake ball succesfully
             } else {
                 intakeSystem.reverse(); // spit out ball if color is not wanted
                 return -1; // spit out ball
@@ -67,28 +73,38 @@ public class spindexer{
         }
         return -1;
     }
-//       try {
-//           int[] intakeSlots = intakeSystem.slots;
-//           if (intakeSlots != null && intakeSlots.length > 0) {
-//               return intakeSlots[intakeSlots.length - 1];
-//           }
-//       } catch (Exception e) {
-//           // Intake not available
-//       }
-//       return 0;
 
 
     public void spinToOuttake() {
+        if (motifPattern == null) return; // No motif pattern set yet
+        if (motifIndex < 0 || motifIndex >= motifPattern.length) return; // Bounds check
         int requiredBall = motifPattern[motifIndex];
         for (int i = 0; i < 3; i++) {
             if (spindexerSlots[i] != 0) { // check if slot is empty or not
                 if (spindexerSlots[i] == requiredBall) {
                     rotateSpindexerOutput(i);
                 }
-            } else {
-                continue;
             }
         }
+    }
+
+    /**
+     * Increments motifIndex after a ball is outtaken.
+     * Resets to 0 if it reaches the end of the pattern.
+     */
+    public void incrementMotifIndex() {
+        if (motifPattern != null && motifIndex < motifPattern.length - 1) {
+            motifIndex++;
+        } else {
+            motifIndex = 0; // Reset to start of pattern
+        }
+    }
+
+    /**
+     * Resets motifIndex to 0 (start of pattern)
+     */
+    public void resetMotifIndex() {
+        motifIndex = 0;
     }
 
     /**
@@ -117,39 +133,21 @@ public class spindexer{
         }
     }
 
-    /**
-     * @param pattern - array of ball colors in pattern
-     * @return formatted string with current position marked
-     */
-//   public String getPatternString(int[] pattern) {
-//       StringBuilder sb = new StringBuilder();
-//       for (int i = 0; i < pattern.length; i++) {
-//           if (i == motifIndex) {
-//               sb.append("[").append(getBallName(pattern[i])).append("]");
-//           } else {
-//               sb.append(getBallName(pattern[i]));
-//           }
-//           if (i < pattern.length - 1) {
-//               sb.append(", ");
-//           }
-//       }
-//       return sb.toString();
-//   }
 
     /**
      * Searches all slots to find the required ball for current motif position
      */
     public void autoRotateToMatchMotif() {
+        if (motifPattern == null) return; // No motif pattern set yet
+        if (motifIndex < 0 || motifIndex >= motifPattern.length) return; // Bounds check
         int requiredBall = motifPattern[motifIndex];
-        int index = 0;
 
-        while (index < 3) {
-            if (spindexerSlots[outtakePosition] == requiredBall) {
+        for (int i = 0; i < 3; i++) {
+            if (spindexerSlots[i] == requiredBall) {
+                rotateSpindexerInput(i);
                 break;
             }
-
-            index++;
         }
-        rotateSpindexerInput(index);
+
     }
 }
