@@ -1,12 +1,10 @@
-package org.firstinspires.ftc.teamcode.Shannon;
-import com.qualcomm.robotcore.eventloop.opmode.OpMode;
-import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
+package org.firstinspires.ftc.teamcode.Stanley;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.CRServo;
-import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.Servo;
 import java.lang.Math;
 @TeleOp
@@ -24,7 +22,19 @@ public class drivetrainMain extends LinearOpMode{
     private CRServo hoodServo=null;
     private Servo spindexer=null;
     private Servo transfer=null;
+    //sensitivity
+    double flywheelSensitivity=10;
     //vars
+    int flywheelspeed=0;
+    int targetspeed=0;
+    boolean flywheelToggle=false;
+    double[] outtakeslots = {0.26, 0.65, 300.0/360};
+    double[] intakeslots = {60.0/360, 180.0/360, 300.0/360};
+    double[] transferpositions ={0.1,0.33};
+    int outtakepos=0;
+    int intakepos=0;
+    //button state storage
+    Gamepad previousgamepad2 =new Gamepad();
 
     //main loop
     @Override
@@ -49,6 +59,47 @@ public class drivetrainMain extends LinearOpMode{
         waitForStart();
         //repeat until opmode ends
         while (opModeIsActive()){
+            //flywheel
+            if (flywheelspeed-gamepad2.right_stick_y*flywheelSensitivity>=0){
+                flywheelspeed-=gamepad2.right_stick_y*flywheelSensitivity;
+            }
+            else{
+                flywheelspeed=0;
+            }
+            if (gamepad2.y && !previousgamepad2.y && !flywheelToggle){
+                targetspeed=flywheelspeed;
+                flywheelToggle=true;
+                flywheel.setVelocity(targetspeed);
+            }else if (gamepad2.y && !previousgamepad2.y && flywheelToggle){
+                flywheelToggle=false;
+                targetspeed=0;
+                flywheel.setVelocity(0);
+            }
+            telemetry.addData("Flywheel Speed(encoder ticks/s):",flywheelspeed);
+            telemetry.addData("Flywheel Target Velocity(encoder ticks/s):",targetspeed);
+            telemetry.addData("Flywheel Real Velocity(encoder ticks/s):",flywheel.getVelocity());
+            //spindexer
+            if (gamepad2.right_bumper && !previousgamepad2.right_bumper){
+                outtakepos++;
+                spindexer.setPosition(outtakeslots[outtakepos%3]);
+            }
+            telemetry.addLine("outtakePos:"+outtakepos+"("+outtakeslots[outtakepos%3]+")");
+            if (gamepad2.left_bumper && !previousgamepad2.left_bumper){
+                intakepos++;
+                spindexer.setPosition(intakeslots[intakepos%3]);
+            }
+            telemetry.addLine("intakePos:"+intakepos+"("+intakeslots[intakepos%3]+")");
+            //hood
+            hoodServo.setPower(gamepad2.left_stick_y);
+            //transfer
+            if (gamepad2.b) {
+                transfer.setPosition(transferpositions[1]);
+                telemetry.addLine("Transfer Position: Up ("+transferpositions[1]+")");
+            }else{
+                transfer.setPosition(transferpositions[0]);
+                telemetry.addLine("Transfer Position: Down ("+transferpositions[0]+")");
+            }
+
             //intake
             intake.setPower(gamepad1.right_trigger-gamepad1.left_trigger);
             //below is drivetrain
@@ -69,7 +120,6 @@ public class drivetrainMain extends LinearOpMode{
             telemetry.addData("drive: ", drive);
             telemetry.addData("strafe: ", strafe);
             telemetry.addData("twist: ", twist);
-            telemetry.update();
 
             double[] speeds = {
                     (drive - strafe + twist), //forward-left motor
@@ -96,6 +146,9 @@ public class drivetrainMain extends LinearOpMode{
             rightBack.setPower(speeds[1]);
             leftBack.setPower(speeds[2]);
             rightFront.setPower(speeds[3]);
+            //update gamepad+telemetry
+            previousgamepad2.copy(gamepad2);
+            telemetry.update();
         }
     }
 }
