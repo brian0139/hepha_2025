@@ -28,9 +28,9 @@ public class drivetrainMain extends LinearOpMode{
     int flywheelspeed=0;
     int targetspeed=0;
     boolean flywheelToggle=false;
-    double[] outtakeslots = {0.26, 0.65, 300.0/360};
-    double[] intakeslots = {60.0/360, 180.0/360, 300.0/360};
-    double[] transferpositions ={0.1,0.33};
+    double[] outtakeslots = {0.26,0.65,1};
+    double[] intakeslots = {0.05,0.44,0.83};
+    double[] transferpositions ={0.6,0.9};
     int outtakepos=0;
     int intakepos=0;
     //button state storage

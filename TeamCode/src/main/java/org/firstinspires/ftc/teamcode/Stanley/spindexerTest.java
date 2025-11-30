@@ -19,8 +19,8 @@ public class spindexerTest extends LinearOpMode{
         double transferPos=0.33;
         double spindexerDialation=0.001;
         double transferDialation=0.001;
-        double[] outtakeslots = {60.0/360, 180.0/360, 300.0/360};
-        double[] transferpositions ={0.1,0.33};
+        double[] outtakeslots = {0.26,0.65,1};
+        double[] transferpositions ={0.6,0.9};
         int outtakePos=0;
         int transferListPos=0;
         boolean lasty=false;
