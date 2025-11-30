@@ -4,6 +4,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 
 @TeleOp
@@ -34,6 +35,7 @@ public class hoodtest extends LinearOpMode{
     public void runOpMode() {
         tmpservo=hardwareMap.crservo.get("hoodServo");
         tmpmotor= (DcMotorEx) hardwareMap.dcMotor.get("flywheel");
+        tmpmotor.setDirection(DcMotorSimple.Direction.REVERSE);
         spindexer=hardwareMap.get(Servo.class,"spindexerServo");
         transfer=hardwareMap.get(Servo.class,"transferServo");
         waitForStart();
