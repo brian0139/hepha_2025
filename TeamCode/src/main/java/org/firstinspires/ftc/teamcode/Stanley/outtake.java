@@ -12,7 +12,6 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Position;
 import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
 import org.firstinspires.ftc.teamcode.Aaron.aprilTag;
-import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 
 import java.util.List;
@@ -30,6 +29,13 @@ public class outtake {
     DcMotorEx flywheelDrive;
     //Outtake Hood Servo
     CRServo hoodServo;
+    //Servo RPM
+    double servoRPM=50;
+    //Degrees changed for every servo rotation
+    double servoDegPerRot =10;
+    //save ms time for hood
+    long savemstime=0;
+    //
     //drivetrain motors
     DcMotor leftFront;
     DcMotor leftBack;
@@ -120,6 +126,14 @@ public class outtake {
         rightBack.setPower(speeds[1]);
         leftBack.setPower(speeds[2]);
         rightFront.setPower(speeds[3]);
+        return true;
+    }
+
+    public boolean setHood(double degrees){
+        double rotations=degrees/this.servoDegPerRot;
+        double time=rotations*60/this.servoRPM;
+        this.savemstime=System.currentTimeMillis();
+
         return true;
     }
 
