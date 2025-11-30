@@ -21,10 +21,10 @@ public class hoodtest extends LinearOpMode{
     boolean lasty=false;
     boolean lastx=false;
     double spindexerpos=0;
-    double spindexerDialation=0.001;
-    double transferDialation=0.001;
+    double spindexerDialation=0.0005;
+    double transferDialation=0.01;
     double[] outtakeslots = {60.0/360, 180.0/360, 300.0/360};
-    double[] transferpositions ={0.1,0.33};
+    double[] transferpositions ={0.68,0.9};
     double transferPos=transferpositions[1];
     int outtakePos=0;
     int transferListPos=0;
@@ -40,7 +40,7 @@ public class hoodtest extends LinearOpMode{
         transfer=hardwareMap.get(Servo.class,"transferServo");
         waitForStart();
         while (opModeIsActive()){
-            power=-gamepad1.left_stick_y;
+            power=-gamepad1.right_stick_x;
             if (motorSpeed -gamepad1.right_stick_y*motorDialation>=0){
                 motorSpeed -=gamepad1.right_stick_y*motorDialation;
             }
@@ -63,7 +63,7 @@ public class hoodtest extends LinearOpMode{
             if (spindexerpos-gamepad1.left_stick_x*spindexerDialation>=0 && spindexerpos-gamepad1.left_stick_x*spindexerDialation<=1){
                 spindexerpos-=gamepad1.left_stick_x*spindexerDialation;
             }
-            if (transferPos+gamepad1.left_stick_y*transferDialation>=transferpositions[0] && transferPos+gamepad1.left_stick_y*transferDialation<=transferpositions[1]){
+            if (transferPos+gamepad1.left_stick_y*transferDialation>=0 && transferPos+gamepad1.left_stick_y*transferDialation<=1){
                 transferPos+=gamepad1.left_stick_y*transferDialation;
             }
             if (gamepad1.a && !lasta){
