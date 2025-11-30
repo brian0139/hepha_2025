@@ -24,7 +24,7 @@ public class hoodtest extends LinearOpMode{
     double spindexerDialation=0.0005;
     double transferDialation=0.01;
     double[] outtakeslots = {60.0/360, 180.0/360, 300.0/360};
-    double[] transferpositions ={0.68,0.9};
+    double[] transferpositions ={0.6,0.9};
     double transferPos=transferpositions[1];
     int outtakePos=0;
     int transferListPos=0;
@@ -54,7 +54,6 @@ public class hoodtest extends LinearOpMode{
             if (gamepad1.x && !lastx) {
                 lastx = true;
                 tmpmotor.setVelocity(0);
-                motorSpeed=0;
                 expectedSpeed = 0;
             }else if(!gamepad1.x && lastx){
                 lastx=false;
