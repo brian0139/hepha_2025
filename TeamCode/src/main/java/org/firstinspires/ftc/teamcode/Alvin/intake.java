@@ -48,7 +48,7 @@ public class intake {
 
     public boolean isPixelDetected() {
         if (colorDetector == null) return false;
-        return colorDetector.getDetected() != colorSensor.Detected.NONE;
+        return colorDetector.getDetected() != 0;
     }
 
     /**
