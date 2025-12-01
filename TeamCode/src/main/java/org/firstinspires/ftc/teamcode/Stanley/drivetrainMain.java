@@ -4,6 +4,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.Servo;
 import java.lang.Math;
@@ -17,12 +18,13 @@ public class drivetrainMain extends LinearOpMode{
     private DcMotor rightBack=null;
     //other motors
     private DcMotorEx flywheel=null;
-    private DcMotor intake=null;
+    private DcMotorEx intake=null;
     //servos
     private CRServo hoodServo=null;
     private Servo spindexer=null;
     private Servo transfer=null;
-    //sensitivity
+    //sensitivity(& other configs)
+    double intakeSpeed=7000;
     double flywheelSensitivity=10;
     //vars
     int flywheelspeed=0;
@@ -44,9 +46,12 @@ public class drivetrainMain extends LinearOpMode{
         leftBack    = hardwareMap.get(DcMotor.class, "leftBack");
         rightFront   = hardwareMap.get(DcMotor.class, "rightFront");
         rightBack   = hardwareMap.get(DcMotor.class, "rightBack");
+        leftFront.setDirection(DcMotorSimple.Direction.REVERSE);
+        leftBack.setDirection(DcMotorSimple.Direction.REVERSE);
         //other motors
-        flywheel=hardwareMap.get(DcMotorEx.class,"flywheel");
-        intake=hardwareMap.get(DcMotor.class,"intake");
+        flywheel=(DcMotorEx) hardwareMap.get(DcMotor.class,"flywheel");
+        flywheel.setDirection(DcMotorSimple.Direction.REVERSE);
+        intake=(DcMotorEx) hardwareMap.get(DcMotor.class,"intake");
         //servos
         hoodServo=hardwareMap.get(CRServo.class,"hoodServo");
         spindexer=hardwareMap.get(Servo.class,"spindexerServo");
@@ -66,14 +71,16 @@ public class drivetrainMain extends LinearOpMode{
             else{
                 flywheelspeed=0;
             }
-            if (gamepad2.y && !previousgamepad2.y && !flywheelToggle){
-                targetspeed=flywheelspeed;
-                flywheelToggle=true;
-                flywheel.setVelocity(targetspeed);
-            }else if (gamepad2.y && !previousgamepad2.y && flywheelToggle){
-                flywheelToggle=false;
-                targetspeed=0;
-                flywheel.setVelocity(0);
+            //toggle
+            if (gamepad2.y && !previousgamepad2.y){
+                flywheelToggle=!flywheelToggle;
+                if (flywheelToggle) {
+                    targetspeed=flywheelspeed;
+                    flywheel.setVelocity(targetspeed);
+                } else{
+                    targetspeed=0;
+                    flywheel.setVelocity(0);
+                }
             }
             telemetry.addData("Flywheel Speed(encoder ticks/s):",flywheelspeed);
             telemetry.addData("Flywheel Target Velocity(encoder ticks/s):",targetspeed);
@@ -90,9 +97,9 @@ public class drivetrainMain extends LinearOpMode{
             }
             telemetry.addLine("intakePos:"+intakepos+"("+intakeslots[intakepos%3]+")");
             //hood
-            hoodServo.setPower(gamepad2.left_stick_y);
+            hoodServo.setPower(-gamepad2.left_stick_y);
             //transfer
-            if (gamepad2.b) {
+            if (gamepad2.x) {
                 transfer.setPosition(transferpositions[0]);
                 telemetry.addLine("Transfer Position: Up ("+transferpositions[0]+")");
             }else{
@@ -101,12 +108,12 @@ public class drivetrainMain extends LinearOpMode{
             }
 
             //intake
-            intake.setPower(gamepad1.right_trigger-gamepad1.left_trigger);
+            intake.setPower(gamepad1.right_trigger*intakeSpeed-gamepad1.left_trigger*intakeSpeed);
             //below is drivetrain
             // Mecanum drive is controlled with three axes: drive (front-and-back),
             // strafe (left-and-right), and twist (rotating the whole chassis).
             //Default:0.7
-            double drive  = gamepad1.right_stick_y*0.7;
+            double drive  = -gamepad1.right_stick_y*0.7;
             final double strafe_speed=0.5;
             //Default:0.5
             double strafe = -gamepad1.right_stick_x*0.5;
@@ -122,10 +129,10 @@ public class drivetrainMain extends LinearOpMode{
             telemetry.addData("twist: ", twist);
 
             double[] speeds = {
-                    (drive - strafe + twist), //forward-left motor
+                    (drive - strafe - twist), //forward-left motor
                     (drive + strafe + twist), //forward-right motor
-                    (-drive - strafe + twist), //back-left motor
-                    (-drive + strafe + twist)  //back-right motor
+                    (drive + strafe - twist), //back-left motor
+                    (drive - strafe + twist)  //back-right motor
             };
 
             // Loop through all values in the speeds[] array and find the greatest
