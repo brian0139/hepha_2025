@@ -11,33 +11,41 @@ public class AlvPath {
         MeepMeep meepMeep = new MeepMeep(750);
 
         RoadRunnerBotEntity myBot = new DefaultBotBuilder(meepMeep)
+                // maxVel, maxAccel, maxAngVel, maxAngAccel, trackWidth
                 .setConstraints(60, 60, Math.toRadians(180), Math.toRadians(180), 15)
                 .build();
 
-        myBot.runAction(myBot.getDrive().actionBuilder(new Pose2d(-60, 12, 0))
-                // Drive forward from starting position to detect target Pixel
-                .lineToX(-36)
+        myBot.runAction(
+                myBot.getDrive().actionBuilder(
+                                new Pose2d(-48.5, 48.9, Math.toRadians(120))
+                        )
+                        // at backboard / scoring area
+                        .strafeToLinearHeading(new Vector2d(-40, 37.6), Math.toRadians(135))
+                        .waitSeconds(1.5)  // scoring / outtake here
 
-                // Move to place Pixel on detection location
-                .lineToXSplineHeading(-24, Math.toRadians(45))
+                        // go to first “ball” stack (intake here in real code)
+                        .strafeToLinearHeading(new Vector2d(-12, 30), Math.toRadians(180))
+                        .waitSeconds(0.5)  // intake dwell
 
-                // Navigate to Pixel storage location
-                .lineToXSplineHeading(-48, Math.toRadians(270))
-                .lineToYSplineHeading(-40, Math.toRadians(270))
+                        .strafeToLinearHeading(new Vector2d(-40, 37.6), Math.toRadians(135))
+                        .waitSeconds(1.5)  // score
 
+                        .strafeToLinearHeading(new Vector2d(10, 30), Math.toRadians(180))
+                        .waitSeconds(0.5)  // intake dwell
 
-                .lineToXSplineHeading(36, Math.toRadians(180))
+                        .strafeToLinearHeading(new Vector2d(-40, 37.6), Math.toRadians(135))
+                        .waitSeconds(1.5)  // score
 
+                        .strafeToLinearHeading(new Vector2d(34.6, 30), Math.toRadians(180))
+                        .waitSeconds(0.5)  // intake dwell
 
-                // Move to scoring area
-                .lineToXSplineHeading(36, Math.toRadians(180))
+                        .strafeToLinearHeading(new Vector2d(-40, 37.6), Math.toRadians(135))
+                        .waitSeconds(1.5)  // final score
 
-                // Align with specific scoring section
-                .strafeTo(new Vector2d(36, -36))
+                        .strafeToLinearHeading(new Vector2d(37, -33), Math.toRadians(270)) // park
 
-                // Park in designated end zone
-                .lineToXSplineHeading(60, Math.toRadians(0))
-                .build());
+                        .build()
+        );
 
         meepMeep.setBackground(MeepMeep.Background.FIELD_DECODE_OFFICIAL)
                 .setDarkMode(true)
