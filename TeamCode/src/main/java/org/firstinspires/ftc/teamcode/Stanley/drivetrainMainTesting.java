@@ -26,7 +26,8 @@ public class drivetrainMainTesting extends LinearOpMode{
     private Servo transfer=null;
     //sensitivity(& other configs)
     double intakeSpeed=7000;
-    double flywheelSensitivity=10;
+    double hoodspeed=0.5;
+    int flywheelSensitivity=10;
     //vars
     int flywheelspeed=0;
     int targetspeed=0;
@@ -66,12 +67,16 @@ public class drivetrainMainTesting extends LinearOpMode{
         //repeat until opmode ends
         while (opModeIsActive()){
             //flywheel
-            if (flywheelspeed-gamepad2.right_stick_y*flywheelSensitivity>=0){
-                flywheelspeed-=gamepad2.right_stick_y*flywheelSensitivity;
+            if (gamepad2.dpad_up){
+                flywheelspeed+=flywheelSensitivity;
             }
-            else{
+            else if (gamepad2.dpad_down && flywheelspeed-flywheelSensitivity>=0){
+                flywheelspeed-=flywheelSensitivity;
+            }
+            else if (gamepad2.dpad_down && flywheelspeed-flywheelSensitivity<0){
                 flywheelspeed=0;
             }
+            telemetry.addData("Y-button:",gamepad2.y);
             //toggle
             if (gamepad2.y && !previousgamepad2.y){
                 flywheelToggle=!flywheelToggle;
@@ -98,7 +103,15 @@ public class drivetrainMainTesting extends LinearOpMode{
             }
             telemetry.addLine("intakePos:"+intakepos+"("+intakeslots[intakepos%3]+")");
             //hood
-            hoodServo.setPower(-gamepad2.left_stick_y);
+            if (gamepad2.dpad_right){
+                hoodServo.setPower(hoodspeed);
+            }
+            else if (gamepad2.dpad_left){
+                hoodServo.setPower(hoodspeed);
+            }
+            else{
+                hoodServo.setPower(0);
+            }
             //transfer
             if (gamepad2.x) {
                 transfer.setPosition(transferpositions[0]);
@@ -109,22 +122,15 @@ public class drivetrainMainTesting extends LinearOpMode{
             }
 
             //intake
-            intake.setPower(gamepad1.right_trigger*intakeSpeed-gamepad1.left_trigger*intakeSpeed);
+            intake.setPower(gamepad2.right_trigger*intakeSpeed-gamepad2.left_trigger*intakeSpeed);
             //below is drivetrain
             // Mecanum drive is controlled with three axes: drive (front-and-back),
             // strafe (left-and-right), and twist (rotating the whole chassis).
             //Default:0.7
-            double drive  = -gamepad1.left_stick_y*0.7;
-            final double strafe_speed=0.5;
+            double drive  = -gamepad2.left_stick_y*0.7;
             //Default:0.5
-            double strafe = -gamepad1.left_stick_x*0.5;
-            if (gamepad1.dpad_left){
-                strafe=strafe_speed;
-            }
-            if (gamepad1.dpad_right){
-                strafe=-strafe_speed;
-            }
-            double twist  = -gamepad1.right_stick_x*0.5;
+            double strafe = -gamepad2.left_stick_x*0.5;
+            double twist  = -gamepad2.right_stick_x*0.5;
             telemetry.addData("drive: ", drive);
             telemetry.addData("strafe: ", strafe);
             telemetry.addData("twist: ", twist);
