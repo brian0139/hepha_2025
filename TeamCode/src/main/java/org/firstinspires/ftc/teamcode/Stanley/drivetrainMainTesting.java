@@ -107,6 +107,8 @@ public class drivetrainMainTesting extends LinearOpMode{
                 intakepos++;
                 spindexer.setPosition(intakeslots[intakepos%3]);
             }
+            //update gamepad+telemetry
+            previousgamepad2.copy(gamepad2);
             telemetry.addLine("intakePos:"+intakepos+"("+intakeslots[intakepos%3]+")");
             //hood
             if (gamepad2.dpad_right){
@@ -166,8 +168,6 @@ public class drivetrainMainTesting extends LinearOpMode{
             rightFront.setPower(speeds[1]);
             leftBack.setPower(speeds[2]);
             rightBack.setPower(speeds[3]);
-            //update gamepad+telemetry
-            previousgamepad2.copy(gamepad2);
             telemetry.update();
         }
     }
