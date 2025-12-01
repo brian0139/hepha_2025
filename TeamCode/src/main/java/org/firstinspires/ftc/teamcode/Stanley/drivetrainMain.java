@@ -93,11 +93,11 @@ public class drivetrainMain extends LinearOpMode{
             hoodServo.setPower(gamepad2.left_stick_y);
             //transfer
             if (gamepad2.b) {
-                transfer.setPosition(transferpositions[1]);
-                telemetry.addLine("Transfer Position: Up ("+transferpositions[1]+")");
-            }else{
                 transfer.setPosition(transferpositions[0]);
-                telemetry.addLine("Transfer Position: Down ("+transferpositions[0]+")");
+                telemetry.addLine("Transfer Position: Up ("+transferpositions[0]+")");
+            }else{
+                transfer.setPosition(transferpositions[1]);
+                telemetry.addLine("Transfer Position: Down ("+transferpositions[1]+")");
             }
 
             //intake
