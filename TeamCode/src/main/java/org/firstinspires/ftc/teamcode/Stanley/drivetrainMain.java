@@ -24,10 +24,9 @@ public class drivetrainMain extends LinearOpMode{
     private Servo spindexer=null;
     private Servo transfer=null;
     //sensitivity(& other configs)
-    double intakeSpeed=7000;
     double flywheelSensitivity=10;
     //vars
-    int flywheelspeed=0;
+    int flywheelspeed=2000;
     int targetspeed=0;
     boolean flywheelToggle=false;
     double[] outtakeslots = {0.26,0.65,1};
@@ -117,7 +116,7 @@ public class drivetrainMain extends LinearOpMode{
             }
 
             //intake
-            intake.setVelocity(gamepad1.right_trigger*intakeSpeed-gamepad1.left_trigger*intakeSpeed);
+            intake.setVelocity(gamepad1.right_trigger-gamepad1.left_trigger);
             //below is drivetrain
             // Mecanum drive is controlled with three axes: drive (front-and-back),
             // strafe (left-and-right), and twist (rotating the whole chassis).
