@@ -37,6 +37,7 @@ public class drivetrainMainTesting extends LinearOpMode{
     double[] transferpositions ={0.6,0.9};
     int outtakepos=0;
     int intakepos=0;
+    boolean pasty=false;
     //button state storage
     Gamepad previousgamepad2 =new Gamepad();
 
@@ -77,8 +78,11 @@ public class drivetrainMainTesting extends LinearOpMode{
                 flywheelspeed=0;
             }
             telemetry.addData("Y-button:",gamepad2.y);
+            telemetry.addData("Previous Y-button:",previousgamepad2.y);
             //toggle
-            if (gamepad2.y && !previousgamepad2.y){
+            if (gamepad2.y && !pasty){
+                telemetry.addLine("triggered");
+                pasty=true;
                 flywheelToggle=!flywheelToggle;
                 if (flywheelToggle) {
                     targetspeed=flywheelspeed;
@@ -87,6 +91,10 @@ public class drivetrainMainTesting extends LinearOpMode{
                     targetspeed=0;
                     flywheel.setVelocity(0);
                 }
+            }
+            else if (!gamepad2.y && pasty){
+                telemetry.addLine("not triggered");
+                pasty=false;
             }
             telemetry.addData("Flywheel Speed(encoder ticks/s):",flywheelspeed);
             telemetry.addData("Flywheel Target Velocity(encoder ticks/s):",targetspeed);
