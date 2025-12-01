@@ -23,7 +23,11 @@ public class AlvPath {
 
                 // Navigate to Pixel storage location
                 .lineToXSplineHeading(-48, Math.toRadians(270))
-                .forward(8)
+                .lineToYSplineHeading(-40, Math.toRadians(270))
+
+
+                .lineToXSplineHeading(36, Math.toRadians(180))
+
 
                 // Move to scoring area
                 .lineToXSplineHeading(36, Math.toRadians(180))
