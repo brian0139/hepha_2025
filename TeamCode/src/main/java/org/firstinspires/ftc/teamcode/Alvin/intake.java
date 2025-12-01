@@ -3,15 +3,18 @@ package org.firstinspires.ftc.teamcode.Alvin;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
-
-
 public class intake {
-
     private Servo intakeServo;
     private colorSensor colorDetector;
+
     private double intakePower = 1.0;    // Forward power
     private double reversePower = -1.0;  // Reverse power
     private double stopPower = 0.0;      // Stop power
+
+    //non-blocking "intake until pixel
+    private boolean runningPixelIntake = false;
+    private long pixelIntakeStartTime = 0;
+    private long pixelIntakeTimeoutMs = 0;
 
     public intake(HardwareMap hardwareMap, String servoDeviceName, String colorDeviceName) {
         intakeServo = hardwareMap.get(Servo.class, servoDeviceName);
@@ -48,22 +51,34 @@ public class intake {
         return colorDetector.getDetected() != colorSensor.Detected.NONE;
     }
 
+    /**
+     * First call: starts the intake and records start time.
+     * Later calls: checks for pixel or timeout, then stops.
+     * @param timeoutMs how long to try, in milliseconds
+     * @return true once a pixel is detected OR timeout reached.
+     */
     public boolean intakeUntilPixel(long timeoutMs) {
-        long startTime = System.currentTimeMillis();
-        intake();  // Start intaking
-
-        while (!isPixelDetected() && (System.currentTimeMillis() - startTime < timeoutMs)) {
-            // Continue intakin
-            try {
-                Thread.sleep(10);
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-                break;
-            }
+        // If we rnt currently running this routine, start it
+        if (!runningPixelIntake) {
+            runningPixelIntake = true;
+            pixelIntakeStartTime = System.currentTimeMillis();
+            pixelIntakeTimeoutMs = timeoutMs;
+            intake();
         }
 
-        stop();
-        return isPixelDetected();
+        // Alr running: check conditions once per call
+        boolean timedOut =
+                System.currentTimeMillis() - pixelIntakeStartTime >= pixelIntakeTimeoutMs;
+
+        if (isPixelDetected() || timedOut) {
+            stop();
+            runningPixelIntake = false;
+            // If timed out and no pixel, still return false for "detected"
+            return isPixelDetected();
+        }
+
+        // Still running, nothing finished yet
+        return false;
     }
 
     public void setPowerLevels(double forwardPower, double reversePower) {
