@@ -116,7 +116,7 @@ public class drivetrainMain extends LinearOpMode{
             }
 
             //intake
-            intake.setVelocity(gamepad1.right_trigger-gamepad1.left_trigger);
+            intake.setPower(gamepad1.right_trigger-gamepad1.left_trigger);
             //below is drivetrain
             // Mecanum drive is controlled with three axes: drive (front-and-back),
             // strafe (left-and-right), and twist (rotating the whole chassis).
