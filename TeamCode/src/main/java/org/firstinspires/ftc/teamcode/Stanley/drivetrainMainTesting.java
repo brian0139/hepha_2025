@@ -77,8 +77,6 @@ public class drivetrainMainTesting extends LinearOpMode{
             else if (gamepad2.dpad_down && flywheelspeed-flywheelSensitivity<0){
                 flywheelspeed=0;
             }
-            telemetry.addData("Y-button:",gamepad2.y);
-            telemetry.addData("Previous Y-button:",previousgamepad2.y);
             //toggle
             if (gamepad2.y && !pasty){
                 telemetry.addLine("triggered");
@@ -115,7 +113,7 @@ public class drivetrainMainTesting extends LinearOpMode{
                 hoodServo.setPower(hoodspeed);
             }
             else if (gamepad2.dpad_left){
-                hoodServo.setPower(hoodspeed);
+                hoodServo.setPower(-hoodspeed);
             }
             else{
                 hoodServo.setPower(0);
@@ -130,7 +128,7 @@ public class drivetrainMainTesting extends LinearOpMode{
             }
 
             //intake
-            intake.setPower(gamepad2.right_trigger*intakeSpeed-gamepad2.left_trigger*intakeSpeed);
+            intake.setVelocity(gamepad2.right_trigger*intakeSpeed-gamepad2.left_trigger*intakeSpeed);
             //below is drivetrain
             // Mecanum drive is controlled with three axes: drive (front-and-back),
             // strafe (left-and-right), and twist (rotating the whole chassis).
