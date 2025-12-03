@@ -31,6 +31,8 @@ public class drivetrainMainTesting extends LinearOpMode{
     int flywheelspeed=2000;
     int targetspeed=0;
     boolean flywheelToggle=false;
+    //false=intake, true=outtake
+    boolean spindexerPosition=false;
     double[] outtakeslots = {0.26,0.65,1};
     double[] intakeslots = {0.05,0.44,0.83};
     double[] transferpositions ={0.6,0.9};
@@ -58,7 +60,8 @@ public class drivetrainMainTesting extends LinearOpMode{
         hoodServo=hardwareMap.get(CRServo.class,"hoodServo");
         spindexer=hardwareMap.get(Servo.class,"spindexerServo");
         transfer=hardwareMap.get(Servo.class,"transferServo");
-
+        //initialize spindexer
+        spindexer.setPosition(intakeslots[0]);
         //telemetry message to signify robot waiting
         telemetry.addLine("Robot Ready.");
         telemetry.update();
@@ -93,21 +96,28 @@ public class drivetrainMainTesting extends LinearOpMode{
                 telemetry.addLine("not triggered");
                 pasty=false;
             }
-            telemetry.addData("Flywheel Speed(encoder ticks/s):",flywheelspeed);
-            telemetry.addData("Flywheel Target Velocity(encoder ticks/s):",targetspeed);
-            telemetry.addData("Flywheel Real Velocity(encoder ticks/s):",flywheel.getVelocity());
+            telemetry.addLine("Flywheel Speed:"+flywheelspeed+" encoder ticks/s, "+flywheelspeed*60/28+" RPM");
+            telemetry.addLine("Flywheel Speed:"+targetspeed+" encoder ticks/s, "+targetspeed*60/28+" RPM");
+            telemetry.addLine("Flywheel Speed:"+flywheel.getVelocity()+" encoder ticks/s, "+flywheel.getVelocity()*60/28+" RPM");
             //spindexer
             if (gamepad2.right_bumper && !previousgamepad2.right_bumper){
                 outtakepos++;
                 spindexer.setPosition(outtakeslots[outtakepos%3]);
+                spindexerPosition=true;
             }
-            telemetry.addLine("outtakePos:"+outtakepos+"("+outtakeslots[outtakepos%3]+")");
             if (gamepad2.left_bumper && !previousgamepad2.left_bumper){
                 intakepos++;
                 spindexer.setPosition(intakeslots[intakepos%3]);
+                spindexerPosition=false;
+            }
+            if (spindexerPosition){
+                telemetry.addData("Spindexer Position","Intake");
+            }else{
+                telemetry.addData("Spindexer Position","Outtake");
             }
             //update gamepad+telemetry
             previousgamepad2.copy(gamepad2);
+            telemetry.addLine("outtakePos:"+outtakepos+"("+outtakeslots[outtakepos%3]+")");
             telemetry.addLine("intakePos:"+intakepos+"("+intakeslots[intakepos%3]+")");
             //hood
             if (gamepad2.dpad_right){
