@@ -60,6 +60,7 @@ public class drivetrainMainTesting extends LinearOpMode{
         hoodServo=hardwareMap.get(CRServo.class,"hoodServo");
         spindexer=hardwareMap.get(Servo.class,"spindexerServo");
         transfer=hardwareMap.get(Servo.class,"transferServo");
+        transfer.setPosition(transferpositions[1]);
         //initialize spindexer
         spindexer.setPosition(intakeslots[0]);
         //telemetry message to signify robot waiting
@@ -100,18 +101,18 @@ public class drivetrainMainTesting extends LinearOpMode{
             telemetry.addLine("Flywheel Speed:"+targetspeed+" encoder ticks/s, "+targetspeed*60/28+" RPM");
             telemetry.addLine("Flywheel Speed:"+flywheel.getVelocity()+" encoder ticks/s, "+flywheel.getVelocity()*60/28+" RPM");
             //spindexer
-            if (gamepad2.right_bumper && !previousgamepad2.right_bumper && transfer.getPosition()==transferpositions[0]){
+            if (gamepad2.right_bumper && !previousgamepad2.right_bumper && transfer.getPosition()==transferpositions[1]){
                 outtakepos++;
                 spindexer.setPosition(outtakeslots[outtakepos%3]);
                 spindexerPosition=true;
             }
-            if (gamepad2.left_bumper && !previousgamepad2.left_bumper && transfer.getPosition()==transferpositions[0]){
+            if (gamepad2.left_bumper && !previousgamepad2.left_bumper && transfer.getPosition()==transferpositions[1]){
                 intakepos++;
                 spindexer.setPosition(intakeslots[intakepos%3]);
                 spindexerPosition=false;
             }
             if (spindexerPosition){
-                telemetry.addData("Spindexer Position","Intake");
+                telemetry.addData("Spindexer Position","Outtake");
                 //transfer
                 if (gamepad2.x) {
                     transfer.setPosition(transferpositions[0]);
@@ -121,7 +122,7 @@ public class drivetrainMainTesting extends LinearOpMode{
                     telemetry.addLine("Transfer Position: Down ("+transferpositions[1]+")");
                 }
             }else{
-                telemetry.addData("Spindexer Position","Outtake");
+                telemetry.addData("Spindexer Position","Intake");
             }
             telemetry.addData("transfer Real Position:",transfer.getPosition());
             //update gamepad+telemetry
