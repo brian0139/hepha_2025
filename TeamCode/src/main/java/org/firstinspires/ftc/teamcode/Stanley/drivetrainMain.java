@@ -106,8 +106,6 @@ public class drivetrainMain extends LinearOpMode{
             }
             if (spindexerPosition){
                 telemetry.addData("Spindexer Position","Intake");
-            }else{
-                telemetry.addData("Spindexer Position","Outtake");
                 //transfer
                 if (gamepad2.x) {
                     transfer.setPosition(transferpositions[0]);
@@ -116,6 +114,8 @@ public class drivetrainMain extends LinearOpMode{
                     transfer.setPosition(transferpositions[1]);
                     telemetry.addLine("Transfer Position: Down ("+transferpositions[1]+")");
                 }
+            }else{
+                telemetry.addData("Spindexer Position","Outtake");
             }
             //update gamepad+telemetry
             previousgamepad2.copy(gamepad2);
