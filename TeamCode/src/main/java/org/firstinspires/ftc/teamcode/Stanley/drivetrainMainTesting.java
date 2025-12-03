@@ -35,7 +35,7 @@ public class drivetrainMainTesting extends LinearOpMode{
     boolean spindexerPosition=false;
     double[] outtakeslots = {0.26,0.65,1};
     double[] intakeslots = {0.05,0.44,0.83};
-    double[] transferpositions ={0.62,0.85};
+    double[] transferpositions ={0.62,0.875};
     int outtakepos=0;
     int intakepos=0;
     boolean pasty=false;
@@ -100,12 +100,12 @@ public class drivetrainMainTesting extends LinearOpMode{
             telemetry.addLine("Flywheel Speed:"+targetspeed+" encoder ticks/s, "+targetspeed*60/28+" RPM");
             telemetry.addLine("Flywheel Speed:"+flywheel.getVelocity()+" encoder ticks/s, "+flywheel.getVelocity()*60/28+" RPM");
             //spindexer
-            if (gamepad2.right_bumper && !previousgamepad2.right_bumper){
+            if (gamepad2.right_bumper && !previousgamepad2.right_bumper && transfer.getPosition()==transferpositions[0]){
                 outtakepos++;
                 spindexer.setPosition(outtakeslots[outtakepos%3]);
                 spindexerPosition=true;
             }
-            if (gamepad2.left_bumper && !previousgamepad2.left_bumper){
+            if (gamepad2.left_bumper && !previousgamepad2.left_bumper && transfer.getPosition()==transferpositions[0]){
                 intakepos++;
                 spindexer.setPosition(intakeslots[intakepos%3]);
                 spindexerPosition=false;
@@ -123,6 +123,7 @@ public class drivetrainMainTesting extends LinearOpMode{
             }else{
                 telemetry.addData("Spindexer Position","Outtake");
             }
+            telemetry.addData("transfer Real Position:",transfer.getPosition());
             //update gamepad+telemetry
             previousgamepad2.copy(gamepad2);
             telemetry.addLine("outtakePos:"+outtakepos+"("+outtakeslots[outtakepos%3]+")");
