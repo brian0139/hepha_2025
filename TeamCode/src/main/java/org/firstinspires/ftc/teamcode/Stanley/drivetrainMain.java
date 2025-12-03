@@ -108,6 +108,14 @@ public class drivetrainMain extends LinearOpMode{
                 telemetry.addData("Spindexer Position","Intake");
             }else{
                 telemetry.addData("Spindexer Position","Outtake");
+                //transfer
+                if (gamepad2.x) {
+                    transfer.setPosition(transferpositions[0]);
+                    telemetry.addLine("Transfer Position: Up ("+transferpositions[0]+")");
+                }else{
+                    transfer.setPosition(transferpositions[1]);
+                    telemetry.addLine("Transfer Position: Down ("+transferpositions[1]+")");
+                }
             }
             //update gamepad+telemetry
             previousgamepad2.copy(gamepad2);
@@ -118,14 +126,6 @@ public class drivetrainMain extends LinearOpMode{
             telemetry.addLine("intakePos:"+intakepos+"("+intakeslots[intakepos%3]+")");
             //hood
             hoodServo.setPower(-gamepad2.left_stick_y);
-            //transfer
-            if (gamepad2.x) {
-                transfer.setPosition(transferpositions[0]);
-                telemetry.addLine("Transfer Position: Up ("+transferpositions[0]+")");
-            }else{
-                transfer.setPosition(transferpositions[1]);
-                telemetry.addLine("Transfer Position: Down ("+transferpositions[1]+")");
-            }
 
             //intake
             intake.setPower(gamepad1.right_trigger-gamepad1.left_trigger);
