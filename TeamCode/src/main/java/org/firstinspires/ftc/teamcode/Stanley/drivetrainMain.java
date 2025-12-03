@@ -33,12 +33,13 @@ public class drivetrainMain extends LinearOpMode{
     boolean spindexerPosition=false;
     double[] outtakeslots = {0.26,0.65,1};
     double[] intakeslots = {0.05,0.44,0.83};
-    double[] transferpositions ={0.6,0.85};
+    double[] transferpositions ={0.62,0.85};
     int outtakepos=0;
     int intakepos=0;
     boolean pasty=false;
     //button state storage
     Gamepad previousgamepad2 =new Gamepad();
+    Gamepad previousgamepad1 = new Gamepad();
 
     //main loop
     @Override
@@ -94,16 +95,17 @@ public class drivetrainMain extends LinearOpMode{
             telemetry.addLine("Flywheel Speed:"+targetspeed+" encoder ticks/s, "+targetspeed*60/28+" RPM");
             telemetry.addLine("Flywheel Speed:"+flywheel.getVelocity()+" encoder ticks/s, "+flywheel.getVelocity()*60/28+" RPM");
             //spindexer
-            if (gamepad2.right_bumper && !previousgamepad2.right_bumper){
+            if ((gamepad2.right_bumper && !previousgamepad2.right_bumper) || (gamepad1.right_bumper && !previousgamepad1.right_bumper)){
                 outtakepos++;
                 spindexer.setPosition(outtakeslots[outtakepos%3]);
                 spindexerPosition=true;
             }
-            if (gamepad2.left_bumper && !previousgamepad2.left_bumper){
+            if ((gamepad2.left_bumper && !previousgamepad2.left_bumper) || (gamepad1.left_bumper && !previousgamepad1.left_bumper)){
                 intakepos++;
                 spindexer.setPosition(intakeslots[intakepos%3]);
                 spindexerPosition=false;
             }
+            previousgamepad1.copy(gamepad1);
             if (spindexerPosition){
                 telemetry.addData("Spindexer Position","Intake");
                 //transfer
