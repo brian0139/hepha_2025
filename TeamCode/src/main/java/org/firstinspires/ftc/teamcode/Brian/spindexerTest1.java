@@ -8,7 +8,6 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.Servo;
 import java.lang.Math;
-
 @TeleOp
 public class spindexerTest1 extends LinearOpMode{
     private DcMotor leftFront=null;
@@ -38,6 +37,7 @@ public class spindexerTest1 extends LinearOpMode{
         aprilTag.init();
 
         // Initialize spindexer
+        //TODO: fix spindexer intialization, requires Servo spindexerServo
         spindexer = new spindexer();
         spindexer.spindexerServo = spindexerServo;
 
