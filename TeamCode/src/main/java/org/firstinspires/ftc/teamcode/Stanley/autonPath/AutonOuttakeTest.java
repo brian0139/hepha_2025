@@ -43,6 +43,8 @@ public class AutonOuttakeTest extends LinearOpMode {
         waitForStart();
         Actions.runBlocking(
                 drive.actionBuilder(beginPose)
+                        .stopAndAdd(new spinSpindexer(spindexerOperator,0,false))
+                        .stopAndAdd(new intakeStart(intakeMotor,1,10000))
                         .stopAndAdd(new spinSpindexer(spindexerOperator,0,true))
                         .waitSeconds(1)
                         .stopAndAdd(new spinFlywheel(flywheel,500,true))
