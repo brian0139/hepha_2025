@@ -29,14 +29,17 @@ public class drivetrainMain extends LinearOpMode{
     int flywheelspeed=2000;
     int targetspeed=0;
     boolean flywheelToggle=false;
+    //false=intake, true=outtake
+    boolean spindexerPosition=false;
     double[] outtakeslots = {0.26,0.65,1};
     double[] intakeslots = {0.05,0.44,0.83};
-    double[] transferpositions ={0.6,0.9};
+    double[] transferpositions ={0.62,0.875};
     int outtakepos=0;
     int intakepos=0;
     boolean pasty=false;
     //button state storage
     Gamepad previousgamepad2 =new Gamepad();
+    Gamepad previousgamepad1 = new Gamepad();
 
     //main loop
     @Override
@@ -56,6 +59,7 @@ public class drivetrainMain extends LinearOpMode{
         hoodServo=hardwareMap.get(CRServo.class,"hoodServo");
         spindexer=hardwareMap.get(Servo.class,"spindexerServo");
         transfer=hardwareMap.get(Servo.class,"transferServo");
+        transfer.setPosition(transferpositions[1]);
 
         //telemetry message to signify robot waiting
         telemetry.addLine("Robot Ready.");
@@ -88,32 +92,42 @@ public class drivetrainMain extends LinearOpMode{
                 telemetry.addLine("not triggered");
                 pasty=false;
             }
-            telemetry.addData("Flywheel Speed(encoder ticks/s):",flywheelspeed);
-            telemetry.addData("Flywheel Target Velocity(encoder ticks/s):",targetspeed);
-            telemetry.addData("Flywheel Real Velocity(encoder ticks/s):",flywheel.getVelocity());
+            telemetry.addLine("Flywheel Speed:"+flywheelspeed+" encoder ticks/s, "+flywheelspeed*60/28+" RPM");
+            telemetry.addLine("Flywheel Speed:"+targetspeed+" encoder ticks/s, "+targetspeed*60/28+" RPM");
+            telemetry.addLine("Flywheel Speed:"+flywheel.getVelocity()+" encoder ticks/s, "+flywheel.getVelocity()*60/28+" RPM");
             //spindexer
-            if (gamepad2.right_bumper && !previousgamepad2.right_bumper){
+            if (((gamepad2.right_bumper && !previousgamepad2.right_bumper) || (gamepad1.right_bumper && !previousgamepad1.right_bumper)) && transfer.getPosition()==transferpositions[1]){
                 outtakepos++;
                 spindexer.setPosition(outtakeslots[outtakepos%3]);
+                spindexerPosition=true;
             }
-            telemetry.addLine("outtakePos:"+outtakepos+"("+outtakeslots[outtakepos%3]+")");
-            if (gamepad2.left_bumper && !previousgamepad2.left_bumper){
+            if (((gamepad2.left_bumper && !previousgamepad2.left_bumper) || (gamepad1.left_bumper && !previousgamepad1.left_bumper)) && transfer.getPosition()==transferpositions[1]){
                 intakepos++;
                 spindexer.setPosition(intakeslots[intakepos%3]);
+                spindexerPosition=false;
             }
+            previousgamepad1.copy(gamepad1);
+            if (spindexerPosition){
+                telemetry.addData("Spindexer Position","Outtake");
+                //transfer
+                if (gamepad2.x) {
+                    transfer.setPosition(transferpositions[0]);
+                    telemetry.addLine("Transfer Position: Up ("+transferpositions[0]+")");
+                }else{
+                    transfer.setPosition(transferpositions[1]);
+                    telemetry.addLine("Transfer Position: Down ("+transferpositions[1]+")");
+                }
+            }else{
+                telemetry.addData("Spindexer Position","Intake");
+            }
+            telemetry.addData("transfer Real Position:",transfer.getPosition());
             //update gamepad+telemetry
             previousgamepad2.copy(gamepad2);
+            telemetry.addLine("outtakePos:"+outtakepos+"("+outtakeslots[outtakepos%3]+")");
+            telemetry.addLine("intakePos:"+intakepos+"("+intakeslots[intakepos%3]+")");
             telemetry.addLine("intakePos:"+intakepos+"("+intakeslots[intakepos%3]+")");
             //hood
             hoodServo.setPower(-gamepad2.left_stick_y);
-            //transfer
-            if (gamepad2.x) {
-                transfer.setPosition(transferpositions[0]);
-                telemetry.addLine("Transfer Position: Up ("+transferpositions[0]+")");
-            }else{
-                transfer.setPosition(transferpositions[1]);
-                telemetry.addLine("Transfer Position: Down ("+transferpositions[1]+")");
-            }
 
             //intake
             intake.setPower(gamepad1.right_trigger-gamepad1.left_trigger);
@@ -122,7 +136,8 @@ public class drivetrainMain extends LinearOpMode{
             // strafe (left-and-right), and twist (rotating the whole chassis).
             //Default:0.7
             double drive  = -gamepad1.left_stick_y*0.7;
-            final double strafe_speed=0.5;
+            final double strafe_speed=0.7;
+            final double drive_speed=0.7;
             //Default:0.5
             double strafe = -gamepad1.left_stick_x*0.5;
             if (gamepad1.dpad_left){
@@ -130,6 +145,12 @@ public class drivetrainMain extends LinearOpMode{
             }
             if (gamepad1.dpad_right){
                 strafe=-strafe_speed;
+            }
+            if (gamepad1.dpad_up){
+                drive=drive_speed;
+            }
+            if (gamepad1.dpad_down){
+                drive=-drive_speed;
             }
             double twist  = -gamepad1.right_stick_x*0.5;
             telemetry.addData("drive: ", drive);

@@ -12,37 +12,45 @@ public class StanPath {
 
         RoadRunnerBotEntity myBot = new DefaultBotBuilder(meepMeep)
                 // Set bot constraints: maxVel, maxAccel, maxAngVel, maxAngAccel, track width
-                .setConstraints(60, 60, Math.toRadians(180), Math.toRadians(180), 15)
+                .setConstraints(50, 50, Math.PI, Math.PI, 18)
                 .build();
-        Vector2d shootingPos=new Vector2d(-32,-32);
-        double shootingAngle=Math.toRadians(220);
-        final boolean parkinginfar=true;
-        if (parkinginfar) {
-            myBot.runAction(myBot.getDrive().actionBuilder(new Pose2d(-61, -36, Math.toRadians(180)))
+        final Vector2d shootingPos=new Vector2d(-32,-32);
+        final double shootingAngle=Math.toRadians(220);
+        final boolean parkinginfar=false;
+        final double intakeFinishy =-45;
+        final double intakeStarty=-25;
+        if (!parkinginfar) {
+            myBot.runAction(myBot.getDrive().actionBuilder(new Pose2d(-57.5, -43.5, Math.toRadians(54)))
                     .strafeToLinearHeading(shootingPos, shootingAngle)
-                    .strafeToLinearHeading(new Vector2d(-12, -30), Math.toRadians(90))
-                    .strafeTo(new Vector2d(-12, -45))
+                    .strafeToLinearHeading(new Vector2d(-12, intakeStarty), Math.toRadians(270))
+                    .strafeTo(new Vector2d(-12, intakeFinishy))
+                    .waitSeconds(3)
                     .strafeToLinearHeading(shootingPos, shootingAngle)
-                    .strafeToLinearHeading(new Vector2d(12, -30), Math.toRadians(90))
-                    .strafeTo(new Vector2d(12, -45))
+                    .waitSeconds(3)
+                    .strafeToLinearHeading(new Vector2d(12, intakeStarty), Math.toRadians(270))
+                    .strafeTo(new Vector2d(12, intakeFinishy))
+                    .waitSeconds(3)
                     .strafeToLinearHeading(shootingPos, shootingAngle)
-                    .strafeToLinearHeading(new Vector2d(35, -30), Math.toRadians(90))
-                    .strafeTo(new Vector2d(35, -45))
+                    .waitSeconds(3)
+                    .strafeToLinearHeading(new Vector2d(35, intakeStarty), Math.toRadians(270))
+                    .strafeTo(new Vector2d(35, intakeFinishy))
+                    .waitSeconds(3)
                     .strafeToLinearHeading(shootingPos, shootingAngle)
-                    .splineToSplineHeading(new Pose2d(-62,-36,Math.toRadians(180)), Math.toRadians(180))
+                    .waitSeconds(3)
+                    .splineToSplineHeading(new Pose2d(-60,-36,Math.toRadians(180)), Math.toRadians(180))
                     .build());
         }
         else{
             myBot.runAction(myBot.getDrive().actionBuilder(new Pose2d(-61, -36, Math.toRadians(180)))
                     .strafeToLinearHeading(shootingPos, shootingAngle)
-                    .strafeToLinearHeading(new Vector2d(-12, -30), Math.toRadians(90))
-                    .strafeTo(new Vector2d(-12, -45))
+                    .strafeToLinearHeading(new Vector2d(-12, intakeStarty), Math.toRadians(270))
+                    .strafeTo(new Vector2d(-12, intakeFinishy))
                     .strafeToLinearHeading(shootingPos, shootingAngle)
-                    .strafeToLinearHeading(new Vector2d(12, -30), Math.toRadians(90))
-                    .strafeTo(new Vector2d(12, -45))
+                    .strafeToLinearHeading(new Vector2d(12, intakeStarty), Math.toRadians(270))
+                    .strafeTo(new Vector2d(12, intakeFinishy))
                     .strafeToLinearHeading(shootingPos, shootingAngle)
-                    .strafeToLinearHeading(new Vector2d(35, -30), Math.toRadians(90))
-                    .strafeTo(new Vector2d(35, -45))
+                    .strafeToLinearHeading(new Vector2d(35, intakeStarty), Math.toRadians(270))
+                    .strafeTo(new Vector2d(35, intakeFinishy))
                     .strafeToLinearHeading(shootingPos, shootingAngle)
                     .setReversed(true)
                     .splineTo(new Vector2d(61, -9), Math.toRadians(0))
