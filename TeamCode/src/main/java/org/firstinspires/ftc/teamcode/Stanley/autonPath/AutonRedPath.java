@@ -37,20 +37,20 @@ public class AutonRedPath extends LinearOpMode {
                     .waitSeconds(0.5)
                     .strafeToLinearHeading(new Vector2d(-10, intakeStarty), Math.toRadians(270))
                         .stopAndAdd(new spinSpindexer(spindexerOperator,0))
-                        .stopAndAdd(new intakeStart(intakeMotor,1))
+                        .stopAndAdd(new intakeStart(intakeMotor,1,-1))
                     .strafeTo(new Vector2d(-10, intakeFinishy))
                         .stopAndAdd(new intakeStop(intakeMotor))
                         .stopAndAdd(new spinSpindexer(spindexerOperator,1))
                         .waitSeconds(1)
-                        .stopAndAdd(new intakeStart(intakeMotor,0.8))
+                        .stopAndAdd(new intakeStart(intakeMotor,0.8,3000))
                     .strafeTo(new Vector2d(-10,intakeFinishy-10))
                         .waitSeconds(1)
-                        .stopAndAdd(new intakeStop(intakeMotor))
+//                        .stopAndAdd(new intakeStop(intakeMotor))
                         .stopAndAdd(new spinSpindexer(spindexerOperator,2))
-                        .waitSeconds(1)
-                        .stopAndAdd(new intakeStart(intakeMotor,1))
-                        .waitSeconds(1)
-                        .stopAndAdd(new intakeStop(intakeMotor))
+                        .waitSeconds(0.5)
+                        .stopAndAdd(new intakeStart(intakeMotor,1,500))
+//                        .waitSeconds(0.5)
+//                        .stopAndAdd(new intakeStop(intakeMotor))
 
 //                    .waitSeconds(3)
 //                    .strafeToLinearHeading(shootingPos, shootingAngle)
@@ -70,13 +70,30 @@ public class AutonRedPath extends LinearOpMode {
     public class intakeStart implements Action{
         DcMotor intake;
         double power;
-        public intakeStart(DcMotor intake, double power){
+        double timems;
+        long starttime;
+        boolean started=false;
+        public intakeStart(DcMotor intake, double power, double timems){
             this.intake=intake;
             this.power=power;
+            this.timems=timems;
         }
         @Override
         public boolean run(TelemetryPacket telemetryPacket){
-            this.intake.setPower(this.power);
+            if (!started) {
+                this.intake.setPower(this.power);
+                this.starttime=System.currentTimeMillis();
+                this.started=true;
+                return false;
+            }
+            if (this.timems < 0){
+                return true;
+            }
+            if (System.currentTimeMillis()-this.starttime>=this.timems){
+                this.intake.setPower(0);
+                this.started=false;
+                return true;
+            }
             return false;
         }
     }

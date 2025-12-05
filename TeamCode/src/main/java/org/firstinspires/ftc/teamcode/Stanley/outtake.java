@@ -7,10 +7,6 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.Range;
 
-import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.Position;
-import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
 import org.firstinspires.ftc.teamcode.Aaron.aprilTag;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 
@@ -18,9 +14,6 @@ import java.util.List;
 import java.util.Objects;
 
 public class outtake {
-    //Camera position info
-    Position cameraPosition=new Position(DistanceUnit.INCH,0,0,0,0);
-    YawPitchRollAngles cameraOrientation=new YawPitchRollAngles(AngleUnit.DEGREES,0,-90,0,0);
     //Team color
     String teamColor;
     //April tag processor
@@ -33,9 +26,17 @@ public class outtake {
     double servoRPM=50;
     //Degrees changed for every servo rotation
     double servoDegPerRot =10;
+    //transfer positions(up, down)
+    double[] transferpositions ={0.62,0.875};
+    //hood angle transitions
     //save ms time for hood
     long savemstime=0;
-    //
+    //if hood running
+    boolean runninghood=false;
+    //hood angle(in degrees)
+    double hoodAngle=0;
+    //transfer servo
+    Servo transfer;
     //drivetrain motors
     DcMotor leftFront;
     DcMotor leftBack;
@@ -52,7 +53,7 @@ public class outtake {
     final double MAX_AUTO_TURN  = 0.3;   //  Clip the turn speed to this max value (adjust for your robot)
     //vars
     int targetTagID=-1;
-    public outtake(HardwareMap hardwareMap, DcMotorEx flywheelDrive, String teamColor, DcMotor leftFront, DcMotor rightFront, DcMotor leftBack, DcMotor rightBack, CRServo hoodServo){
+    public outtake(HardwareMap hardwareMap, DcMotorEx flywheelDrive, String teamColor, DcMotor leftFront, DcMotor rightFront, DcMotor leftBack, DcMotor rightBack, CRServo hoodServo, Servo transfer){
         this.flywheelDrive=flywheelDrive;
         this.teamColor=teamColor;
         this.leftFront=leftFront;
@@ -60,6 +61,7 @@ public class outtake {
         this.leftBack=leftBack;
         this.rightBack=rightBack;
         this.hoodServo=hoodServo;
+        this.transfer=transfer;
         //set target april tag number to aim at depending on team color.
         if (Objects.equals(this.teamColor, "Red") && this.targetTagID!=-1){
             this.targetTagID=24;
@@ -130,22 +132,40 @@ public class outtake {
     }
 
     public boolean setHood(double degrees){
-        double rotations=degrees/this.servoDegPerRot;
-        double time=rotations*60/this.servoRPM;
-        this.savemstime=System.currentTimeMillis();
-
-        return true;
+        double rotations=degrees-this.hoodAngle/this.servoDegPerRot;
+        //time needed to rotate for in ms
+        double time=Math.abs(rotations*60*1000/this.servoRPM);
+        if (runninghood){
+            if (rotations>0) this.hoodAngle += ((double) (System.currentTimeMillis() - savemstime)*this.servoRPM*this.servoDegPerRot) / (60*1000);
+            else if (rotations<0) this.hoodAngle -= ((double) (System.currentTimeMillis() - savemstime)*this.servoRPM*this.servoDegPerRot) / (60*1000);
+        }
+        if (System.currentTimeMillis()-savemstime>=time){
+            this.runninghood=false;
+            return true;
+        }
+        if (!runninghood) {
+            this.savemstime=System.currentTimeMillis();
+            if (rotations > 0) {
+                this.hoodServo.setPower(1);
+            } else if (rotations < 0) {
+                this.hoodServo.setPower(-1);
+            }
+            this.runninghood=true;
+        }
+        return false;
     }
 
     /**
-     * Transfer artifact to flywheel
-     * @param actuator Servo Linear Actuator to push artifact
+     * Transfer artifact to flywheel(move transfer up)
      */
-    public void transfer(Servo actuator){
-        int normalPos=0;
-        int transferPos=1;
-        actuator.setPosition(transferPos);
-        actuator.setPosition(normalPos);
+    public void transferUp(){
+        this.transfer.setPosition(this.transferpositions[0]);
+    }
+    /**
+     * Lower Transfer
+     */
+    public void transferDown(){
+        this.transfer.setPosition(this.transferpositions[1]);
     }
 
     /**
