@@ -22,6 +22,7 @@ public class outtake {
     DcMotorEx flywheelDrive;
     //Outtake Hood Servo
     CRServo hoodServo;
+    //TODO: get servo RPM
     //Servo RPM
     double servoRPM=50;
     //Degrees changed for every servo rotation

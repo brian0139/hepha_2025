@@ -17,15 +17,19 @@ import org.firstinspires.ftc.teamcode.MecanumDrive;
 import org.firstinspires.ftc.teamcode.Stanley.outtake;
 
 @Autonomous
-public class AutonRedPath extends LinearOpMode {
+public class AutonOuttakeTest extends LinearOpMode {
     Servo spindexerServo=null;
+    Servo transfer=null;
     DcMotor intakeMotor=null;
+    DcMotorEx flywheel=null;
     //classes
     spindexer spindexerOperator=null;
     @Override
     public void runOpMode() throws InterruptedException{
         spindexerServo=hardwareMap.servo.get("spindexerServo");
         intakeMotor=hardwareMap.dcMotor.get("intake");
+        flywheel=(DcMotorEx) hardwareMap.dcMotor.get("flywheel");
+        transfer=hardwareMap.servo.get("transferServo");
         spindexerOperator=new spindexer(spindexerServo);
         Pose2d beginPose=new Pose2d(-57.5, -43.5, Math.toRadians(54));
         MecanumDrive drive=new MecanumDrive(hardwareMap,beginPose);
@@ -39,38 +43,13 @@ public class AutonRedPath extends LinearOpMode {
         waitForStart();
         Actions.runBlocking(
                 drive.actionBuilder(beginPose)
-                    .strafeToLinearHeading(shootingPos, shootingAngle)
-                    .waitSeconds(0.5)
-                    .strafeToLinearHeading(new Vector2d(-10, intakeStarty), Math.toRadians(270))
-                        .stopAndAdd(new spinSpindexer(spindexerOperator,0))
-                        .stopAndAdd(new intakeStart(intakeMotor,1,-1))
-                    .strafeTo(new Vector2d(-10, intakeFinishy))
-                        .stopAndAdd(new intakeStop(intakeMotor))
-                        .stopAndAdd(new spinSpindexer(spindexerOperator,1))
+                        .stopAndAdd(new spinSpindexer(spindexerOperator,0,true))
                         .waitSeconds(1)
-                        .stopAndAdd(new intakeStart(intakeMotor,0.8,3000))
-                    .strafeTo(new Vector2d(-10,intakeFinishy-10))
-                        .waitSeconds(1)
-//                        .stopAndAdd(new intakeStop(intakeMotor))
-                        .stopAndAdd(new spinSpindexer(spindexerOperator,2))
-                        .waitSeconds(0.5)
-                        .stopAndAdd(new intakeStart(intakeMotor,1,500))
-//                        .waitSeconds(0.5)
-//                        .stopAndAdd(new intakeStop(intakeMotor))
-
-//                    .waitSeconds(3)
-//                    .strafeToLinearHeading(shootingPos, shootingAngle)
-//                    .waitSeconds(3)
-//                    .strafeToLinearHeading(new Vector2d(10, intakeStarty+7), Math.toRadians(275))
-//                    .strafeTo(new Vector2d(10, intakeFinishy+3))
-//                    .waitSeconds(3)
-//                    .strafeToLinearHeading(shootingPos, shootingAngle)
-//                    .waitSeconds(3)
-//                    .strafeToLinearHeading(new Vector2d(35, intakeStarty+10), Math.toRadians(270))
-//                    .strafeTo(new Vector2d(35, intakeFinishy+10))
-//                    .waitSeconds(3)
-//                    .strafeToLinearHeading(shootingPos, shootingAngle)
-//                    .waitSeconds(3)
+                        .stopAndAdd(new spinFlywheel(flywheel,500,true))
+                        .stopAndAdd(new moveTransfer(transfer,true))
+                        .waitSeconds(0.75)
+                        .stopAndAdd(new spinFlywheel(flywheel,0,false))
+                        .stopAndAdd(new moveTransfer(transfer,false))
                     .build());
     }
 
@@ -108,13 +87,21 @@ public class AutonRedPath extends LinearOpMode {
     public class spinSpindexer implements Action{
         spindexer spindexerOperator;
         int position;
-        public spinSpindexer(spindexer spindexerOperator,int position){
+        //false=intake,true=outtake
+        boolean inout=false;
+        public spinSpindexer(spindexer spindexerOperator,int position,boolean inout){
             this.spindexerOperator=spindexerOperator;
             this.position=position;
+            this.inout=inout;
         }
         @Override
         public boolean run(TelemetryPacket telemetryPacket){
-            this.spindexerOperator.rotateSpindexerInput(this.position);
+            if (!inout) {
+                this.spindexerOperator.rotateSpindexerInput(this.position);
+            }
+            else{
+                this.spindexerOperator.rotateSpindexerOutput(this.position);
+            }
             return false;
         }
     }
