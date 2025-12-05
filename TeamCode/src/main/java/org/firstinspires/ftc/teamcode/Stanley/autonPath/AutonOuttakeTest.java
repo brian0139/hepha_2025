@@ -44,12 +44,23 @@ public class AutonOuttakeTest extends LinearOpMode {
         Actions.runBlocking(
                 drive.actionBuilder(beginPose)
                         .stopAndAdd(new spinSpindexer(spindexerOperator,0,false))
+                        .stopAndAdd(new spinSpindexer(spindexerOperator,1,false))
+                        .stopAndAdd(new spinSpindexer(spindexerOperator,2,false))
                         .stopAndAdd(new intakeStart(intakeMotor,1,10000))
                         .stopAndAdd(new spinSpindexer(spindexerOperator,0,true))
                         .waitSeconds(1)
                         .stopAndAdd(new spinFlywheel(flywheel,500,true))
                         .stopAndAdd(new moveTransfer(transfer,true))
-                        .waitSeconds(0.75)
+                        .waitSeconds(0.5)
+                        .stopAndAdd(new moveTransfer(transfer,false))
+                        .stopAndAdd(new spinSpindexer(spindexerOperator,1,true))
+                        .stopAndAdd(new moveTransfer(transfer,true))
+                        .waitSeconds(0.5)
+                        .stopAndAdd(new moveTransfer(transfer,false))
+                        .stopAndAdd(new spinSpindexer(spindexerOperator,2,true))
+                        .stopAndAdd(new moveTransfer(transfer,true))
+                        .waitSeconds(0.5)
+                        .stopAndAdd(new moveTransfer(transfer,false))
                         .stopAndAdd(new spinFlywheel(flywheel,0,false))
                         .stopAndAdd(new moveTransfer(transfer,false))
                     .build());
@@ -127,7 +138,7 @@ public class AutonOuttakeTest extends LinearOpMode {
             this.angle=angle;
             this.hood=hood;
             this.wait=wait;
-            this.outtakeOperator=new outtake(hardwareMap,null,null,null,null,null,null,hood,null);
+            this.outtakeOperator=new outtake(hardwareMap,null,null,null,null,null,null,hood,null,false);
         }
         @Override
         public boolean run(TelemetryPacket telemetryPacket){
@@ -150,7 +161,7 @@ public class AutonOuttakeTest extends LinearOpMode {
             this.flywheel = flywheel;
             this.wait = wait;
             this.targetSpeed=targetSpeed;
-            this.outtakeOperator = new outtake(hardwareMap, flywheel, null, null, null, null, null, null, null);
+            this.outtakeOperator = new outtake(hardwareMap, flywheel, null, null, null, null, null, null, null,false);
         }
         @Override
         public boolean run(TelemetryPacket telemetryPacket){
@@ -171,7 +182,7 @@ public class AutonOuttakeTest extends LinearOpMode {
         public moveTransfer(Servo transfer, boolean position){
             this.transfer=transfer;
             this.position=position;
-            this.outtakeOperator=new outtake(hardwareMap,null,null,null,null,null,null,null,transfer);
+            this.outtakeOperator=new outtake(hardwareMap,null,null,null,null,null,null,null,transfer,false);
         }
         @Override
         public boolean run(TelemetryPacket telemetryPacket){
