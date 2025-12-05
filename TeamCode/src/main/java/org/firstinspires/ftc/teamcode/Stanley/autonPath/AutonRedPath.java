@@ -7,11 +7,14 @@ import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.teamcode.Brian.spindexer;
 import org.firstinspires.ftc.teamcode.MecanumDrive;
+import org.firstinspires.ftc.teamcode.Stanley.outtake;
 
 @Autonomous
 public class AutonRedPath extends LinearOpMode {
@@ -30,6 +33,9 @@ public class AutonRedPath extends LinearOpMode {
         final double shootingAngle=Math.toRadians(225);
         final double intakeFinishy =-36;
         final double intakeStarty=-13;
+        //TODO:get values for shooting hood angle and flywheel speed
+        final double hoodAngle;
+        final double flywheelSpeed;
         waitForStart();
         Actions.runBlocking(
                 drive.actionBuilder(beginPose)
@@ -67,6 +73,8 @@ public class AutonRedPath extends LinearOpMode {
 //                    .waitSeconds(3)
                     .build());
     }
+
+    //action classes
     public class intakeStart implements Action{
         DcMotor intake;
         double power;
@@ -121,4 +129,71 @@ public class AutonRedPath extends LinearOpMode {
             return false;
         }
     }
+    public class moveHood implements Action{
+        double angle;
+        CRServo hood;
+        outtake outtakeOperator;
+        boolean wait=false;
+        public moveHood(double angle, CRServo hood,boolean wait){
+            this.angle=angle;
+            this.hood=hood;
+            this.wait=wait;
+            this.outtakeOperator=new outtake(null,null,null,null,null,null,null,hood,null);
+        }
+        @Override
+        public boolean run(TelemetryPacket telemetryPacket){
+            if (this.wait) {
+                return this.outtakeOperator.setHood(this.angle);
+            }
+            else{
+                this.outtakeOperator.setHood(this.angle);
+                return false;
+            }
+        }
+    }
+    public class spinFlywheel implements Action{
+        DcMotorEx flywheel;
+        boolean wait=false;
+        int targetSpeed;
+        int tolerance=5;
+        outtake outtakeOperator;
+        public spinFlywheel(DcMotorEx flywheel,int targetSpeed, boolean wait) {
+            this.flywheel = flywheel;
+            this.wait = wait;
+            this.targetSpeed=targetSpeed;
+            this.outtakeOperator = new outtake(null, flywheel, null, null, null, null, null, null, null);
+        }
+        @Override
+        public boolean run(TelemetryPacket telemetryPacket){
+            if (this.wait){
+                return this.outtakeOperator.spin_flywheel(this.targetSpeed,this.tolerance);
+            }
+            else{
+                this.outtakeOperator.spin_flywheel(this.targetSpeed,this.tolerance);
+                return false;
+            }
+        }
+    }
+    public class moveTransfer implements Action{
+        Servo transfer;
+        //true=up, false=down
+        boolean position;
+        outtake outtakeOperator;
+        public moveTransfer(Servo transfer, boolean position){
+            this.transfer=transfer;
+            this.position=position;
+            this.outtakeOperator=new outtake(null,null,null,null,null,null,null,null,transfer);
+        }
+        @Override
+        public boolean run(TelemetryPacket telemetryPacket){
+            if (this.position){
+                this.outtakeOperator.transferUp();
+            }
+            else{
+                this.outtakeOperator.transferDown();
+            }
+            return false;
+        }
+    }
+
 }
