@@ -33,9 +33,13 @@ public class spindexer{
     int emptySlot;
 
     // Intake slots (servo positions)
-    public double[] intakeslots = {0.0/360, 120.0/360, 240.0/360};
+    public double[] intakeslots = {0.05,0.44,0.83};
     // Outtake slots (servo positions)
-    public double[] outtakeslots = {60.0/360, 180.0/360, 300.0/360};
+    public double[] outtakeslots = {0.26,0.65,1};
+
+    public spindexer(Servo spindexerServo){
+        this.spindexerServo=spindexerServo;
+    }
 
     public int rotateSpindexerInput(int reqIntake) {
         spindexerServo.setPosition(intakeslots[reqIntake]);

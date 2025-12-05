@@ -22,7 +22,7 @@ public class hoodtest extends LinearOpMode{
     boolean lastx=false;
     double spindexerpos=0;
     double spindexerDialation=0.0005;
-    double transferDialation=0.01;
+    double transferDialation=0.003;
     //double[] outtakeslots = {60.0/360, 180.0/360, 300.0/360};
     double[] outtakeslots = {0.26,0.65,1};
     double[] transferpositions ={0.6,0.9};

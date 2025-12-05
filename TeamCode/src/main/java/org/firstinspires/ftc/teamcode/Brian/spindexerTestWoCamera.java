@@ -12,7 +12,6 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.Servo;
 import java.lang.Math;
-
 @TeleOp
 public class spindexerTestWoCamera extends LinearOpMode {
     private DcMotor leftFront = null;
@@ -37,6 +36,7 @@ public class spindexerTestWoCamera extends LinearOpMode {
         limelight = hardwareMap.get(Limelight3A.class, "limelight");
 
         // Initialize spindexer
+        //TODO: fix spindexer intialization, requires Servo spindexerServo
         spindexer = new spindexer();
         spindexer.spindexerServo = spindexerServo;
 
