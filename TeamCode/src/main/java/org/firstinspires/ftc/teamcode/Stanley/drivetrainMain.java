@@ -37,6 +37,7 @@ public class drivetrainMain extends LinearOpMode{
     int outtakepos=0;
     int intakepos=0;
     boolean pasty=false;
+    double epsilon=0.001;
     //button state storage
     Gamepad previousgamepad2 =new Gamepad();
     Gamepad previousgamepad1 = new Gamepad();
@@ -96,12 +97,18 @@ public class drivetrainMain extends LinearOpMode{
             telemetry.addLine("Flywheel Speed:"+targetspeed+" encoder ticks/s, "+targetspeed*60/28+" RPM");
             telemetry.addLine("Flywheel Speed:"+flywheel.getVelocity()+" encoder ticks/s, "+flywheel.getVelocity()*60/28+" RPM");
             //spindexer
-            if (((gamepad2.right_bumper && !previousgamepad2.right_bumper) || (gamepad1.right_bumper && !previousgamepad1.right_bumper)) && transfer.getPosition()==transferpositions[1]){
+            telemetry.addData("gamepad2.right_bumper",gamepad2.rightBumperWasPressed());
+            telemetry.addData("gamepad2.left_bumper",gamepad2.leftBumperWasPressed());
+            telemetry.addData("gamepad1.right_bumper",gamepad1.rightBumperWasPressed());
+            telemetry.addData("gamepad1.left_bumper",gamepad1.leftBumperWasPressed());
+            telemetry.addData("transferStatement",((transfer.getPosition()>=transferpositions[1]-epsilon) && (transfer.getPosition()<=transferpositions[1]+epsilon)));
+//            if ((gamepad2.rightBumperWasPressed() || gamepad1.rightBumperWasPressed()) && (transfer.getPosition()>=transferpositions[1]-epsilon)){
+            if (gamepad1.right_bumper){
                 outtakepos++;
                 spindexer.setPosition(outtakeslots[outtakepos%3]);
                 spindexerPosition=true;
             }
-            if (((gamepad2.left_bumper && !previousgamepad2.left_bumper) || (gamepad1.left_bumper && !previousgamepad1.left_bumper)) && transfer.getPosition()==transferpositions[1]){
+            if ((gamepad2.leftBumperWasPressed() || gamepad1.leftBumperWasPressed()) && (transfer.getPosition()>=transferpositions[1]-epsilon)){
                 intakepos++;
                 spindexer.setPosition(intakeslots[intakepos%3]);
                 spindexerPosition=false;
