@@ -45,6 +45,6 @@ public class AutonRedMinPathTarget extends LinearOpMode {
         waitForStart();
         Actions.runBlocking(
                 drive.actionBuilder(beginPose)
-                    .splineTo(new Vector2d(-54,6),Math.toRadians(-90)).build());
+                    .splineTo(new Vector2d(-54,23),Math.toRadians(-90)).build());
     }
 }

@@ -20,7 +20,7 @@ public class StanPath {
         final double intakeFinishy =-45;
         final double intakeStarty=-25;
         if (!parkinginfar) {
-            myBot.runAction(myBot.getDrive().actionBuilder(new Pose2d(-57.5, -43.5, Math.toRadians(54)))
+            myBot.runAction(myBot.getDrive().actionBuilder(new Pose2d(-54, -23, Math.toRadians(90)))
                     .strafeToLinearHeading(shootingPos, shootingAngle)
                     .strafeToLinearHeading(new Vector2d(-12, intakeStarty), Math.toRadians(270))
                     .strafeTo(new Vector2d(-12, intakeFinishy))
