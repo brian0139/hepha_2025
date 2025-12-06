@@ -25,6 +25,9 @@ public class AutonBluePath extends LinearOpMode {
     Servo transfer=null;
     DcMotorEx flywheel=null;
     CRServo hood=null;
+    //TODO:get values for shooting hood angle and flywheel speed
+    final double hoodAngle=0;
+    final int flywheelSpeed=2000;
     //classes
     spindexer spindexerOperator=null;
     @Override
@@ -42,9 +45,6 @@ public class AutonBluePath extends LinearOpMode {
         final double shootingAngle=Math.toRadians(225);
         final double intakeFinishy =-36;
         final double intakeStarty=-13;
-        //TODO:get values for shooting hood angle and flywheel speed
-        final double hoodAngle;
-        final double flywheelSpeed;
 
         waitForStart();
         Actions.runBlocking(
@@ -52,16 +52,16 @@ public class AutonBluePath extends LinearOpMode {
                     .strafeToLinearHeading(shootingPos, shootingAngle)
                     .waitSeconds(0.5)
                     .strafeToLinearHeading(new Vector2d(-15, intakeStarty), Math.toRadians(270))
-//                        .stopAndAdd(new spinSpindexer(spindexerOperator,0))
+                        .stopAndAdd(new spinSpindexer(spindexerOperator,0,false))
                         .stopAndAdd(new intakeStart(intakeMotor,1))
                     .strafeTo(new Vector2d(-15, intakeFinishy))
                         .stopAndAdd(new intakeStop(intakeMotor))
-//                        .stopAndAdd(new spinSpindexer(spindexerOperator,1))
+                        .stopAndAdd(new spinSpindexer(spindexerOperator,1,false))
                         .waitSeconds(1)
                         .stopAndAdd(new intakeStart(intakeMotor,0.8))
                     .strafeTo(new Vector2d(-15,intakeFinishy-10))
                         .waitSeconds(1)
-//                        .stopAndAdd(new intakeStop(intakeMotor))
+                        .stopAndAdd(new intakeStop(intakeMotor))
                         .stopAndAdd(new spinSpindexer(spindexerOperator,2,false))
                         .waitSeconds(0.5)
                         .stopAndAdd(new intakeStart(intakeMotor,1))
@@ -83,7 +83,16 @@ public class AutonBluePath extends LinearOpMode {
 //                    .waitSeconds(3)
                     .build());
     }
-    //trajectory generation function
+
+    /**
+     * intake path generation function
+     * @param endY normal end y pos
+     * @param x x pos
+     * @param ramY ram to pos
+     * @param startPose starting pose
+     * @param drive MecanumDrive object
+     * @return Action object for intake sequence
+     */
     public Action intake(double endY, double x, double ramY, Pose2d startPose, MecanumDrive drive){
         Action intakeTrajectory=drive.actionBuilder(startPose)
                 //spin to 0 intake
@@ -96,11 +105,36 @@ public class AutonBluePath extends LinearOpMode {
                 .stopAndAdd(new intakeStop(intakeMotor))
                 //spin to 1 intake
                 .stopAndAdd(new spinSpindexer(spindexerOperator,1,false))
-                //strafe
+                .waitSeconds(0.75)
+                //start intake
+                .stopAndAdd(new intakeStart(intakeMotor,0.8))
+                //strafe to ram
+                .strafeTo(new Vector2d(x,ramY))
+                //stop intake
+                .stopAndAdd(new intakeStop(intakeMotor))
+                //spin to 2 intake
+                .stopAndAdd(new spinSpindexer(spindexerOperator,1,false))
+                //intake last artifact
+                .stopAndAdd(new intakeStart(intakeMotor,1))
                 .build();
         return intakeTrajectory;
     }
+
     //action classes
+    public void shoot(int[] slots,MecanumDrive drive, Pose2d startPose){
+        for (int i=0;i<=slots.length;i++) {
+            Action shootAction = drive.actionBuilder(startPose)
+                    .stopAndAdd(new spinSpindexer(spindexerOperator, slots[i], true))
+                    .stopAndAdd(new spinFlywheel(flywheel, flywheelSpeed, true))
+                    .waitSeconds(1)
+                    .stopAndAdd(new moveTransfer(transfer, true))
+                    .waitSeconds(0.5)
+                    .stopAndAdd(new moveTransfer(transfer, false))
+                    .waitSeconds(0.2)
+                    .build();
+            Actions.runBlocking(shootAction);
+        }
+    }
     public class intakeStart implements Action{
         DcMotor intake;
         double power;
@@ -176,16 +210,23 @@ public class AutonBluePath extends LinearOpMode {
         DcMotorEx flywheel;
         int targetSpeed;
         int tolerance=5;
+        boolean wait=false;
         outtake outtakeOperator;
-        public spinFlywheel(DcMotorEx flywheel,int targetSpeed) {
+        public spinFlywheel(DcMotorEx flywheel,int targetSpeed, boolean wait) {
             this.flywheel = flywheel;
             this.targetSpeed=targetSpeed;
+            this.wait=wait;
             this.outtakeOperator = new outtake(hardwareMap, flywheel, null, null, null, null, null, null, null,false);
         }
         @Override
         public boolean run(TelemetryPacket telemetryPacket){
-            this.outtakeOperator.spin_flywheel(this.targetSpeed,this.tolerance);
-            return false;
+            if (!wait){
+                outtakeOperator.spin_flywheel(targetSpeed,tolerance);
+                return false;
+            }
+            else {
+                return !outtakeOperator.spin_flywheel(targetSpeed, 10);
+            }
         }
     }
     public class moveTransfer implements Action{
