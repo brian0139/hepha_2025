@@ -11,7 +11,7 @@ public class spindexer{
 
     public Servo spindexerServo = null;
 
-    public int[] spindexerSlots = {2,2,1}; // 0=empty, 1=green, 2=purple
+    public int[] spindexerSlots = {2,29,1}; // 0=empty, 1=green, 2=purple
     public int currentPosition = 0;
     public int outtakePosition = 0;
     public int intakePosition = 0;
@@ -41,16 +41,18 @@ public class spindexer{
         this.spindexerServo=spindexerServo;
     }
 
-    public void rotateSpindexerInput(int reqIntake) {
+    public int rotateSpindexerInput(int reqIntake) {
         spindexerServo.setPosition(intakeslots[reqIntake]);
         intakePosition = reqIntake;
         currentPosition = intakePosition;
+        return intakePosition;
     }
 
-    public void rotateSpindexerOutput(int reqOuttake) {
+    public int rotateSpindexerOutput(int reqOuttake) {
         spindexerServo.setPosition(outtakeslots[reqOuttake]);
         outtakePosition = reqOuttake; // set outtake position to current slot outtaking
         currentPosition = outtakePosition; // set current position to outtaking position
+        return intakePosition;
     }
 
     // calling intake if intakeuntilpixel until returns true
