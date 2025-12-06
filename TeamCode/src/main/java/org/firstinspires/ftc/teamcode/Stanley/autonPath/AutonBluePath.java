@@ -27,7 +27,7 @@ public class AutonBluePath extends LinearOpMode {
     CRServo hood=null;
     //TODO:get values for shooting hood angle and flywheel speed
     final double hoodAngle=0;
-    final int flywheelSpeed=2000;
+    final int flywheelSpeed=1000;
     //classes
     spindexer spindexerOperator=null;
     @Override
@@ -49,7 +49,8 @@ public class AutonBluePath extends LinearOpMode {
         waitForStart();
         Actions.runBlocking(
                 drive.actionBuilder(beginPose)
-                    .strafeToLinearHeading(shootingPos, shootingAngle)
+//                    .strafeToLinearHeading(shootingPos, shootingAngle)
+
 //                    .waitSeconds(0.5)
 //                    .strafeToLinearHeading(new Vector2d(-15, intakeStarty), Math.toRadians(270))
 //                        .stopAndAdd(new spinSpindexer(spindexerOperator,0,false))
@@ -124,7 +125,7 @@ public class AutonBluePath extends LinearOpMode {
 
     //action classes
     public void shoot(int[] slots,MecanumDrive drive, Pose2d startPose){
-        for (int i=0;i<=slots.length;i++) {
+        for (int i=0;i<slots.length;i++) {
             Action shootAction = drive.actionBuilder(startPose)
                     .stopAndAdd(new spinSpindexer(spindexerOperator, slots[i], true))
                     .stopAndAdd(new spinFlywheel(flywheel, flywheelSpeed, true))
@@ -227,6 +228,9 @@ public class AutonBluePath extends LinearOpMode {
                 return false;
             }
             else {
+                telemetry.addData("Flywheel Speed",outtakeOperator.flywheelDrive.getVelocity());
+                telemetry.addData("Flywheel Target Speed",targetSpeed);
+                telemetry.update();
                 return !outtakeOperator.spin_flywheel(targetSpeed, 10);
             }
         }
