@@ -51,7 +51,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
  * Remove or comment out the @Disabled line to add this OpMode to the Driver Station OpMode list.
  */
 
-@Disabled
+
 @TeleOp(name="Concept: Gamepad Edge Detection", group ="Concept")
 public class ConceptGamepadEdgeDetection extends LinearOpMode {
 
@@ -65,7 +65,7 @@ public class ConceptGamepadEdgeDetection extends LinearOpMode {
             telemetryButtonData();
 
             // Wait 2 seconds before doing another check
-            sleep(2000);
+//            sleep(2000);
         }
     }
 
@@ -73,6 +73,7 @@ public class ConceptGamepadEdgeDetection extends LinearOpMode {
         // Add the status of the Gamepad 1 Left Bumper
         telemetry.addData("Gamepad 1 Left Bumper Pressed", gamepad1.leftBumperWasPressed());
         telemetry.addData("Gamepad 1 Left Bumper Released", gamepad1.leftBumperWasReleased());
+
         telemetry.addData("Gamepad 1 Left Bumper Status", gamepad1.left_bumper);
 
         // Add an empty line to separate the buttons in telemetry
