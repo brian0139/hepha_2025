@@ -33,9 +33,9 @@ public class drivetrainMainTesting extends LinearOpMode{
     boolean flywheelToggle=false;
     //false=intake, true=outtake
     boolean spindexerPosition=false;
-    double[] outtakeslots = {0.26,0.65,1};
+    double[] outtakeslots = {0.65,1,0.26};
     double[] intakeslots = {0.05,0.44,0.83};
-    double[] transferpositions ={0.62,0.875};
+    double[] transferpositions ={0.65,0.875};
     int outtakepos=0;
     int intakepos=0;
     boolean pasty=false;
@@ -124,6 +124,7 @@ public class drivetrainMainTesting extends LinearOpMode{
             }else{
                 telemetry.addData("Spindexer Position","Intake");
             }
+            telemetry.addData("Spindexer Real Position",spindexer.getPosition());
             telemetry.addData("transfer Real Position:",transfer.getPosition());
             //update gamepad+telemetry
             previousgamepad2.copy(gamepad2);

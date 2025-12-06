@@ -28,16 +28,16 @@ public class outtake {
     //Degrees changed for every servo rotation
     double servoDegPerRot =10;
     //transfer positions(up, down)
-    double[] transferpositions ={0.62,0.875};
+    public double[] transferpositions ={0.62,0.875};
     //hood angle transitions
     //save ms time for hood
     long savemstime=0;
     //if hood running
-    boolean runninghood=false;
+    public boolean runninghood=false;
     //hood angle(in degrees)
-    double hoodAngle=0;
+    public double hoodAngle=0;
     //transfer servo
-    Servo transfer;
+    public Servo transfer;
     //drivetrain motors
     DcMotor leftFront;
     DcMotor leftBack;
@@ -54,7 +54,7 @@ public class outtake {
     final double MAX_AUTO_TURN  = 0.3;   //  Clip the turn speed to this max value (adjust for your robot)
     //vars
     int targetTagID=-1;
-    public outtake(HardwareMap hardwareMap, DcMotorEx flywheelDrive, String teamColor, DcMotor leftFront, DcMotor rightFront, DcMotor leftBack, DcMotor rightBack, CRServo hoodServo, Servo transfer){
+    public outtake(HardwareMap hardwareMap, DcMotorEx flywheelDrive, String teamColor, DcMotor leftFront, DcMotor rightFront, DcMotor leftBack, DcMotor rightBack, CRServo hoodServo, Servo transfer, boolean useTag){
         this.flywheelDrive=flywheelDrive;
         this.teamColor=teamColor;
         this.leftFront=leftFront;
@@ -71,8 +71,10 @@ public class outtake {
             this.targetTagID = 20;
         }
         //Init apriltag instance
-        this.apriltag=new aprilTag(hardwareMap);
-        this.apriltag.init();
+        if (useTag) {
+            this.apriltag = new aprilTag(hardwareMap);
+            this.apriltag.init();
+        }
     }
     /**
      * Autoaim to april tag.

@@ -33,7 +33,7 @@ public class outtakeTest extends LinearOpMode{
         flywheel=hardwareMap.get(DcMotorEx.class,"flywheel");
         hoodServo=hardwareMap.get(CRServo.class,"hoodServo");
         transfer=hardwareMap.get(Servo.class,"transferServo");
-        outtake outTake = new outtake(hardwareMap, flywheel, "Red",leftFront,rightFront,leftBack,rightBack,hoodServo,transfer);
+        outtake outTake = new outtake(hardwareMap, flywheel, "Red",leftFront,rightFront,leftBack,rightBack,hoodServo,transfer,false);
 
         //telemetry message to signify robot waiting
         telemetry.addLine("Robot Ready.");
