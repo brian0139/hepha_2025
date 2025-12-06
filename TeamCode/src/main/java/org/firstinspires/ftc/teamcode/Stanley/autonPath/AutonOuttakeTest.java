@@ -10,6 +10,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.teamcode.Brian.spindexer;
@@ -29,6 +30,7 @@ public class AutonOuttakeTest extends LinearOpMode {
         spindexerServo=hardwareMap.servo.get("spindexerServo");
         intakeMotor=hardwareMap.dcMotor.get("intake");
         flywheel=(DcMotorEx) hardwareMap.dcMotor.get("flywheel");
+        flywheel.setDirection(DcMotorSimple.Direction.REVERSE);
         transfer=hardwareMap.servo.get("transferServo");
         spindexerOperator=new spindexer(spindexerServo);
         Pose2d beginPose=new Pose2d(-57.5, -43.5, Math.toRadians(54));
@@ -43,26 +45,53 @@ public class AutonOuttakeTest extends LinearOpMode {
         waitForStart();
         Actions.runBlocking(
                 drive.actionBuilder(beginPose)
-                        .stopAndAdd(new spinSpindexer(spindexerOperator,0,false))
-                        .stopAndAdd(new spinSpindexer(spindexerOperator,1,false))
-                        .stopAndAdd(new spinSpindexer(spindexerOperator,2,false))
-                        .stopAndAdd(new intakeStart(intakeMotor,1,10000))
+//                        .stopAndAdd(new spinSpindexer(spindexerOperator,0,false))
+//                        .stopAndAdd(new intakeStart(intakeMotor,1))
+//                        .waitSeconds(2.5)
+//                        .stopAndAdd(new spinSpindexer(spindexerOperator,1,false))
+//                        .stopAndAdd(new intakeStart(intakeMotor,1))
+//                        .waitSeconds(2.5)
+//                        .stopAndAdd(new spinSpindexer(spindexerOperator,2,false))
+//                        .stopAndAdd(new intakeStart(intakeMotor,1))
+//                        .waitSeconds(2.5)
+//                        .stopAndAdd(new intakeStop(intakeMotor))
+//                        //outtake sequence
+////                        .waitSeconds(2.5)
+//                        .stopAndAdd(new spinFlywheel(flywheel,1000))
+                        .stopAndAdd(new moveTransfer(transfer,false))
+                        .waitSeconds(0.5)
                         .stopAndAdd(new spinSpindexer(spindexerOperator,0,true))
-                        .waitSeconds(1)
-                        .stopAndAdd(new spinFlywheel(flywheel,500,true))
+                        .waitSeconds(2)
                         .stopAndAdd(new moveTransfer(transfer,true))
                         .waitSeconds(0.5)
                         .stopAndAdd(new moveTransfer(transfer,false))
+                        .waitSeconds(0.75)
                         .stopAndAdd(new spinSpindexer(spindexerOperator,1,true))
+                        .waitSeconds(2)
                         .stopAndAdd(new moveTransfer(transfer,true))
                         .waitSeconds(0.5)
                         .stopAndAdd(new moveTransfer(transfer,false))
+                        .waitSeconds(0.75)
                         .stopAndAdd(new spinSpindexer(spindexerOperator,2,true))
+                        .waitSeconds(2)
                         .stopAndAdd(new moveTransfer(transfer,true))
                         .waitSeconds(0.5)
                         .stopAndAdd(new moveTransfer(transfer,false))
-                        .stopAndAdd(new spinFlywheel(flywheel,0,false))
+                        .waitSeconds(0.75)
+                        .stopAndAdd(new spinSpindexer(spindexerOperator,1,true))
+                        .waitSeconds(2)
+                        .stopAndAdd(new moveTransfer(transfer,true))
+                        .waitSeconds(0.5)
                         .stopAndAdd(new moveTransfer(transfer,false))
+                        .waitSeconds(0.75)
+                        .stopAndAdd(new spinSpindexer(spindexerOperator,2,true))
+                        .waitSeconds(2)
+                        .stopAndAdd(new moveTransfer(transfer,true))
+                        .waitSeconds(0.5)
+                        .stopAndAdd(new moveTransfer(transfer,false))
+                        .waitSeconds(0.75)
+                        .stopAndAdd(new spinFlywheel(flywheel,0))
+//                        .stopAndAdd(new moveTransfer(transfer,false,true))
                     .build());
     }
 
@@ -70,30 +99,17 @@ public class AutonOuttakeTest extends LinearOpMode {
     public class intakeStart implements Action{
         DcMotor intake;
         double power;
-        double timems;
         long starttime;
         boolean started=false;
-        public intakeStart(DcMotor intake, double power, double timems){
+        public intakeStart(DcMotor intake, double power){
             this.intake=intake;
             this.power=power;
-            this.timems=timems;
         }
         @Override
         public boolean run(TelemetryPacket telemetryPacket){
-            if (!started) {
-                this.intake.setPower(this.power);
-                this.starttime=System.currentTimeMillis();
-                this.started=true;
-                return false;
-            }
-            if (this.timems < 0){
-                return true;
-            }
-            if (System.currentTimeMillis()-this.starttime>=this.timems){
-                this.intake.setPower(0);
-                this.started=false;
-                return true;
-            }
+            this.intake.setPower(this.power);
+            this.starttime=System.currentTimeMillis();
+            this.started=true;
             return false;
         }
     }
@@ -153,25 +169,18 @@ public class AutonOuttakeTest extends LinearOpMode {
     }
     public class spinFlywheel implements Action{
         DcMotorEx flywheel;
-        boolean wait=false;
         int targetSpeed;
         int tolerance=5;
         outtake outtakeOperator;
-        public spinFlywheel(DcMotorEx flywheel,int targetSpeed, boolean wait) {
+        public spinFlywheel(DcMotorEx flywheel,int targetSpeed) {
             this.flywheel = flywheel;
-            this.wait = wait;
             this.targetSpeed=targetSpeed;
             this.outtakeOperator = new outtake(hardwareMap, flywheel, null, null, null, null, null, null, null,false);
         }
         @Override
         public boolean run(TelemetryPacket telemetryPacket){
-            if (this.wait){
-                return this.outtakeOperator.spin_flywheel(this.targetSpeed,this.tolerance);
-            }
-            else{
-                this.outtakeOperator.spin_flywheel(this.targetSpeed,this.tolerance);
-                return false;
-            }
+            this.outtakeOperator.spin_flywheel(this.targetSpeed,this.tolerance);
+            return false;
         }
     }
     public class moveTransfer implements Action{
@@ -187,9 +196,13 @@ public class AutonOuttakeTest extends LinearOpMode {
         @Override
         public boolean run(TelemetryPacket telemetryPacket){
             if (this.position){
+                telemetry.addLine("transferUp");
+                telemetry.update();
                 this.outtakeOperator.transferUp();
             }
             else{
+                telemetry.addLine("transferDown");
+                telemetry.update();
                 this.outtakeOperator.transferDown();
             }
             return false;

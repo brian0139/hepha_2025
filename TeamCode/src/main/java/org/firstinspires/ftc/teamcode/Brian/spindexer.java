@@ -35,7 +35,7 @@ public class spindexer{
     // Intake slots (servo positions)
     public double[] intakeslots = {0.05,0.44,0.83};
     // Outtake slots (servo positions)
-    public double[] outtakeslots = {0.26,0.65,1};
+    public double[] outtakeslots = {0.65,1,0.26};
 
     public spindexer(Servo spindexerServo){
         this.spindexerServo=spindexerServo;

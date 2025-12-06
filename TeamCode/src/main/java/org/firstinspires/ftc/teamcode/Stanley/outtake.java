@@ -28,16 +28,16 @@ public class outtake {
     //Degrees changed for every servo rotation
     double servoDegPerRot =10;
     //transfer positions(up, down)
-    double[] transferpositions ={0.62,0.875};
+    public double[] transferpositions ={0.62,0.875};
     //hood angle transitions
     //save ms time for hood
     long savemstime=0;
     //if hood running
-    boolean runninghood=false;
+    public boolean runninghood=false;
     //hood angle(in degrees)
-    double hoodAngle=0;
+    public double hoodAngle=0;
     //transfer servo
-    Servo transfer;
+    public Servo transfer;
     //drivetrain motors
     DcMotor leftFront;
     DcMotor leftBack;
