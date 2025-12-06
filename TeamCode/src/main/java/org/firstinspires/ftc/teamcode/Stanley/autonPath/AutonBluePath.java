@@ -50,21 +50,21 @@ public class AutonBluePath extends LinearOpMode {
         Actions.runBlocking(
                 drive.actionBuilder(beginPose)
                     .strafeToLinearHeading(shootingPos, shootingAngle)
-                    .waitSeconds(0.5)
-                    .strafeToLinearHeading(new Vector2d(-15, intakeStarty), Math.toRadians(270))
-                        .stopAndAdd(new spinSpindexer(spindexerOperator,0,false))
-                        .stopAndAdd(new intakeStart(intakeMotor,1))
-                    .strafeTo(new Vector2d(-15, intakeFinishy))
-                        .stopAndAdd(new intakeStop(intakeMotor))
-                        .stopAndAdd(new spinSpindexer(spindexerOperator,1,false))
-                        .waitSeconds(1)
-                        .stopAndAdd(new intakeStart(intakeMotor,0.8))
-                    .strafeTo(new Vector2d(-15,intakeFinishy-10))
-                        .waitSeconds(1)
-                        .stopAndAdd(new intakeStop(intakeMotor))
-                        .stopAndAdd(new spinSpindexer(spindexerOperator,2,false))
-                        .waitSeconds(0.5)
-                        .stopAndAdd(new intakeStart(intakeMotor,1))
+//                    .waitSeconds(0.5)
+//                    .strafeToLinearHeading(new Vector2d(-15, intakeStarty), Math.toRadians(270))
+//                        .stopAndAdd(new spinSpindexer(spindexerOperator,0,false))
+//                        .stopAndAdd(new intakeStart(intakeMotor,1))
+//                    .strafeTo(new Vector2d(-15, intakeFinishy))
+//                        .stopAndAdd(new intakeStop(intakeMotor))
+//                        .stopAndAdd(new spinSpindexer(spindexerOperator,1,false))
+//                        .waitSeconds(1)
+//                        .stopAndAdd(new intakeStart(intakeMotor,0.8))
+//                    .strafeTo(new Vector2d(-15,intakeFinishy-10))
+//                        .waitSeconds(1)
+//                        .stopAndAdd(new intakeStop(intakeMotor))
+//                        .stopAndAdd(new spinSpindexer(spindexerOperator,2,false))
+//                        .waitSeconds(0.5)
+//                        .stopAndAdd(new intakeStart(intakeMotor,1))
 //                        .waitSeconds(0.5)
 //                        .stopAndAdd(new intakeStop(intakeMotor))
 
@@ -82,6 +82,8 @@ public class AutonBluePath extends LinearOpMode {
 //                    .strafeToLinearHeading(shootingPos, shootingAngle)
 //                    .waitSeconds(3)
                     .build());
+        shoot(new int[] {0,1,2},drive,new Pose2d(-34,-23,Math.toRadians(225)));
+
     }
 
     /**
