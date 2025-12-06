@@ -31,13 +31,12 @@ public class drivetrainMain extends LinearOpMode{
     boolean flywheelToggle=false;
     //false=intake, true=outtake
     boolean spindexerPosition=false;
-    double[] outtakeslots = {0.65,1,0.26};
+    double[] outtakeslots = {0.26,0.65,1};
     double[] intakeslots = {0.05,0.44,0.83};
-    double[] transferpositions ={0.68,0.9};
+    double[] transferpositions ={0.65,0.875};
     int outtakepos=0;
     int intakepos=0;
     boolean pasty=false;
-    double epsilon=0.001;
     //button state storage
     Gamepad previousgamepad2 =new Gamepad();
     Gamepad previousgamepad1 = new Gamepad();
@@ -97,18 +96,12 @@ public class drivetrainMain extends LinearOpMode{
             telemetry.addLine("Flywheel Speed:"+targetspeed+" encoder ticks/s, "+targetspeed*60/28+" RPM");
             telemetry.addLine("Flywheel Speed:"+flywheel.getVelocity()+" encoder ticks/s, "+flywheel.getVelocity()*60/28+" RPM");
             //spindexer
-            telemetry.addData("gamepad2.right_bumper",gamepad2.rightBumperWasPressed());
-            telemetry.addData("gamepad2.left_bumper",gamepad2.leftBumperWasPressed());
-            telemetry.addData("gamepad1.right_bumper",gamepad1.rightBumperWasPressed());
-            telemetry.addData("gamepad1.left_bumper",gamepad1.leftBumperWasPressed());
-            telemetry.addData("transferStatement",((transfer.getPosition()>=transferpositions[1]-epsilon) && (transfer.getPosition()<=transferpositions[1]+epsilon)));
-//            if ((gamepad2.rightBumperWasPressed() || gamepad1.rightBumperWasPressed()) && (transfer.getPosition()>=transferpositions[1]-epsilon)){
-            if (gamepad1.right_bumper){
+            if (((gamepad2.right_bumper && !previousgamepad2.right_bumper) || (gamepad1.right_bumper && !previousgamepad1.right_bumper)) && transfer.getPosition()==transferpositions[1]){
                 outtakepos++;
                 spindexer.setPosition(outtakeslots[outtakepos%3]);
                 spindexerPosition=true;
             }
-            if ((gamepad2.leftBumperWasPressed() || gamepad1.leftBumperWasPressed()) && (transfer.getPosition()>=transferpositions[1]-epsilon)){
+            if (((gamepad2.left_bumper && !previousgamepad2.left_bumper) || (gamepad1.left_bumper && !previousgamepad1.left_bumper)) && transfer.getPosition()==transferpositions[1]){
                 intakepos++;
                 spindexer.setPosition(intakeslots[intakepos%3]);
                 spindexerPosition=false;
@@ -158,6 +151,18 @@ public class drivetrainMain extends LinearOpMode{
             }
             if (gamepad1.dpad_down){
                 drive=-drive_speed;
+            }
+            if (gamepad1.y) {
+                drive=drive_speed*0.1;
+            }
+            if (gamepad1.a) {
+                drive=-drive_speed*0.1;
+            }
+            if (gamepad1.b) {
+                strafe=strafe_speed*0.1;
+            }
+            if (gamepad1.x) {
+                strafe=-strafe_speed*0.1;
             }
             double twist  = -gamepad1.right_stick_x*0.5;
             telemetry.addData("drive: ", drive);
