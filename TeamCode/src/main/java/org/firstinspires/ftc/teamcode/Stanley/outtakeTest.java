@@ -19,6 +19,7 @@ public class outtakeTest extends LinearOpMode{
     private DcMotor rightBack=null;
     private DcMotorEx flywheel=null;
     private CRServo hoodServo=null;
+    private Servo transfer=null;
 
     //main loop
     @Override
@@ -31,7 +32,8 @@ public class outtakeTest extends LinearOpMode{
         //outtake instance
         flywheel=hardwareMap.get(DcMotorEx.class,"flywheel");
         hoodServo=hardwareMap.get(CRServo.class,"hoodServo");
-        outtake outTake = new outtake(hardwareMap, flywheel, "Red",leftFront,rightFront,leftBack,rightBack,hoodServo);
+        transfer=hardwareMap.get(Servo.class,"transferServo");
+        outtake outTake = new outtake(hardwareMap, flywheel, "Red",leftFront,rightFront,leftBack,rightBack,hoodServo,transfer);
 
         //telemetry message to signify robot waiting
         telemetry.addLine("Robot Ready.");

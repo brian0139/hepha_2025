@@ -38,8 +38,8 @@ public class spindexerTest1 extends LinearOpMode{
 
         // Initialize spindexer
         //TODO: fix spindexer intialization, requires Servo spindexerServo
-        spindexer = new spindexer();
-        spindexer.spindexerServo = spindexerServo;
+        spindexer = new spindexer(spindexerServo);
+//        spindexer.spindexerServo = spindexerServo;
 
         //telemetry message to signify robot waiting
         telemetry.addLine("Robot Ready.");
