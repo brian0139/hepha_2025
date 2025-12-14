@@ -49,7 +49,7 @@ public class AutonBluePathPreloadTarget extends LinearOpMode {
         spindexerOperator.rotateSpindexerInput(0);
 
         waitForStart();
-        Actions.runBlocking(intake(intakeFinishy,40,intakeStarty,beginPose,drive));
+        Actions.runBlocking(intake(intakeFinishy,40,intakeFinishy+7,new Pose2d(new Vector2d(intakeStarty,40),Math.toRadians(270)),drive));
 
     }
 
@@ -68,6 +68,7 @@ public class AutonBluePathPreloadTarget extends LinearOpMode {
                 .stopAndAdd(new spinSpindexer(spindexerOperator,0,false))
                 //start intake
                 .stopAndAdd(new intakeStart(intakeMotor,1))
+                //TODO: Re-add strafeTo and remove waitSeconds to verify tentative intake plan
                 //strafe forwards
 //                .strafeTo(new Vector2d(x,endY))
                 .waitSeconds(2)
@@ -84,10 +85,10 @@ public class AutonBluePathPreloadTarget extends LinearOpMode {
                 //stop intake
                 .stopAndAdd(new intakeStop(intakeMotor))
                 //spin to 2 intake
-                .stopAndAdd(new spinSpindexer(spindexerOperator,1,false))
+                .stopAndAdd(new spinSpindexer(spindexerOperator,2,false))
                 //intake last artifact
                 .stopAndAdd(new intakeStart(intakeMotor,1))
-                .waitSeconds(0.7)
+                .waitSeconds(2)
                 //stop intake
                 .stopAndAdd(new intakeStop(intakeMotor))
                 .build();
