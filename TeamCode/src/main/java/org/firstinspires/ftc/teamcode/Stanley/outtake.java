@@ -28,7 +28,7 @@ public class outtake {
     //Degrees changed for every servo rotation
     double servoDegPerRot =10;
     //transfer positions(up, down)
-    public double[] transferpositions ={0.68,0.875};
+    public static double[] transferpositions ={0.68,0.875};
     //hood angle transitions
     //save ms time for hood
     long savemstime=0;
