@@ -32,6 +32,8 @@ public class outtake {
     //hood angle transitions
     //save ms time for hood
     long savemstime=0;
+    //save hood angle for starting hood angle
+    double savehoodAngle=0;
     //if hood running
     public boolean runninghood=false;
     //hood angle(in degrees)
@@ -134,20 +136,36 @@ public class outtake {
         return true;
     }
 
-    public boolean setHood(double degrees){
-        double rotations=degrees-this.hoodAngle/this.servoDegPerRot;
+    public boolean setHood(double degrees, boolean override){
+        double rotations=(degrees-this.hoodAngle)/this.servoDegPerRot;
         //time needed to rotate for in ms
         double time=Math.abs(rotations*60*1000/this.servoRPM);
-        if (runninghood){
-            if (rotations>0) this.hoodAngle += ((double) (System.currentTimeMillis() - savemstime)*this.servoRPM*this.servoDegPerRot) / (60*1000);
-            else if (rotations<0) this.hoodAngle -= ((double) (System.currentTimeMillis() - savemstime)*this.servoRPM*this.servoDegPerRot) / (60*1000);
+        //If overriding to new position and servo is already running
+        if (override && runninghood){
+            //update current hood angle
+            this.updateHoodAngle(degrees);
+            //Initialize variables for new position
+            this.savemstime=System.currentTimeMillis();
+            this.savehoodAngle=this.hoodAngle;
+            if (rotations > 0) {
+                this.hoodServo.setPower(1);
+            } else if (rotations < 0) {
+                this.hoodServo.setPower(-1);
+            }
         }
-        if (System.currentTimeMillis()-savemstime>=time){
+        //Exit condition
+        if (System.currentTimeMillis()-this.savemstime>=time){
+            //Update hood position
+            this.updateHoodAngle(degrees);
+            //set runninghood to false(no longer running hood)
             this.runninghood=false;
+            //stop hood servo
+            this.hoodServo.setPower(0);
             return true;
         }
         if (!runninghood) {
             this.savemstime=System.currentTimeMillis();
+            this.savehoodAngle=this.hoodAngle;
             if (rotations > 0) {
                 this.hoodServo.setPower(1);
             } else if (rotations < 0) {
@@ -156,6 +174,18 @@ public class outtake {
             this.runninghood=true;
         }
         return false;
+    }
+
+    /**
+     * Helper function to update current angle of hood
+     * @param degrees Target degrees the hood is currently trying to get to
+     */
+    public void updateHoodAngle(double degrees){
+        double rotations=(degrees-this.hoodAngle)/this.servoDegPerRot;
+        //Update hood position
+        double elapsed = System.currentTimeMillis() - this.savemstime;
+        double totalRotation = (elapsed * this.servoRPM) / 60000.0;
+        this.hoodAngle = this.savehoodAngle + (rotations > 0 ? 1 : -1) * totalRotation * this.servoDegPerRot;
     }
 
     /**
