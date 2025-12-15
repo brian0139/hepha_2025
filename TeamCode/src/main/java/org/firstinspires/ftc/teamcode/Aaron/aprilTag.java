@@ -1,13 +1,17 @@
 package org.firstinspires.ftc.teamcode.Aaron;
 
-import org.firstinspires.ftc.teamcode.LimelightHelpers;
+import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+
+import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
+import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
+
 import java.util.ArrayList;
 import java.util.List;
 
 public class aprilTag {
 
-    private static final String LIMELIGHT_TABLE = "limelight";
+    private Limelight3A limelight;
 
     // Replace with actual Decode tag IDs
     private static final int TAG_ID_A = 1;
@@ -15,29 +19,20 @@ public class aprilTag {
     private static final int TAG_ID_C = 3;
 
     private int lastTagId = -1;
+    private AprilTagProcessor aprilTagProcessor;
+    List<AprilTagDetection> currentDetections = aprilTagProcessor.getDetections();
 
-    private final List<Integer> motifList = new ArrayList<>();
-
-    private final LimelightHelpers limelight;
 
     /** Constructor */
     public aprilTag(HardwareMap hwMap) {
-        limelight = new LimelightHelpers(hwMap, LIMELIGHT_TABLE);
-    }
-
-    /** Optional init method */
-    public void init() {
-        // No-op for Limelight
+        limelight = hwMap.get(Limelight3A.class, "limelight");
+        limelight.pipelineSwitch(0);
+        limelight.start();
     }
 
     /** Scan Limelight once per loop */
     public void scanOnce() {
-        motifList.clear();
-        lastTagId = limelight.getFiducialID();  // update class field
-        int motif = mapTagToMotif(lastTagId);
-        if (motif != -1) {
-            motifList.add(motif);
-        }
+
     }
 
     /** Returns all detected motif codes */
