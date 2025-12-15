@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.Shannon;
+package org.firstinspires.ftc.teamcode.Stanley;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -11,12 +11,15 @@ import com.qualcomm.robotcore.hardware.Servo;
 import java.lang.Math;
 @TeleOp
 
-public class driveTrain extends LinearOpMode{
+public class outtakeTest extends LinearOpMode{
     // drivetrain wheel motor declaration
     private DcMotor leftFront=null;
     private DcMotor leftBack=null;
     private DcMotor rightFront=null;
     private DcMotor rightBack=null;
+    private DcMotorEx flywheel=null;
+    private CRServo hoodServo=null;
+    private Servo transfer=null;
 
     //main loop
     @Override
@@ -24,16 +27,32 @@ public class driveTrain extends LinearOpMode{
         //initiate drivetrain motors
         leftFront   = hardwareMap.get(DcMotor.class, "leftFront");
         leftBack    = hardwareMap.get(DcMotor.class, "leftBack");
-        rightFront   = hardwareMap.get(DcMotor.class, "rightFront");
+        rightFront  = hardwareMap.get(DcMotor.class, "rightFront");
         rightBack   = hardwareMap.get(DcMotor.class, "rightBack");
+        //outtake instance
+        flywheel=hardwareMap.get(DcMotorEx.class,"flywheel");
+        hoodServo=hardwareMap.get(CRServo.class,"hoodServo");
+        transfer=hardwareMap.get(Servo.class,"transferServo");
+        outtake outTake = new outtake(hardwareMap, flywheel, "Red",leftFront,rightFront,leftBack,rightBack,hoodServo,transfer,false);
 
         //telemetry message to signify robot waiting
         telemetry.addLine("Robot Ready.");
         telemetry.update();
         //wait for driver to press play
         waitForStart();
-        //repeat untill opmode ends
+        //repeat until opmode ends
+        double adjustFactorTrigger=10;
+        double adjustFactor=1;
+        double encoderticksperrev=2000;
+        double ets=0;
+        boolean pastRbumper=false;
+        double maxets=10000;
         while (opModeIsActive()){
+            //outtake tests
+
+            //apply speed
+            outTake.spin_flywheel(ets,1);
+            telemetry.addData("Current Speed:", flywheel.getVelocity()+"encoder ticks/sec （"+ets*60/encoderticksperrev+"rpm)");
             //below is drivetrain
             // Mecanum drive is controlled with three axes: drive (front-and-back),
             // strafe (left-and-right), and twist (rotating the whole chassis).

@@ -1,6 +1,7 @@
 package com.example.meepmeeptesting.Alvin;
 
 import com.acmerobotics.roadrunner.Pose2d;
+import com.acmerobotics.roadrunner.Vector2d;
 import com.noahbres.meepmeep.MeepMeep;
 import com.noahbres.meepmeep.roadrunner.DefaultBotBuilder;
 import com.noahbres.meepmeep.roadrunner.entity.RoadRunnerBotEntity;
@@ -10,13 +11,41 @@ public class AlvPath {
         MeepMeep meepMeep = new MeepMeep(750);
 
         RoadRunnerBotEntity myBot = new DefaultBotBuilder(meepMeep)
-                // Set bot constraints: maxVel, maxAccel, maxAngVel, maxAngAccel, track width
+                // maxVel, maxAccel, maxAngVel, maxAngAccel, trackWidth
                 .setConstraints(60, 60, Math.toRadians(180), Math.toRadians(180), 15)
                 .build();
 
-        myBot.runAction(myBot.getDrive().actionBuilder(new Pose2d(-60, 0, 0))
-                // add your own code now OR ELSE!!!!!
-                .build());
+        myBot.runAction(
+                myBot.getDrive().actionBuilder(
+                                new Pose2d(-48.5, 48.9, Math.toRadians(120))
+                        )
+                        // at backboard / scoring area
+                        .strafeToLinearHeading(new Vector2d(-40, 37.6), Math.toRadians(135))
+                        .waitSeconds(1.5)  // scoring / outtake here
+
+                        // go to first “ball” stack (intake here in real code)
+                        .strafeToLinearHeading(new Vector2d(-12, 30), Math.toRadians(180))
+                        .waitSeconds(0.5)  // intake dwell
+
+                        .strafeToLinearHeading(new Vector2d(-40, 37.6), Math.toRadians(135))
+                        .waitSeconds(1.5)  // score
+
+                        .strafeToLinearHeading(new Vector2d(10, 30), Math.toRadians(180))
+                        .waitSeconds(0.5)  // intake dwell
+
+                        .strafeToLinearHeading(new Vector2d(-40, 37.6), Math.toRadians(135))
+                        .waitSeconds(1.5)  // score
+
+                        .strafeToLinearHeading(new Vector2d(34.6, 30), Math.toRadians(180))
+                        .waitSeconds(0.5)  // intake dwell
+
+                        .strafeToLinearHeading(new Vector2d(-40, 37.6), Math.toRadians(135))
+                        .waitSeconds(1.5)  // final score
+
+                        .strafeToLinearHeading(new Vector2d(37, -33), Math.toRadians(270)) // park
+
+                        .build()
+        );
 
         meepMeep.setBackground(MeepMeep.Background.FIELD_DECODE_OFFICIAL)
                 .setDarkMode(true)

@@ -1,0 +1,1187 @@
+[33mcommit ee51b48f64a4c683032a2b0d29bfd709a930a85b[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmaster[m[33m)[m
+Author: Mehe123123 <potatothepotato061@gmail.com>
+Date:   Sat Sep 13 12:04:38 2025 -0700
+
+    Team code 9/13/25
+    
+    Signed-off-by: Mehe123123 <potatothepotato061@gmail.com>
+
+[33mcommit 08f089889f6f53238b34b457b92ce6122b1cbf72[m[33m ([m[1;31morigin/master[m[33m, [m[1;31morigin/HEAD[m[33m)[m
+Author: Ryan Brott <rcbrott@gmail.com>
+Date:   Mon Sep 8 21:04:10 2025 -0700
+
+    Bump dash
+
+[33mcommit c4822cbcf3dc66a9a69d1e6b74de25e391301494[m
+Author: Zach Harel <zach@zharel.me>
+Date:   Sun Sep 7 11:46:59 2025 -0400
+
+    Merge SDK v11.0 (#513)
+
+[33mcommit 0c6c87aec20b20d26965e492eb4ca505575b2b9d[m
+Author: Ryan Brott <rcbrott@gmail.com>
+Date:   Fri Aug 22 20:22:59 2025 -0700
+
+    Bump RR FTC (fixes #510)
+
+[33mcommit dbcce7e7049d9ae624329c03dfc8a25a96d63ba6[m
+Author: Zach Harel <zach@zharel.me>
+Date:   Fri Aug 22 22:59:16 2025 -0400
+
+    Use mm when configuring pinpoint to work around driver bug (#511)
+
+[33mcommit 53a711140fffd0e7a016c018b045ce8e571181f5[m
+Author: Ryan Brott <rcbrott@gmail.com>
+Date:   Mon Jun 30 22:12:18 2025 -0700
+
+    Bump dash
+
+[33mcommit 49b4574588576b0c37ec215c45350ac90705a87b[m
+Author: Zach Harel <zach.harel42@gmail.com>
+Date:   Sun Jun 29 17:29:28 2025 -0400
+
+    Merge SDK v10.3.0 (#502)
+    
+    * use new pinpoint driver with read validation and methods that take units as parameters; update localizer to use this new driver
+    
+    * Update `getHeadingVelocity` in `TuningOpModes` to use units parameter
+    
+    * remove unneeded import in driver, not cache current pose (aka pre-PR behavior)
+    
+    * FtcRobotController v10.3
+    
+    * update to 10.3.0: use sdk's pinpoint driver instead of custom
+    
+    ---------
+    
+    Co-authored-by: Cal Kestis <cmacfarlane@firstinspires.org>
+    Co-authored-by: Cal Kestis <51927529+CalKestis@users.noreply.github.com>
+
+[33mcommit cdf04f6842eb37ec5888e2ae5622dcd094fe9b67[m
+Author: Ryan Brott <rcbrott@gmail.com>
+Date:   Sun Jun 29 14:28:52 2025 -0700
+
+    Bump RR FTC
+
+[33mcommit 4a414ada2e2ed8cba2e491a02c1fe06966d89c8f[m
+Author: Ryan Brott <rcbrott@gmail.com>
+Date:   Wed May 28 07:00:31 2025 -0700
+
+    Bump RR FTC
+
+[33mcommit 94bed9d39d6d63a9b2755e94f0c7f2ecd286d347[m
+Author: Zach Harel <zach.harel42@gmail.com>
+Date:   Tue May 13 22:51:22 2025 -0400
+
+    Add direction functions to pinpoint view (#490)
+
+[33mcommit 8e256d4de85f556f8dc6f94d3b154fd7464729c1[m
+Author: Ryan Brott <rcbrott@gmail.com>
+Date:   Tue May 13 19:50:58 2025 -0700
+
+    Bump RR FTC
+
+[33mcommit 8972cf97f8f295818bd0e71ae11dc22685082803[m
+Author: Ryan Brott <rcbrott@gmail.com>
+Date:   Tue May 13 19:49:26 2025 -0700
+
+    Revert "Revert "Register OTOS tuners with the other tuners (#489)""
+    
+    This reverts commit 356cc9f8930175372763ff3e823504b54965c37b.
+
+[33mcommit 356cc9f8930175372763ff3e823504b54965c37b[m
+Author: Ryan Brott <rcbrott@gmail.com>
+Date:   Fri Apr 11 11:34:45 2025 -0700
+
+    Revert "Register OTOS tuners with the other tuners (#489)"
+    
+    This reverts commit 0cd9766ddaec2ba0f4df2d4c6e04ba822b2fe68c.
+
+[33mcommit 0cd9766ddaec2ba0f4df2d4c6e04ba822b2fe68c[m
+Author: Zach Harel <zach.harel42@gmail.com>
+Date:   Sat Mar 29 20:38:02 2025 -0400
+
+    Register OTOS tuners with the other tuners (#489)
+
+[33mcommit d5fbfdc552358486d4d72682ae3d180313dfa588[m
+Author: Lucas Bubner <lkbubner@proton.me>
+Date:   Sun Mar 9 03:55:06 2025 +1030
+
+    Fix OTOSLocalizer (#488)
+    
+    * fix: build error
+    
+    * fix: OTOSLocalizer applying velocity rotation properly
+    
+    * refactor: sane defaults for OTOS scalars and inform of required units
+    
+    * fix: rotate by displacement not velocity
+
+[33mcommit f37e0c6d2d6959fd4357ff07348602b34ac72e27[m
+Author: Ryan Brott <rcbrott@gmail.com>
+Date:   Sat Mar 8 09:21:03 2025 -0800
+
+    Bump RR FTC
+
+[33mcommit a4bed6fc8c1cfd76829fcc4f92d3abc3fd9d3eed[m
+Author: Ryan Brott <rcbrott@gmail.com>
+Date:   Fri Feb 21 22:38:04 2025 -0800
+
+    Add missing imports
+
+[33mcommit eab78a152dd4f0dd812d16ab1f64f595e25f689e[m
+Author: Lucas Bubner <bubner@proton.me>
+Date:   Fri Feb 21 16:42:04 2025 +1030
+
+    Fix TuningOpModes and add an OTOS TODO (#483)
+    
+    * fix: TuningOpModes references TankDrive fields properly
+    
+    * style: added a TODO for OTOS accessing HardwareMap
+
+[33mcommit 9d9d1afe16c5e9ee5f5fb55ca25dd92561702fd3[m
+Author: Zach Harel <zach.harel42@gmail.com>
+Date:   Fri Feb 21 01:08:22 2025 -0500
+
+    Fix OTOS units (#485)
+
+[33mcommit 06d2cb08df827b88cf0286246c44d936c41f6a31[m
+Author: Zach Harel <zach.harel42@gmail.com>
+Date:   Sun Feb 16 23:02:18 2025 -0500
+
+    Add OTOS support (#478)
+    
+    * OTOSLocalizer and addition to TuningOpModes for the OTOS-specific opmodes
+    
+    * add the OTOS encoders to the drive view factories in the tuning opmodes so it can actually be used for tuning
+    
+    * get TuningOpModes to use the EncoderGroup system
+    
+    * Public access to `otos` field in OTOSLocalizer, renamed both convertPose versions, have `OTOSLocalizer.update()` return robot-centric velocity
+    
+    * use to/fromOTOSPose from rr-ftc and follow changes to rr-ftc OTOS file
+    
+    * bump rr version
+
+[33mcommit 979ff39ef91e8b03add851e8af0fc88e3e1d6cc7[m
+Author: Ryan Brott <rcbrott@gmail.com>
+Date:   Sun Feb 9 16:00:18 2025 -0800
+
+    Add Pinpoint tuning support
+
+[33mcommit 22b1a94cbca68cbab3b756357d038f5fef126ed2[m
+Author: Ryan Brott <rcbrott@gmail.com>
+Date:   Sun Feb 9 15:22:26 2025 -0800
+
+    Add PinpointView impl
+
+[33mcommit 006187eccfdbc793744d6da49d5dd5ac60c58ee6[m
+Author: Ryan Brott <rcbrott@gmail.com>
+Date:   Sun Feb 2 21:47:32 2025 -0800
+
+    Add Pinpoint localizer
+
+[33mcommit 3a46ab87c13ba065f8283843a645e54580d0d3fb[m
+Author: Ryan Brott <rcbrott@gmail.com>
+Date:   Sun Feb 2 21:47:12 2025 -0800
+
+    Bump RR FTC
+
+[33mcommit 599e32189fb2eb59788443c0b7c2e69ca84dff02[m
+Merge: 28dff9e 28d5246
+Author: Ryan Brott <rcbrott@gmail.com>
+Date:   Sun Feb 2 21:44:00 2025 -0800
+
+    Merge SDK v10.2
+
+[33mcommit 28dff9e32f9b77565632c606f88172bb58d68afd[m
+Author: Ryan Brott <rcbrott@gmail.com>
+Date:   Sat Feb 1 13:20:15 2025 -0800
+
+    Add Pinpoint support
+    
+    Driver is from commit 219d935c3659088fe2a5026fb5f6d17e823a669e
+
+[33mcommit 28d52462d144e6594cb81379872c015c88228f48[m
+Merge: ee16f8e 5f50780
+Author: Cal Kestis <51927529+CalKestis@users.noreply.github.com>
+Date:   Wed Jan 22 10:03:47 2025 -0800
+
+    Merge pull request #1416 from FIRST-Tech-Challenge/20250121-174034-release-candidate
+    
+    FtcRobotController v10.2
+
+[33mcommit 5f507800b728f24f9a50b4f2f1f79ab307370053[m
+Author: Cal Kestis <cmacfarlane@firstinspires.org>
+Date:   Tue Jan 21 22:13:57 2025 -0800
+
+    FtcRobotController v10.2
+
+[33mcommit 3ae3551a3d4f8279f3be7d5549a5eee006aecf51[m
+Author: Ryan Brott <rcbrott@gmail.com>
+Date:   Sun Jan 5 15:51:24 2025 -0800
+
+    Bump RR versions
+
+[33mcommit 4a47020bc101710886a62e8f6dff3069d0563724[m
+Author: Ryan Brott <rcbrott@gmail.com>
+Date:   Thu Jan 2 22:28:03 2025 -0800
+
+    Fix LocalizationTest
+
+[33mcommit dd340514ab8d6ee8c5c45955d4627277c651dfd7[m
+Author: Ryan Brott <rcbrott@gmail.com>
+Date:   Thu Jan 2 22:26:01 2025 -0800
+
+    Fix tank localizer twist
+
+[33mcommit 1a97396950ac588a0e69b7d8d7f6bd9249a3e9ec[m
+Author: Zach Harel <zach.harel42@gmail.com>
+Date:   Fri Jan 3 01:10:49 2025 -0500
+
+    Store full pose in localizers (#462)
+
+[33mcommit f63d1bc54ce6f197cd8159a0f1ebcfb87d32fb0c[m
+Merge: 8e7870f ee16f8e
+Author: Ryan Brott <rcbrott@gmail.com>
+Date:   Sat Nov 9 15:26:35 2024 -0800
+
+    Merge SDK v10.1.1
+
+[33mcommit ee16f8e657f7c71aa2cad1fbcab13b34cec0ce1d[m
+Merge: 6af9bb6 9f11128
+Author: Craig MacFarlane <camacfarl@gmail.com>
+Date:   Wed Nov 6 13:31:57 2024 +0900
+
+    Merge pull request #1250 from FIRST-Tech-Challenge/20241102-092223-release-candidate
+    
+    FtcRobotController v10.1.1
+
+[33mcommit 9f11128c611cda46f92c0cbb4cb929322aa1ad70[m
+Author: Cal Kestis <cmacfarlane@firstinspires.org>
+Date:   Sat Nov 2 10:16:56 2024 +0900
+
+    FtcRobotController v10.1
+
+[33mcommit 8e7870ff1e9dfe3547b2aae60dfded00e736bc69[m
+Author: Ryan Brott <rcbrott@gmail.com>
+Date:   Sun Oct 13 10:13:09 2024 -0700
+
+    Fix tank drive turn min ang accel (fixes #420)
+
+[33mcommit 5f35f4c22c1ae7c0be5b35da0961c8f3a181ad31[m
+Author: Ethan <ehtanhnery@gmail.com>
+Date:   Sat Sep 21 18:53:31 2024 -0700
+
+    Merge FTC SDK v10.1
+    
+    Co-authored-by: Cal Kestis <cmacfarlane@firstinspires.org>
+    Co-authored-by: Cal Kestis <51927529+CalKestis@users.noreply.github.com>
+
+[33mcommit 6af9bb6534436ea164d910f796b7ebe871e90735[m
+Merge: 442c867 054017d
+Author: Cal Kestis <51927529+CalKestis@users.noreply.github.com>
+Date:   Fri Sep 20 11:54:13 2024 -0700
+
+    Merge pull request #1074 from FIRST-Tech-Challenge/20240919-122750-release-candidate
+    
+    FtcRobotController v10.1
+
+[33mcommit 054017df61156a822a85893c0b7e4514e2e48429[m
+Author: Cal Kestis <cmacfarlane@firstinspires.org>
+Date:   Thu Sep 19 13:38:50 2024 -0700
+
+    FtcRobotController v10.1
+
+[33mcommit dab1d63053cd22126db7310c68bbf28b70232a3f[m
+Author: Ryan Brott <rcbrott@gmail.com>
+Date:   Thu Sep 19 09:41:48 2024 -0700
+
+    Fix angular velocity
+    
+    Add workaround for https://github.com/FIRST-Tech-Challenge/FtcRobotController/issues/1070
+
+[33mcommit a05fae8a0253504e540441fd78f3e7e445dd6464[m
+Author: Ryan Brott <rcbrott@gmail.com>
+Date:   Wed Sep 18 21:37:05 2024 -0700
+
+    Bump RR FTC (fixes #405)
+
+[33mcommit a75cfbaa46fbc901c9f2dae34295058ee1b84649[m
+Author: Ryan Brott <rcbrott@gmail.com>
+Date:   Sun Sep 8 19:10:24 2024 -0700
+
+    Bump dash
+
+[33mcommit ed1d69268c0812776216fe6675dd6cb7d93f829a[m
+Merge: af672c7 442c867
+Author: Ryan Brott <rcbrott@gmail.com>
+Date:   Sun Sep 8 09:28:19 2024 -0700
+
+    Merge SDK v10.0
+
+[33mcommit 442c867b93c7da9215826752dd124951fe2a060a[m
+Author: Cal Kestis <51927529+CalKestis@users.noreply.github.com>
+Date:   Sat Sep 7 09:38:48 2024 -0700
+
+    Update README.md
+
+[33mcommit f75e498a5529d45f87d60b14c93b1e29703144db[m
+Merge: 6ce588f 7158b61
+Author: Cal Kestis <51927529+CalKestis@users.noreply.github.com>
+Date:   Sat Sep 7 09:19:53 2024 -0700
+
+    Merge pull request #1038 from FIRST-Tech-Challenge/20240828-111152-release-candidate
+    
+    FtcRobotController v10.0
+
+[33mcommit 7158b61d94c5ac0a7e2cf6596967c67cdd22add0[m
+Author: Cal Kestis <cmacfarlane@firstinspires.org>
+Date:   Wed Aug 28 12:49:37 2024 -0700
+
+    FtcRobotController v10.0
+
+[33mcommit af672c78077e5c37b105a42a422f6907c9a56bea[m
+Author: Ryan Brott <rcbrott@gmail.com>
+Date:   Sun Jul 21 21:55:34 2024 -0700
+
+    Bump RR
+
+[33mcommit d7f145300f7a4fce889d755838fbd1a0113bb2bc[m
+Merge: 416ba0d 6ce588f
+Author: Ryan Brott <rcbrott@gmail.com>
+Date:   Sun Jul 21 21:14:41 2024 -0700
+
+    Merge FTC SDK v9.2
+
+[33mcommit 6ce588fc79a65fe25afc97211e12b68608d4b424[m
+Merge: 1da45a3 48019d0
+Author: Cal Kestis <51927529+CalKestis@users.noreply.github.com>
+Date:   Thu Jul 11 12:56:07 2024 -0700
+
+    Merge pull request #990 from FIRST-Tech-Challenge/20240701-085519-release-candidate
+    
+    FtcRobotController v9.2
+
+[33mcommit 48019d026b0630b52ee70137994508361e6ea084[m
+Author: Cal Kestis <cmacfarlane@firstinspires.org>
+Date:   Mon Jul 1 09:44:53 2024 -0700
+
+    FtcRobotController v9.2
+
+[33mcommit 416ba0d1ad394f6c0b9a60346be5d7a3519e6030[m
+Author: Ryan Brott <rcbrott@gmail.com>
+Date:   Sat Mar 16 08:58:51 2024 -0700
+
+    Bump RR
+
+[33mcommit 6b35895532d1d597997a8b0f774e13c27b590e21[m
+Author: Ryan Brott <rcbrott@gmail.com>
+Date:   Sat Mar 2 22:56:53 2024 -0800
+
+    Use new params
+
+[33mcommit 03d95d791e98f2c22ad9d5f22d2b80d0248d087d[m
+Author: Ryan Brott <rcbrott@gmail.com>
+Date:   Tue Feb 20 22:07:37 2024 -0800
+
+    Rename `LazyImu` drive members
+    
+    Also makes sure the mecanum drive localizer fetches the IMU
+    on construction.
+
+[33mcommit 9d2cd48287cc73c399c4f404b73bf53b9265f7c6[m
+Author: Ryan Brott <rcbrott@gmail.com>
+Date:   Mon Feb 19 14:23:43 2024 -0800
+
+    Stop reading localizer inputs on construction
+    
+    This ensures that any motion between construction and first update
+    will be ignored (this is usually the period between init and start
+    of an op mode). If teams want to track pose during that period,
+    they can call `updatePoseEstimate()` explicitly. This matches the
+    behavior of the 0.5.x localizers (without the annoying reset on
+    every pose estimate set).
+    
+    The localizers also now log much more data to help troubleshoot
+    localization issues in the future.
+
+[33mcommit ecc49aa7780a600aad18707900e95aa6462d2f74[m
+Merge: 8e84495 1da45a3
+Author: Ryan Brott <rcbrott@gmail.com>
+Date:   Sat Feb 17 10:51:28 2024 -0800
+
+    Merge SDK v9.1
+
+[33mcommit 1da45a36c64d1ea3d31f08ca42ce52155dcf57e1[m
+Merge: f326c0d c303962
+Author: Cal Kestis <51927529+CalKestis@users.noreply.github.com>
+Date:   Fri Feb 16 14:13:01 2024 -0800
+
+    Merge pull request #941 from FIRST-Tech-Challenge/20240215-115542-release-candidate
+    
+    FtcRobotController v9.1
+
+[33mcommit c303962469198a4814167aee9c48b74eb69afcc5[m
+Author: Cal Kestis <cmacfarlane@firstinspires.org>
+Date:   Thu Feb 15 13:10:49 2024 -0800
+
+    FtcRobotController v9.1
+
+[33mcommit 8e84495f1a603f0d442e3868d5bdaefb1da7f383[m
+Author: Ryan Brott <rcbrott@gmail.com>
+Date:   Wed Jan 31 17:52:54 2024 -0800
+
+    Add drawing class
+
+[33mcommit 01d55d76f4f6d18de06a9de766c315f5d10357a1[m
+Author: Ryan Brott <rcbrott@gmail.com>
+Date:   Tue Jan 30 22:10:22 2024 -0800
+
+    Draw robot in LocalizationTest (fixes #360)
+
+[33mcommit c6ef075c48d3f94a63c6c0fe563426f9c52bfa61[m
+Author: Ryan Brott <rcbrott@gmail.com>
+Date:   Thu Jan 25 22:27:07 2024 -0800
+
+    Update to lazy IMU (fixes #346)
+
+[33mcommit 5cf1596910ff7a870cda23d394b1714cac7aa046[m
+Author: Ryan Brott <rcbrott@gmail.com>
+Date:   Sun Jan 14 09:09:14 2024 -0800
+
+    Set better default `lateralInPerTick`
+
+[33mcommit 7381cb6b23e496099afa638fcf4c2220e7c0e461[m
+Author: Ryan Brott <rcbrott@gmail.com>
+Date:   Sun Dec 24 14:40:51 2023 -0800
+
+    Bump RR FTC
+
+[33mcommit a01ac85ef7712335adcc191f04250d902f2402b2[m
+Author: Ryan Brott <rcbrott@gmail.com>
+Date:   Sun Dec 24 13:30:20 2023 -0800
+
+    Better spline test
+
+[33mcommit a890105110feccf443142230e419bd9a2225e4ea[m
+Author: Ryan Brott <rcbrott@gmail.com>
+Date:   Sat Dec 23 13:23:40 2023 -0800
+
+    Add encoder reverse directions to dead wheel localizers
+    
+    Direction doesn't matter for position regression, but it does matter
+    for `inPerTick`, `lateralInPerTick`. And everything makes more sense
+    if the directions are correct.
+
+[33mcommit ce080b0b51d7913e58d4682e74b1c63653a74c68[m
+Author: Ryan Brott <rcbrott@gmail.com>
+Date:   Wed Dec 20 18:10:52 2023 -0800
+
+    Always throw `RuntimeException`
+    
+    The FTC SDK only catches `Exception` thrown by user code,
+    so switch all throwables to `RuntimeException`.
+
+[33mcommit e4cff7367d5372d3498285a4c4f95297396cca4e[m
+Author: Ryan Brott <rcbrott@gmail.com>
+Date:   Sun Dec 17 12:45:19 2023 -0800
+
+    Bump RR FTC
+
+[33mcommit 263100de3bb4f7d34fec8b16e5044764d2ef70ba[m
+Author: Ryan Brott <rcbrott@gmail.com>
+Date:   Tue Dec 12 09:48:38 2023 -0800
+
+    Bump RR
+
+[33mcommit 02d8ea76154635bf773a0465e226ca9e41c16fd5[m
+Author: Ryan Brott <rcbrott@gmail.com>
+Date:   Sat Dec 9 09:17:20 2023 -0800
+
+    Move drive encoder reversal before first get
+    
+    Changing the direction of an encoder after reading it the first time
+    will create a potentially massive delta in the first odometry update.
+
+[33mcommit 01453c24d4cb2dbe0497b5dd8bd043496460a899[m
+Author: Ryan Brott <rcbrott@gmail.com>
+Date:   Tue Dec 5 23:18:58 2023 -0800
+
+    Add TODO comments
+
+[33mcommit d586fc3e74dd7638f8e8f26ca9b064585111071d[m
+Author: Ryan Brott <rcbrott@gmail.com>
+Date:   Sun Nov 26 14:28:01 2023 -0800
+
+    Bump RR FTC
+
+[33mcommit 416cab6f51dae21eaab83312eee433e945a39a3a[m
+Author: Ryan Brott <rcbrott@gmail.com>
+Date:   Sun Nov 26 13:54:10 2023 -0800
+
+    Log power commands
+
+[33mcommit 7ad781b8aca9e10f07fc832b48fa9bf9b75ea6d2[m
+Author: Ryan Brott <rcbrott@gmail.com>
+Date:   Sun Nov 26 11:46:46 2023 -0800
+
+    Replace `log()` with `toDouble()`
+
+[33mcommit 79d6297a46e9202d8436672aa0a914e1ebe61753[m
+Author: Ryan Brott <rcbrott@gmail.com>
+Date:   Mon Nov 20 22:59:36 2023 -0800
+
+    Add more debug messages
+
+[33mcommit 0e66ff3715ae4d25e3b37675224f140987849151[m
+Author: Ryan Brott <rcbrott@gmail.com>
+Date:   Mon Nov 20 20:32:35 2023 -0800
+
+    Add missing imports
+
+[33mcommit ddfb994c78a7b50329d5e0446d1b9ef6ac88c2fa[m
+Author: Ryan Brott <rcbrott@gmail.com>
+Date:   Mon Nov 20 20:31:08 2023 -0800
+
+    Localization test degrees heading
+
+[33mcommit df17f93fd3e037d58332ce5ac29f732d670c5881[m
+Author: Ryan Brott <rcbrott@gmail.com>
+Date:   Mon Nov 20 00:21:34 2023 -0800
+
+    Fix yaml
+
+[33mcommit a6ed85a5c4031d1642eaaa938770bf16475a5268[m
+Merge: d955adf 071e405
+Author: Ryan Brott <rcbrott@gmail.com>
+Date:   Mon Nov 20 00:13:42 2023 -0800
+
+    Merge branch 'master' of github.com:acmerobotics/road-runner-quickstart
+
+[33mcommit d955adf47ce565adc712a86c4d91e7b613b5c8d4[m
+Author: Ryan Brott <rcbrott@gmail.com>
+Date:   Mon Nov 20 00:13:30 2023 -0800
+
+    Add bug template
+
+[33mcommit 071e405f9236bf4502bc0025fb7f75d293dc8e4c[m
+Author: j5155 <54331556+j5155@users.noreply.github.com>
+Date:   Sun Nov 12 20:55:25 2023 -0900
+
+    Require odometry wheel positions to run ManualFeedbackTuner (#292)
+
+[33mcommit e69e475565fa9811e46718a191e436d9e9a3aadc[m
+Author: Ryan Brott <rcbrott@gmail.com>
+Date:   Sun Nov 5 16:56:40 2023 -0800
+
+    Bump dash
+
+[33mcommit e291d590a6105444a03191a0eb054a2a6196a4bb[m
+Author: Ryan Brott <rcbrott@gmail.com>
+Date:   Sat Oct 21 14:19:36 2023 -0700
+
+    Ensure 2 samples when drawing paths
+
+[33mcommit a6b4dbebc42db9039eed1d30f9f9f047ca360857[m
+Author: Ryan Brott <rcbrott@gmail.com>
+Date:   Tue Oct 17 22:48:23 2023 -0700
+
+    Replace rear with back
+
+[33mcommit 42246e0296bed7e9a6e7fbffa7fabb67a3b1a8bd[m
+Author: Ryan Brott <rcbrott@gmail.com>
+Date:   Sun Oct 15 09:10:55 2023 -0700
+
+    Drive view use feedforward factory (fixes #258)
+
+[33mcommit 57db0dc66b95c04a5922961764c44ca0b9e44ac7[m
+Author: Ryan Brott <rcbrott@gmail.com>
+Date:   Tue Oct 10 14:49:06 2023 -0700
+
+    Pipe feedforward into drive view factory
+
+[33mcommit 1b1197db0cfff0e152d3c7271e9ada331333c98b[m
+Author: Ryan Brott <rcbrott@gmail.com>
+Date:   Mon Oct 9 22:07:21 2023 -0700
+
+    Re-create feedforward objects
+
+[33mcommit 2584ce8d450cb594e798f91c7101439134b985d2[m
+Author: Ryan Brott <rcbrott@gmail.com>
+Date:   Sun Oct 8 15:43:48 2023 -0700
+
+    Add more dash tunables
+
+[33mcommit 6115d0311ffd1a09cf0a6514a021bd3127b719cd[m
+Author: Ryan Brott <rcbrott@gmail.com>
+Date:   Sun Oct 8 15:35:35 2023 -0700
+
+    Bump RR FTC
+
+[33mcommit fc9b93aab48138a43847fd3c1f3e8cb7f9bda800[m
+Author: Ryan Brott <rcbrott@gmail.com>
+Date:   Sat Oct 7 09:58:00 2023 -0700
+
+    Fix feedback tuner start
+
+[33mcommit 4ff75136aae4a69d9e76f5684be9e2c0bd930e1b[m
+Author: Ryan Brott <rcbrott@gmail.com>
+Date:   Sat Oct 7 09:39:20 2023 -0700
+
+    Remove outdated TODO
+
+[33mcommit dd6d43d9c05f70847dc95cd03972db26c4e43d8a[m
+Author: Ryan Brott <rcbrott@gmail.com>
+Date:   Sun Oct 1 15:54:38 2023 -0700
+
+    Change default `par1YTicks`
+    
+    This avoids populating `NaN` in odometry-derived values.
+
+[33mcommit 219e07813ded6f5225576774b8c3d26ee6550bad[m
+Merge: 7cce1c4 f326c0d
+Author: Ryan Brott <rcbrott@gmail.com>
+Date:   Sat Sep 30 17:08:15 2023 -0700
+
+    Merge SDK v9.0.1
+
+[33mcommit f326c0d033b69a476dea0a06bc394103e504a0ca[m
+Merge: f3a5a54 c023e97
+Author: Cal Kestis <51927529+CalKestis@users.noreply.github.com>
+Date:   Fri Sep 29 19:13:38 2023 +0900
+
+    Merge pull request #731 from FIRST-Tech-Challenge/20230929-083754-release-candidate
+    
+    FtcRobotController v9.0.1
+
+[33mcommit c023e97a6ae01cab6221425175fb64a31751973b[m
+Author: Cal Kestis <cmacfarlane@firstinspires.org>
+Date:   Fri Sep 29 09:28:32 2023 +0900
+
+    FtcRobotController v9.0.1
+
+[33mcommit 7cce1c43a9fea82a8944e274d45ded5e32595e30[m
+Author: Ryan Brott <rcbrott@gmail.com>
+Date:   Sun Sep 24 15:29:43 2023 -0700
+
+    Apply heading velocity correction in localizer
+
+[33mcommit 629c103d77ffc357e654a22b230ea5e082a9d6cd[m
+Author: Ryan Brott <rcbrott@gmail.com>
+Date:   Fri Sep 22 18:26:54 2023 -0700
+
+    Bump dash
+
+[33mcommit 973ca84a46f32b65acf0405a005728249004bd6a[m
+Author: Ryan Brott <rcbrott@gmail.com>
+Date:   Tue Sep 19 22:20:41 2023 -0700
+
+    Bump RR FTC
+
+[33mcommit 5f2fcaf51fdab85131c71451c9b0b4544c4f20cb[m
+Author: Ryan Brott <rcbrott@gmail.com>
+Date:   Mon Sep 18 22:51:19 2023 -0700
+
+    Dead wheel overflow encoders by default
+
+[33mcommit 334252c42177180e6cb429af93cf0f76a4993526[m
+Author: Ryan Brott <rcbrott@gmail.com>
+Date:   Sun Sep 17 16:12:05 2023 -0700
+
+    Bump RR FTC
+
+[33mcommit 3c2d54523a799d7f138e41af288ac35111caa716[m
+Author: Ryan Brott <rcbrott@gmail.com>
+Date:   Sun Sep 17 09:36:46 2023 -0700
+
+    Bump deps
+
+[33mcommit 2f2c6e62951286d85c2733ad97905228823d2a0b[m
+Author: Ryan Brott <rcbrott@gmail.com>
+Date:   Fri Sep 15 18:45:36 2023 -0700
+
+    Rename dead wheel params
+
+[33mcommit dc1b43e13f1d0377030ef082f04597f13fcbd2cd[m
+Author: Ryan Brott <rcbrott@gmail.com>
+Date:   Sun Sep 10 09:12:50 2023 -0700
+
+    Remove mecanum forward kinematics rotation factors
+
+[33mcommit b12b1214470df1c836552321f6941de1656e24ac[m
+Author: Ryan Brott <rcbrott@gmail.com>
+Date:   Sun Sep 10 09:12:35 2023 -0700
+
+    Add more unit comments
+
+[33mcommit 5cd5bdd04e1ece683aad76359d7ec39c05129ee0[m
+Author: Ryan Brott <rcbrott@gmail.com>
+Date:   Sun Sep 10 09:12:20 2023 -0700
+
+    Finish tank params refactor
+
+[33mcommit a4747329efa0d4d67f22cb41a0432bdf28dd23e0[m
+Merge: 76e5f3e f3a5a54
+Author: Ryan Brott <rcbrott@gmail.com>
+Date:   Sun Sep 10 07:47:04 2023 -0700
+
+    Merge FTC SDK v9.0
+
+[33mcommit f3a5a54f67688eb778a8f9a62d9ce1b6e728b836[m
+Merge: 660a2f6 4de7b1e
+Author: Craig MacFarlane <camacfarl@gmail.com>
+Date:   Sun Sep 10 01:34:35 2023 +0900
+
+    Merge pull request #674 from FIRST-Tech-Challenge/20230830-154348-release-candidate
+    
+    FtcRobotController v9.0
+
+[33mcommit 76e5f3e4b9374056ec161cd6692fff5a1e4bc073[m
+Author: Ryan Brott <rcbrott@gmail.com>
+Date:   Wed Sep 6 20:34:57 2023 -0700
+
+    Bump RR FTC
+
+[33mcommit 14861319311f861aca726f9ccf9fe3517caff29c[m
+Author: Ryan Brott <rcbrott@gmail.com>
+Date:   Tue Sep 5 07:17:22 2023 -0700
+
+    Bump RR FTC
+
+[33mcommit 7c43265fd6824aa7e333457919a12fc011b689db[m
+Author: Ryan Brott <rcbrott@gmail.com>
+Date:   Sun Sep 3 21:54:12 2023 -0700
+
+    Bump RR FTC
+
+[33mcommit 5c0fd0b51967a98f68d9d4796d976421ede272d0[m
+Author: Ryan Brott <rcbrott@gmail.com>
+Date:   Sun Sep 3 21:49:49 2023 -0700
+
+    Update README.md
+
+[33mcommit 4de7b1e7c7080bb5488f450c8ea68d42ba1ea632[m
+Author: Cal Kestis <cmacfarlane@firstinspires.org>
+Date:   Wed Aug 30 17:44:45 2023 +0900
+
+    FtcRobotController v9.0
+
+[33mcommit e002d6468959326152dd880a1254475d99f89fdc[m
+Author: Ryan Brott <rcbrott@gmail.com>
+Date:   Sat Aug 26 10:41:44 2023 -0700
+
+    Use RR FTC module
+
+[33mcommit 9fa28159da32259dc98ac9ead9477f1d37f18bf1[m
+Author: Ryan Brott <rcbrott@gmail.com>
+Date:   Sat Aug 26 10:09:43 2023 -0700
+
+    Remove tuning web files
+
+[33mcommit 3fc724ee39e69674cc495502dcc019421154e0f4[m
+Merge: 9db94c0 660a2f6
+Author: Ryan Brott <rcbrott@gmail.com>
+Date:   Sat Aug 19 19:30:45 2023 -0700
+
+    Merge SDK v8.2
+
+[33mcommit 9db94c089dbe758638b9ef1bf603bb40fcb870ab[m
+Author: Ryan Brott <rcbrott@gmail.com>
+Date:   Sat Aug 19 19:29:18 2023 -0700
+
+    Move quickstart files to separate module
+
+[33mcommit 0c14630d40f2cf8b715e46dfc78c54350be42b78[m
+Author: Ryan Brott <rcbrott@gmail.com>
+Date:   Wed Jul 19 23:13:58 2023 -0700
+
+    Bump RR
+
+[33mcommit 660a2f63bc04c25ee3b405ca03aa2cb34194ede8[m
+Merge: 0879b47 5c8b4c4
+Author: Cal Kestis <51927529+CalKestis@users.noreply.github.com>
+Date:   Tue Jul 11 09:06:22 2023 -0700
+
+    Merge pull request #654 from FIRST-Tech-Challenge/20230707-131020-release-candidate
+    
+    FtcRobotController v8.2
+
+[33mcommit 5c8b4c448b2508fd93df7d8e050a324eb7c7dc56[m
+Author: Cal Kestis <cmacfarlane@firstinspires.org>
+Date:   Fri Jul 7 15:15:11 2023 -0700
+
+    FtcRobotController v8.2
+
+[33mcommit 1ae2be3dcfb385d6a7d92a81e1d0e258404053c0[m
+Author: Ryan Brott <rcbrott@gmail.com>
+Date:   Sat May 20 22:59:50 2023 -0700
+
+    Add localization test
+    
+    Also shorten some longer method names.
+
+[33mcommit 491bb4212304468bb68f29424293ffbe111fac4f[m
+Author: Ryan Brott <rcbrott@gmail.com>
+Date:   Wed Apr 5 22:22:16 2023 -0700
+
+    Fix tick units
+
+[33mcommit 5fbb278d096f82eb84c78da123b689e879733e73[m
+Author: Ryan Brott <rcbrott@gmail.com>
+Date:   Mon Mar 27 22:25:28 2023 -0700
+
+    Add link to quickstart2 docs (fixes #217)
+
+[33mcommit 1c857f2f951afdaa5aca726cb54e0cfdf88f2f5b[m
+Author: Ryan Brott <rcbrott@gmail.com>
+Date:   Fri Mar 10 01:22:48 2023 -0800
+
+    Bump dash
+
+[33mcommit db869f3e010243158b009395f4f9ca0f1a3e339a[m
+Author: Ryan Brott <rcbrott@gmail.com>
+Date:   Mon Mar 6 22:50:07 2023 -0800
+
+    Adapt regression to signals
+
+[33mcommit 332704b5363d21e0c77ae60090f6eba553003a68[m
+Author: Ryan Brott <rcbrott@gmail.com>
+Date:   Sun Mar 5 21:01:03 2023 -0800
+
+    Record signals on Java side
+
+[33mcommit 47151cbebd7936c3e73cf336123f7fee492a9cec[m
+Author: Ryan Brott <rcbrott@gmail.com>
+Date:   Sun Mar 5 18:32:16 2023 -0800
+
+    Correct velocity in ManualFeedforwardTuner
+
+[33mcommit 98cbe1e9501106018ae61712c1a178ddb0f589e0[m
+Author: Ryan Brott <rcbrott@gmail.com>
+Date:   Thu Mar 2 00:23:39 2023 -0800
+
+    Fix drive powers
+
+[33mcommit 80ea431b294a2f8a96108b9dbe308cf419e421e8[m
+Author: Ryan Brott <rcbrott@gmail.com>
+Date:   Thu Mar 2 00:16:35 2023 -0800
+
+    Regression improvements
+
+[33mcommit 9651735df36d70b333926cccddeebbb29c2a382b[m
+Author: Ryan Brott <rcbrott@gmail.com>
+Date:   Wed Mar 1 23:32:02 2023 -0800
+
+    No intercept regression
+
+[33mcommit b4af81739a78ff83ddc5588dd70deacda8b5e004[m
+Author: Ryan Brott <rcbrott@gmail.com>
+Date:   Wed Mar 1 21:46:32 2023 -0800
+
+    Use IMU heading in mecanum drive localizer (fixes #215)
+
+[33mcommit 77dbd7f5e23979b33262edd79dbd7e951890ef25[m
+Author: Ryan Brott <rcbrott@gmail.com>
+Date:   Thu Feb 2 19:48:52 2023 -0800
+
+    Move logging stuff
+
+[33mcommit b617f87bac9b86d00cb368181015f6170b0f34df[m
+Author: Ryan Brott <rcbrott@gmail.com>
+Date:   Thu Feb 2 01:57:04 2023 -0800
+
+    Add logging behind the scenes
+
+[33mcommit 8a88605057eaa0b6b822c1d276ab892b79ba2928[m
+Author: Ryan Brott <rcbrott@gmail.com>
+Date:   Sat Jan 28 18:32:35 2023 -0800
+
+    Add setDirection() to Encoder interface (fixes #203)
+
+[33mcommit 970625f1c0870e9ba260ee6b99ebfdd97f5eba3a[m
+Author: Ryan Brott <rcbrott@gmail.com>
+Date:   Thu Jan 19 09:29:24 2023 -0800
+
+    Migrate to IMU interface
+
+[33mcommit b38e9e615310353e3e64a09db44bf09f3299904c[m
+Author: Ryan Brott <rcbrott@gmail.com>
+Date:   Thu Jan 5 18:04:04 2023 -0800
+
+    Bump dash
+
+[33mcommit 4fc5d6465b08e583a0f36015afe663d1fb5eca8d[m
+Author: Ryan Brott <rcbrott@gmail.com>
+Date:   Mon Jan 2 16:59:15 2023 -0800
+
+    Bump RR
+
+[33mcommit d0b06e2d5924b485043f338136d40547040f9541[m
+Author: Ryan Brott <rcbrott@gmail.com>
+Date:   Sun Jan 1 22:40:18 2023 -0800
+
+    Update for new actions
+
+[33mcommit 2d9c57a37363c94687d36ffcab873cd53d058a83[m
+Author: Ryan Brott <rcbrott@gmail.com>
+Date:   Tue Dec 13 23:18:46 2022 -0800
+
+    Fix action drawing
+
+[33mcommit 45d77b8b359efb49a42874fb4fc5511750c14bfa[m
+Author: Ryan Brott <rcbrott@gmail.com>
+Date:   Wed Dec 7 22:12:43 2022 -0800
+
+    Bump dash
+
+[33mcommit 4a3417ca4964a695cf6f3bfad6cb72515f19cf43[m
+Merge: 1b7f3ca 0879b47
+Author: Ryan Brott <rcbrott@gmail.com>
+Date:   Wed Dec 7 22:11:56 2022 -0800
+
+    Merge SDK v8.1.1
+
+[33mcommit 1b7f3ca0d0814c15c0f16dcfb39d0c1719c70c1a[m
+Author: Ryan Brott <rcbrott@gmail.com>
+Date:   Tue Dec 6 21:16:31 2022 -0800
+
+    Fix DriveView setDrivePowers()
+
+[33mcommit 7c9fd6c18a40ae60f380ffcba15169fb026dd58b[m
+Author: Ryan Brott <rcbrott@gmail.com>
+Date:   Tue Dec 6 21:15:01 2022 -0800
+
+    Hopefully fix track width regression
+
+[33mcommit b44d5e0ca5e0118127868cdab0361c792203062f[m
+Author: Ryan Brott <rcbrott@gmail.com>
+Date:   Mon Dec 5 22:00:23 2022 -0800
+
+    Fix CW turns
+
+[33mcommit 0879b4797f7c9664731c9306926f713ef4ddfe5d[m
+Merge: 501c7c0 3383440
+Author: Cal Kestis <51927529+CalKestis@users.noreply.github.com>
+Date:   Fri Dec 2 15:39:27 2022 -0800
+
+    Merge pull request #506 from FIRST-Tech-Challenge/20221201-150726-release-candidate
+    
+    FtcRobotController v8.1.1
+
+[33mcommit 338344032838fede57ee071a1418a807491a7ed2[m
+Author: Cal Kestis <cmacfarlane@firstinspires.org>
+Date:   Thu Dec 1 20:35:00 2022 -0800
+
+    FtcRobotController v8.1.1
+
+[33mcommit 6f6a0c9771e55d7084367110941c08d1553d688a[m
+Merge: b721133 501c7c0
+Author: Ryan Brott <rcbrott@gmail.com>
+Date:   Fri Nov 25 10:08:20 2022 -0800
+
+    Merge SDK v8.1
+
+[33mcommit 501c7c0e5542edd2e256c527fb8de50ef4247f10[m
+Merge: 2390680 35d4aa7
+Author: Cal Kestis <51927529+CalKestis@users.noreply.github.com>
+Date:   Mon Nov 21 16:24:24 2022 -0800
+
+    Merge pull request #488 from FIRST-Tech-Challenge/20221121-115119-release-candidate
+    
+    FtcRobotController v8.1
+
+[33mcommit 35d4aa719283d72d34e3e9352a3fcd2cbcc44dc7[m
+Author: Cal Kestis <cmacfarlane@firstinspires.org>
+Date:   Mon Nov 21 14:53:43 2022 -0800
+
+    FtcRobotController v8.1
+
+[33mcommit b7211333e67790dda046cca2b8489d2a13be693a[m
+Author: abidingabi <abigail@dogbuilt.net>
+Date:   Tue Nov 1 22:22:06 2022 -0400
+
+    Make Data fields in Logger OpModes public (#179)
+
+[33mcommit 57cc92bc477f58485cf8933c9f19290b93f7793b[m
+Author: abidingabi <abigail@dogbuilt.net>
+Date:   Sun Oct 30 17:08:01 2022 -0400
+
+    Remove AccelLogger from TuningOpModes (#177)
+
+[33mcommit 05056c07b890c91d91a22bf230921a569e13fe35[m
+Author: Ryan Brott <rcbrott@gmail.com>
+Date:   Wed Sep 28 22:33:54 2022 -0700
+
+    Bump dash
+
+[33mcommit 67b0165c322af7112bcef4a686c66489f3359ca8[m
+Author: Ryan Brott <rcbrott@gmail.com>
+Date:   Thu Sep 22 08:11:23 2022 -0700
+
+    Add initial quickstart files
+
+[33mcommit 2390680ce6a1a918b8855dc429555f57b38796e0[m
+Merge: aba72e5 e0282fc
+Author: Cal Kestis <51927529+CalKestis@users.noreply.github.com>
+Date:   Tue Sep 13 14:16:07 2022 -0700
+
+    Merge pull request #344 from FIRST-Tech-Challenge/20220907-131644-release-candidate
+    
+    FtcRobotController v8.0
+
+[33mcommit e0282fcbd3de5116132a69a1d0ed229f3ca97e0f[m
+Author: Cal Kestis <cmacfarlane@firstinspires.org>
+Date:   Wed Sep 7 13:59:24 2022 -0700
+
+    FtcRobotController v8.0
+
+[33mcommit aba72e566c381d65ba7b97ef4e5326b14881d4bc[m
+Merge: e945da2 fe758ed
+Author: Cal Kestis <51927529+CalKestis@users.noreply.github.com>
+Date:   Mon Jul 25 16:15:51 2022 +0900
+
+    Merge pull request #324 from FIRST-Tech-Challenge/20220723-130006-release-candidate
+    
+    FtcRobotController v7.2
+
+[33mcommit fe758edbd4a4ef3752bfbfbba2751362f9e173f5[m
+Author: Cal Kestis <cmacfarlane@firstinspires.org>
+Date:   Sat Jul 23 13:50:42 2022 +0900
+
+    FtcRobotController v7.2
+
+[33mcommit e945da24e6bbbd81f58cfc52de5d6bb46d0652c9[m
+Merge: 704b694 439a5bf
+Author: Cal Kestis <51927529+CalKestis@users.noreply.github.com>
+Date:   Mon Jan 17 10:46:39 2022 -0800
+
+    Merge pull request #274 from FIRST-Tech-Challenge/20211223-120805-release-candidate
+    
+    FtcRobotController v7.1
+
+[33mcommit 439a5bf491b72fa9aff67dd424155fd9b0476a00[m
+Author: Cal Kestis <cmacfarlane@firstinspires.org>
+Date:   Thu Dec 23 12:41:34 2021 -0800
+
+    FtcRobotController v7.1
+
+[33mcommit 704b6948e3ee1e0640a9d2f06ecf400302442f4c[m
+Merge: cd037e0 724f759
+Author: Cal Kestis <51927529+CalKestis@users.noreply.github.com>
+Date:   Mon Sep 20 08:32:05 2021 -0700
+
+    Merge pull request #159 from FIRST-Tech-Challenge/20210915-141025-release-candidate
+    
+    FtcRobotController v7.0
+
+[33mcommit 724f759dea8e26c6980565af05b9d010e6c0ab98[m
+Author: Cal Kestis <cmacfarlane@firstinspires.org>
+Date:   Wed Sep 15 15:02:44 2021 -0700
+
+    FtcRobotController v7.0
+
+[33mcommit cd037e0e744335a58f2b28ce9e0ad7e87cc024ac[m
+Merge: 5b8d84a 6e7dfbf
+Author: Cal Kestis <51927529+CalKestis@users.noreply.github.com>
+Date:   Mon Feb 22 13:17:09 2021 -0800
+
+    Merge pull request #105 from FIRST-Tech-Challenge/20210218-074821-release-candidate
+    
+    FtcRobotController v6.2
+
+[33mcommit 6e7dfbfb8b725343f9d4fc6a92ed17618f8fea44[m
+Author: Cal Kestis <cmacfarlane@firstinspires.org>
+Date:   Thu Feb 18 08:03:59 2021 -0800
+
+    FtcRobotController v6.2
+
+[33mcommit 5b8d84a3cd0a407401329038cc6f1182154089b4[m
+Merge: d010c1b e11a44a
+Author: Cal Kestis <51927529+CalKestis@users.noreply.github.com>
+Date:   Tue Dec 22 15:41:55 2020 -0800
+
+    Merge pull request #68 from FIRST-Tech-Challenge/2020.22.12-fix-javadoc-url
+    
+    Fix broken urls in README
+
+[33mcommit e11a44a356405dc4a0362efe20874d55363a4b66[m
+Author: Cal Kestis <cmacfarlane@firstinspires.org>
+Date:   Tue Dec 22 15:40:05 2020 -0800
+
+    Fix broken urls in README
+
+[33mcommit d010c1b0fc00756d6aaa74898e9fd9b133850f95[m
+Merge: 09359bb 0c811a0
+Author: Cal Kestis <51927529+CalKestis@users.noreply.github.com>
+Date:   Wed Dec 16 08:38:17 2020 -0800
+
+    Merge pull request #62 from FIRST-Tech-Challenge/20201209-113742-release-candidate
+    
+    FtcRobotController v6.1
+
+[33mcommit 0c811a081aa832aa792ed34adfa6b9d9c6b5337f[m
+Author: Cal Kestis <cmacfarlane@firstinspires.org>
+Date:   Wed Dec 9 12:01:36 2020 -0800
+
+    FtcRobotController v6.1
+
+[33mcommit 09359bbaaf0dbe3c1511aa452883472a4af81ccc[m
+Merge: 7ab3861 314c650
+Author: Cal Kestis <51927529+CalKestis@users.noreply.github.com>
+Date:   Fri Sep 25 09:47:41 2020 -0700
+
+    Merge pull request #7 from FIRST-Tech-Challenge/missing-gradlew
+    
+    Missing gradle wrappers
+
+[33mcommit 314c6500d988a435c44849aefab76eabc6b33902[m
+Author: CalKestis <cmacfarlane@firstinspires.org>
+Date:   Fri Sep 25 08:38:16 2020 -0700
+
+    Missing gradle wrappers
+
+[33mcommit 7ab38611f7ff48d3d841288a92fcb1cf1e6f459e[m
+Merge: 8b8b098 00cbf34
+Author: Craig MacFarlane <camacfarl@gmail.com>
+Date:   Wed Sep 23 13:40:39 2020 -0700
+
+    Merge pull request #1 from FIRST-Tech-Challenge/20200921-085816-release-candidate
+    
+    FtcRobotController v6.0
+
+[33mcommit 00cbf344526d991ce33452437018af9f119d22d1[m
+Author: Cal Kestis <cmacfarlane@firstinspires.org>
+Date:   Mon Sep 21 09:09:43 2020 -0700
+
+    FtcRobotController v6.0
+
+[33mcommit 8b8b0988d4c91854f4ca3c3cab720aa320168bb5[m
+Author: Craig MacFarlane <camacfarl@gmail.com>
+Date:   Fri Sep 18 09:05:37 2020 -0700
+
+    Update .gitignore
+
+[33mcommit 47c58724fed44d539ca1ed135f82a9df16459fd6[m
+Author: Craig MacFarlane <camacfarl@gmail.com>
+Date:   Thu Sep 17 22:18:13 2020 -0700
+
+    Update .gitignore
+
+[33mcommit 7682f4487e9210141177460fdbabe3620b8a2116[m
+Author: Craig MacFarlane <camacfarl@gmail.com>
+Date:   Thu Sep 17 22:06:19 2020 -0700
+
+    Update .gitignore
+
+[33mcommit ebb3ce841960e9e10314758be9cd7f97c1018cb2[m
+Author: Craig MacFarlane <camacfarl@gmail.com>
+Date:   Thu Sep 17 22:05:59 2020 -0700
+
+    Update .gitignore
+
+[33mcommit e77eeda89f53b5f7f3ee68b4e6e8a73673bacb29[m
+Author: Craig MacFarlane <camacfarl@gmail.com>
+Date:   Thu Sep 17 17:24:06 2020 -0700
+
+    Initial commit
