@@ -75,7 +75,6 @@ public class outtake {
         //Init apriltag instance
         if (useTag) {
             this.apriltag = new aprilTag(hardwareMap);
-            this.apriltag.init();
         }
     }
     /**
@@ -106,9 +105,11 @@ public class outtake {
         double  yawError        = targetDetection.ftcPose.yaw;
 
         // Use the speed and turn "gains" to calculate how we want the robot to move.
-        double drive  = Range.clip(rangeError * SPEED_GAIN, -MAX_AUTO_SPEED, MAX_AUTO_SPEED);
+//        double drive  = Range.clip(rangeError * SPEED_GAIN, -MAX_AUTO_SPEED, MAX_AUTO_SPEED);
+        double drive=0;
         double turn   = Range.clip(headingError * TURN_GAIN, -MAX_AUTO_TURN, MAX_AUTO_TURN) ;
-        double strafe = Range.clip(-yawError * STRAFE_GAIN, -MAX_AUTO_STRAFE, MAX_AUTO_STRAFE);
+//        double strafe = Range.clip(-yawError * STRAFE_GAIN, -MAX_AUTO_STRAFE, MAX_AUTO_STRAFE);
+        double strafe=0;
 
         double[] speeds = {
                 (drive - strafe + turn), //forward-left motor

@@ -35,21 +35,11 @@ public class aprilTag {
     private static final int TAG_ID_C = 23; //ppg
 
     // Camera name (defaults to "Webcam 1")
-    private String cameraName = "Webcam 1";
+    private String cameraName = "limelight";
 
     /** Constructor: requires HardwareMap (uses default camera name "Webcam 1") */
     public aprilTag(HardwareMap hwMap) {
         hardwareMap = hwMap;
-    }
-
-    /** Constructor: requires HardwareMap and camera name */
-    public aprilTag(HardwareMap hwMap, String camName) {
-        hardwareMap = hwMap;
-        cameraName = camName;
-    }
-
-    /** Initialize AprilTag processor and VisionPortal */
-    public void init() {
         AprilTagProcessor.Builder builder = new AprilTagProcessor.Builder();
         builder.setDrawTagID(true)
                 .setDrawTagOutline(true)
