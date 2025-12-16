@@ -33,8 +33,6 @@ public class spindexerTest1 extends LinearOpMode{
 
         // Initialize AprilTag system
         aprilTag = new aprilTag(hardwareMap);
-        // or use hardwaremap, "name"
-        aprilTag.init();
 
         // Initialize spindexer
         //TODO: fix spindexer intialization, requires Servo spindexerServo
