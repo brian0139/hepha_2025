@@ -46,7 +46,7 @@ public class aprilTagV3 {
         limelight.start();
     }
 
-    /** Scan for AprilTags once per loop */
+    // Scan for AprilTags once per loop
     public void scanOnce(){
         motifList.clear();
 
@@ -94,47 +94,47 @@ public class aprilTagV3 {
         }
     }
 
-    /** Check if have valid target */
+    // Check if have valid target
     public boolean hasValidTarget(){
         return currentTagId!=-1;
     }
 
-    /** Returns all detected motif codes */
+    // Returns all detected motif codes
     public List<Integer> getAllDetections(){
         return motifList;
     }
 
-    /** Returns the raw AprilTag ID */
+    // Returns the raw AprilTag ID
     public int getTagId(){
         return currentTagId;
     }
 
-    /** Returns primary motif code */
+    // Returns primary motif code
     public int getMotifCode(){
         return currentMotif;
     }
 
-    /** Returns yaw (tx) in degrees */
+    // Returns yaw (tx) in degrees
     public double getYaw(){
         return tx;
     }
 
-    /** Returns pitch (ty) in degrees */
+    // Returns pitch (ty) in degrees
     public double getPitch(){
         return ty;
     }
 
-    /** Returns target area percentage */
+    // Returns target area percentage
     public double getTargetArea(){
         return ta;
     }
 
-    /** Returns robot pose from Limelight */
+    // Returns robot pose from Limelight
     public Pose3D getBotPose(){
         return botPose;
     }
 
-    /** Returns distance to target */
+    // Returns distance to target
     public double getDistance(){
         if (botPose==null){
             return Double.NaN;
@@ -142,7 +142,7 @@ public class aprilTagV3 {
         return botPose.getPosition().z;
     }
 
-    /** Get X position from botpose */
+    // Get X position from botpose
     public double getX(){
         if (botPose==null) {
             return Double.NaN;
@@ -150,7 +150,7 @@ public class aprilTagV3 {
         return botPose.getPosition().x;
     }
 
-    /** Get Y position from botpose */
+    // Get Y position from botpose
     public double getY(){
         if (botPose==null){
             return Double.NaN;
@@ -158,7 +158,7 @@ public class aprilTagV3 {
         return botPose.getPosition().y;
     }
 
-    /** Map raw AprilTag IDs to Decode motif numbers */
+    // Map raw AprilTag IDs to Decode motif numbers */
     private int mapTagToMotif(int id){
         if (id == TAG_ID_A) return 1;
         if (id == TAG_ID_B) return 2;
@@ -166,19 +166,19 @@ public class aprilTagV3 {
         return -1; // Unknown tag
     }
 
-    /** Reset stored detections */
+    // Reset stored detections
     public void resetDetection(){
         currentTagId=-1;
         currentMotif=-1;
         motifList.clear();
     }
 
-    /** Stop Limelight when done */
+    // Stop Limelight when done
     public void stop(){
         limelight.stop();
     }
 
-    /** Switch pipeline */
+    // Switch pipeline
     public void setPipeline(int pipeline){
         limelight.pipelineSwitch(pipeline);
     }
