@@ -34,8 +34,9 @@ public class drivetrainMainCRMergedTesting extends LinearOpMode{
     boolean transferToggle=false;
     double spindexerpos=0.75;
     double spindexerDialation=0.01;
+    double epsilon=0.01;
     double[] spindexerpositions = {0,0.75};
-    int spindexerAutoPos=0;
+    int spindexerAutoPos=1;
     boolean pasty=false;
     //button state storage
     Gamepad previousgamepad1 = new Gamepad();
@@ -58,6 +59,7 @@ public class drivetrainMainCRMergedTesting extends LinearOpMode{
         //servos
         hoodServo=hardwareMap.get(CRServo.class,"hoodServo");
         spindexer=hardwareMap.get(Servo.class,"spindexerServo");
+        spindexer.setPosition(spindexerpos);
         transfer=hardwareMap.get(DcMotor.class,"par1");
 
         //telemetry message to signify robot waiting
@@ -92,19 +94,23 @@ public class drivetrainMainCRMergedTesting extends LinearOpMode{
             telemetry.addLine("Flywheel Speed:"+targetspeed+" encoder ticks/s, "+targetspeed*60/28+" RPM");
             telemetry.addLine("Flywheel Speed:"+flywheel.getVelocity()+" encoder ticks/s, "+flywheel.getVelocity()*60/28+" RPM");
             //spindexer
-            if (spindexerpos-gamepad1.left_stick_x*spindexerDialation>=0 && spindexerpos-gamepad1.left_stick_x*spindexerDialation<=0.75){
-                spindexerpos-=gamepad1.left_stick_x*spindexerDialation;
-            }
-            else if (spindexerpos-gamepad1.left_stick_x*spindexerDialation<0){
-                spindexerpos=0;
-            }
-            else if (spindexerpos-gamepad1.left_stick_x*spindexerDialation>0.75){
-                spindexerpos=0.75;
-            }
+//            if (spindexerpos-gamepad1.left_stick_x*spindexerDialation>=0 && spindexerpos-gamepad1.left_stick_x*spindexerDialation<=0.75){
+//                spindexerpos-=gamepad1.left_stick_x*spindexerDialation;
+//            }
+//            else if (spindexerpos-gamepad1.left_stick_x*spindexerDialation<0){
+//                spindexerpos=0;
+//            }
+//            else if (spindexerpos-gamepad1.left_stick_x*spindexerDialation>0.75){
+//                spindexerpos=0.75;
+//            }
             if (gamepad1.rightBumperWasPressed() || gamepad1.rightBumperWasPressed()){
                 spindexerAutoPos++;
                 spindexerpos=spindexerpositions[spindexerAutoPos%2];
             }
+//            if ((spindexer.getPosition()<=spindexerpositions[0]+epsilon) && (spindexer.getPosition()>=spindexerpositions[0]-epsilon) && spindexerAutoPos%2==0){
+//                spindexerAutoPos++;
+//                spindexerpos=spindexerpositions[spindexerAutoPos%2];
+//            }
             telemetry.addLine("outtakePos:"+spindexerAutoPos+"("+spindexerpositions[spindexerAutoPos%2]+")");
             spindexer.setPosition(spindexerpos);
             //update gamepad+telemetry
