@@ -78,7 +78,7 @@ public class drivetrainMainCRMergedTesting extends LinearOpMode{
                 flywheelspeed=0;
             }
             //toggle
-            if (gamepad2.yWasPressed()){
+            if (gamepad1.yWasPressed()){
                 flywheelToggle=!flywheelToggle;
                 if (flywheelToggle) {
                     targetspeed=flywheelspeed;
@@ -92,16 +92,16 @@ public class drivetrainMainCRMergedTesting extends LinearOpMode{
             telemetry.addLine("Flywheel Speed:"+targetspeed+" encoder ticks/s, "+targetspeed*60/28+" RPM");
             telemetry.addLine("Flywheel Speed:"+flywheel.getVelocity()+" encoder ticks/s, "+flywheel.getVelocity()*60/28+" RPM");
             //spindexer
-            if (spindexerpos-gamepad2.left_stick_x*spindexerDialation>=0 && spindexerpos-gamepad2.left_stick_x*spindexerDialation<=0.75){
-                spindexerpos-=gamepad2.left_stick_x*spindexerDialation;
+            if (spindexerpos-gamepad1.left_stick_x*spindexerDialation>=0 && spindexerpos-gamepad1.left_stick_x*spindexerDialation<=0.75){
+                spindexerpos-=gamepad1.left_stick_x*spindexerDialation;
             }
-            else if (spindexerpos-gamepad2.left_stick_x*spindexerDialation<0){
+            else if (spindexerpos-gamepad1.left_stick_x*spindexerDialation<0){
                 spindexerpos=0;
             }
-            else if (spindexerpos-gamepad2.left_stick_x*spindexerDialation>0.75){
+            else if (spindexerpos-gamepad1.left_stick_x*spindexerDialation>0.75){
                 spindexerpos=0.75;
             }
-            if (gamepad2.rightBumperWasPressed() || gamepad1.rightBumperWasPressed()){
+            if (gamepad1.rightBumperWasPressed() || gamepad1.rightBumperWasPressed()){
                 spindexerAutoPos++;
                 spindexerpos=spindexerpositions[spindexerAutoPos%2];
             }
@@ -110,7 +110,7 @@ public class drivetrainMainCRMergedTesting extends LinearOpMode{
             //update gamepad+telemetry
             previousgamepad1.copy(gamepad1);
             //transfer
-            if (gamepad2.xWasPressed()){
+            if (gamepad1.xWasPressed()){
                 transferToggle=!transferToggle;
             }
             if (transferToggle) {
