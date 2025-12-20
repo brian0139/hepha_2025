@@ -40,7 +40,7 @@ public class drivetrainMainTesting extends LinearOpMode{
     int intakepos=0;
     boolean pasty=false;
     //button state storage
-    Gamepad previousgamepad2 =new Gamepad();
+    Gamepad previousgamepad1 =new Gamepad();
 
     //main loop
     @Override
@@ -71,17 +71,17 @@ public class drivetrainMainTesting extends LinearOpMode{
         //repeat until opmode ends
         while (opModeIsActive()){
             //flywheel
-            if (gamepad2.dpad_up){
+            if (gamepad1.dpad_up){
                 flywheelspeed+=flywheelSensitivity;
             }
-            else if (gamepad2.dpad_down && flywheelspeed-flywheelSensitivity>=0){
+            else if (gamepad1.dpad_down && flywheelspeed-flywheelSensitivity>=0){
                 flywheelspeed-=flywheelSensitivity;
             }
-            else if (gamepad2.dpad_down && flywheelspeed-flywheelSensitivity<0){
+            else if (gamepad1.dpad_down && flywheelspeed-flywheelSensitivity<0){
                 flywheelspeed=0;
             }
             //toggle
-            if (gamepad2.y && !pasty){
+            if (gamepad1.y && !pasty){
                 telemetry.addLine("triggered");
                 pasty=true;
                 flywheelToggle=!flywheelToggle;
@@ -93,7 +93,7 @@ public class drivetrainMainTesting extends LinearOpMode{
                     flywheel.setVelocity(0);
                 }
             }
-            else if (!gamepad2.y && pasty){
+            else if (!gamepad1.y && pasty){
                 telemetry.addLine("not triggered");
                 pasty=false;
             }
@@ -101,12 +101,12 @@ public class drivetrainMainTesting extends LinearOpMode{
             telemetry.addLine("Flywheel Speed:"+targetspeed+" encoder ticks/s, "+targetspeed*60/28+" RPM");
             telemetry.addLine("Flywheel Speed:"+flywheel.getVelocity()+" encoder ticks/s, "+flywheel.getVelocity()*60/28+" RPM");
             //spindexer
-            if (gamepad2.right_bumper && !previousgamepad2.right_bumper && transfer.getPosition()==transferpositions[1]){
+            if (gamepad1.right_bumper && !previousgamepad1.right_bumper && transfer.getPosition()==transferpositions[1]){
                 outtakepos++;
                 spindexer.setPosition(outtakeslots[outtakepos%3]);
                 spindexerPosition=true;
             }
-            if (gamepad2.left_bumper && !previousgamepad2.left_bumper && transfer.getPosition()==transferpositions[1]){
+            if (gamepad1.left_bumper && !previousgamepad1.left_bumper && transfer.getPosition()==transferpositions[1]){
                 intakepos++;
                 spindexer.setPosition(intakeslots[intakepos%3]);
                 spindexerPosition=false;
@@ -114,7 +114,7 @@ public class drivetrainMainTesting extends LinearOpMode{
             if (spindexerPosition){
                 telemetry.addData("Spindexer Position","Outtake");
                 //transfer
-                if (gamepad2.x) {
+                if (gamepad1.x) {
                     transfer.setPosition(transferpositions[0]);
                     telemetry.addLine("Transfer Position: Up ("+transferpositions[0]+")");
                 }else{
@@ -127,29 +127,29 @@ public class drivetrainMainTesting extends LinearOpMode{
             telemetry.addData("Spindexer Real Position",spindexer.getPosition());
             telemetry.addData("transfer Real Position:",transfer.getPosition());
             //update gamepad+telemetry
-            previousgamepad2.copy(gamepad2);
+            previousgamepad1.copy(gamepad1);
             telemetry.addLine("outtakePos:"+outtakepos+"("+outtakeslots[outtakepos%3]+")");
             telemetry.addLine("intakePos:"+intakepos+"("+intakeslots[intakepos%3]+")");
             //hood
-            if (gamepad2.dpad_right){
+            if (gamepad1.dpad_right){
                 hoodServo.setPower(hoodspeed);
             }
-            else if (gamepad2.dpad_left){
+            else if (gamepad1.dpad_left){
                 hoodServo.setPower(-hoodspeed);
             }
             else{
                 hoodServo.setPower(0);
             }
             //intake
-            intake.setPower(gamepad2.right_trigger-gamepad2.left_trigger);
+            intake.setPower(gamepad1.right_trigger-gamepad1.left_trigger);
             //below is drivetrain
             // Mecanum drive is controlled with three axes: drive (front-and-back),
             // strafe (left-and-right), and twist (rotating the whole chassis).
             //Default:0.7
-            double drive  = -gamepad2.left_stick_y*0.7;
+            double drive  = -gamepad1.left_stick_y*0.7;
             //Default:0.5
-            double strafe = -gamepad2.left_stick_x*0.5;
-            double twist  = -gamepad2.right_stick_x*0.5;
+            double strafe = -gamepad1.left_stick_x*0.5;
+            double twist  = -gamepad1.right_stick_x*0.5;
             telemetry.addData("drive: ", drive);
             telemetry.addData("strafe: ", strafe);
             telemetry.addData("twist: ", twist);

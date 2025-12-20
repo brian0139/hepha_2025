@@ -11,7 +11,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 
 @TeleOp
 
-public class drivetrainMainCRTest extends LinearOpMode{
+public class drivetrainMainCRMergedTesting extends LinearOpMode{
     // drivetrain wheel motor declaration
     private DcMotor leftFront=null;
     private DcMotor leftBack=null;
@@ -26,6 +26,7 @@ public class drivetrainMainCRTest extends LinearOpMode{
     private Servo spindexer=null;
     //sensitivity(& other configs)
     double flywheelSensitivity=10;
+    double hoodspeed=0.5;
     //vars
     int flywheelspeed=2000;
     int targetspeed=0;
@@ -37,7 +38,6 @@ public class drivetrainMainCRTest extends LinearOpMode{
     int spindexerAutoPos=0;
     boolean pasty=false;
     //button state storage
-    Gamepad previousgamepad2 =new Gamepad();
     Gamepad previousgamepad1 = new Gamepad();
 
     //main loop
@@ -68,10 +68,13 @@ public class drivetrainMainCRTest extends LinearOpMode{
         //repeat until opmode ends
         while (opModeIsActive()){
             //flywheel
-            if (flywheelspeed-gamepad2.right_stick_y*flywheelSensitivity>=0){
-                flywheelspeed-=gamepad2.right_stick_y*flywheelSensitivity;
+            if (gamepad1.dpad_up){
+                flywheelspeed+=flywheelSensitivity;
             }
-            else{
+            else if (gamepad1.dpad_down && flywheelspeed-flywheelSensitivity>=0){
+                flywheelspeed-=flywheelSensitivity;
+            }
+            else if (gamepad1.dpad_down && flywheelspeed-flywheelSensitivity<0){
                 flywheelspeed=0;
             }
             //toggle
@@ -100,10 +103,11 @@ public class drivetrainMainCRTest extends LinearOpMode{
             }
             if (gamepad2.rightBumperWasPressed() || gamepad1.rightBumperWasPressed()){
                 spindexerAutoPos++;
-                spindexer.setPosition(spindexerpositions[spindexerAutoPos%2]);
+                spindexerpos=spindexerpositions[spindexerAutoPos%2];
             }
             telemetry.addLine("outtakePos:"+spindexerAutoPos+"("+spindexerpositions[spindexerAutoPos%2]+")");
             spindexer.setPosition(spindexerpos);
+            //update gamepad+telemetry
             previousgamepad1.copy(gamepad1);
             //transfer
             if (gamepad2.xWasPressed()){
@@ -119,10 +123,16 @@ public class drivetrainMainCRTest extends LinearOpMode{
             telemetry.addData("Spindexer Real Position:",spindexer.getPosition());
             //TODO:Change telemetry to add real transfer speed when encoder cable connected
 //            telemetry.addData("transfer Target Speed:",transfer.getPosition());
-            //update gamepad+telemetry
-            previousgamepad2.copy(gamepad2);
             //hood
-            hoodServo.setPower(-gamepad2.left_stick_y);
+            if (gamepad1.dpad_right){
+                hoodServo.setPower(hoodspeed);
+            }
+            else if (gamepad1.dpad_left){
+                hoodServo.setPower(-hoodspeed);
+            }
+            else{
+                hoodServo.setPower(0);
+            }
 
             //intake
             intake.setPower(gamepad1.right_trigger-gamepad1.left_trigger);
@@ -131,35 +141,8 @@ public class drivetrainMainCRTest extends LinearOpMode{
             // strafe (left-and-right), and twist (rotating the whole chassis).
             //Default:0.7
             double drive  = -gamepad1.left_stick_y*0.7;
-            final double strafe_speed=0.7;
-            final double drive_speed=0.7;
             //Default:0.5
             double strafe = -gamepad1.left_stick_x*0.5;
-            if (gamepad1.dpad_left){
-                strafe=strafe_speed;
-            }
-            if (gamepad1.dpad_right){
-                strafe=-strafe_speed;
-            }
-            if (gamepad1.dpad_up){
-                drive=drive_speed;
-            }
-            if (gamepad1.dpad_down){
-                drive=-drive_speed;
-            }
-            double secondaryDialation=0.25;
-            if (gamepad1.y) {
-                drive=drive_speed* secondaryDialation;
-            }
-            if (gamepad1.a) {
-                drive=-drive_speed*secondaryDialation;
-            }
-            if (gamepad1.b) {
-                strafe=-strafe_speed*secondaryDialation;
-            }
-            if (gamepad1.x) {
-                strafe=strafe_speed*secondaryDialation;
-            }
             double twist  = -gamepad1.right_stick_x*0.5;
             telemetry.addData("drive: ", drive);
             telemetry.addData("strafe: ", strafe);

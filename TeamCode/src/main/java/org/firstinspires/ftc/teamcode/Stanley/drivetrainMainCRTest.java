@@ -100,7 +100,7 @@ public class drivetrainMainCRTest extends LinearOpMode{
             }
             if (gamepad2.rightBumperWasPressed() || gamepad1.rightBumperWasPressed()){
                 spindexerAutoPos++;
-                spindexer.setPosition(spindexerpositions[spindexerAutoPos%2]);
+                spindexerpos=spindexerpositions[spindexerAutoPos%2];
             }
             telemetry.addLine("outtakePos:"+spindexerAutoPos+"("+spindexerpositions[spindexerAutoPos%2]+")");
             spindexer.setPosition(spindexerpos);
