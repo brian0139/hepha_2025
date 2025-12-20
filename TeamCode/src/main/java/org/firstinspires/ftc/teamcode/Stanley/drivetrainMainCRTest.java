@@ -31,7 +31,7 @@ public class drivetrainMainCRTest extends LinearOpMode{
     int targetspeed=0;
     boolean flywheelToggle=false;
     boolean transferToggle=false;
-    double spindexerpos=0.75;
+    double spindexerpos=0.75; //0.75 is initial (wall at farthest), 0 is shooting (pushes balls to shooting)
     double spindexerDialation=0.01;
     double epsilon=0.05;
     double[] spindexerpositions = {0,0.75};
