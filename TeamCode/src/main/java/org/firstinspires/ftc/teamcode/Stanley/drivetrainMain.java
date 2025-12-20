@@ -49,6 +49,7 @@ public class drivetrainMain extends LinearOpMode{
         leftBack    = hardwareMap.get(DcMotor.class, "leftBack");
         rightFront   = hardwareMap.get(DcMotor.class, "rightFront");
         rightBack   = hardwareMap.get(DcMotor.class, "rightBack");
+        //Reverse motor directions where needed
         leftFront.setDirection(DcMotorSimple.Direction.REVERSE);
         leftBack.setDirection(DcMotorSimple.Direction.REVERSE);
         //other motors
@@ -108,7 +109,7 @@ public class drivetrainMain extends LinearOpMode{
             }
             previousgamepad1.copy(gamepad1);
             if (spindexerPosition){
-                telemetry.addData("Spindexer Position","Outtake");
+                telemetry.addLine("Spindexer Position:"+"Outtake("+outtakepos%3+")");
                 //transfer
                 if (gamepad2.x) {
                     transfer.setPosition(transferpositions[0]);
@@ -118,7 +119,7 @@ public class drivetrainMain extends LinearOpMode{
                     telemetry.addLine("Transfer Position: Down ("+transferpositions[1]+")");
                 }
             }else{
-                telemetry.addData("Spindexer Position","Intake");
+                telemetry.addLine("Spindexer Position:"+"Intake("+intakepos%3+")");
             }
             telemetry.addData("transfer Real Position:",transfer.getPosition());
             //update gamepad+telemetry
@@ -152,17 +153,18 @@ public class drivetrainMain extends LinearOpMode{
             if (gamepad1.dpad_down){
                 drive=-drive_speed;
             }
+            double secondaryDialation=0.25;
             if (gamepad1.y) {
-                drive=drive_speed*0.1;
+                drive=drive_speed* secondaryDialation;
             }
             if (gamepad1.a) {
-                drive=-drive_speed*0.1;
+                drive=-drive_speed*secondaryDialation;
             }
             if (gamepad1.b) {
-                strafe=-strafe_speed*0.1;
+                strafe=-strafe_speed*secondaryDialation;
             }
             if (gamepad1.x) {
-                strafe=strafe_speed*0.1;
+                strafe=strafe_speed*secondaryDialation;
             }
             double twist  = -gamepad1.right_stick_x*0.5;
             telemetry.addData("drive: ", drive);
