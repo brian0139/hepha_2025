@@ -4,6 +4,7 @@ import com.qualcomm.hardware.limelightvision.LLResult;
 import com.qualcomm.hardware.limelightvision.LLResultTypes;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.IMU;
 
@@ -11,7 +12,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
 import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
 
 import java.util.List;
-
+@Autonomous
 public class aprilTagV2 extends OpMode{
     private Limelight3A limelight;
     private IMU imu;
@@ -24,7 +25,7 @@ public class aprilTagV2 extends OpMode{
     @Override
     public void init(){
         limelight=hardwareMap.get(Limelight3A.class,"limelight");
-        limelight.pipelineSwitch(9); // AprilTag pipeline CHANGE IF NEEDED CUZ IDK WHAT IS
+        limelight.pipelineSwitch(3); // TODO:AprilTag pipeline CHANGE IF NEEDED CUZ IDK WHAT IS
 
         imu = hardwareMap.get(IMU.class, "imu");
         RevHubOrientationOnRobot revHubOrientationOnRobot = new RevHubOrientationOnRobot(
@@ -33,7 +34,7 @@ public class aprilTagV2 extends OpMode{
         imu.initialize(new IMU.Parameters(revHubOrientationOnRobot));
 
         telemetry.addData("Status","Initialized");
-        telemetry.addData("Pipeline","9 (AprilTag)");
+        telemetry.addData("Pipeline","3 (AprilTag)");
         telemetry.update();
     }
 
