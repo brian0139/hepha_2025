@@ -1,6 +1,6 @@
 package org.firstinspires.ftc.teamcode.Brian;
 
-import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.hardware.CRServo;
 
 import org.firstinspires.ftc.teamcode.Aaron.aprilTag;
 import org.firstinspires.ftc.teamcode.Alvin.colorSensor;
@@ -9,14 +9,15 @@ import org.firstinspires.ftc.teamcode.Alvin.intake;
 
 public class spindexer{
 
-    public Servo spindexerServo = null;
+    public CRServo spindexerServo = null;
+    public int touchSensorTaps=0;
 
-    public int[] spindexerSlots = {2,29,1}; // 0=empty, 1=green, 2=purple
+    public int[] spindexerSlots = {2,2,1}; // 0=empty, 1=green, 2=purple
     public int currentPosition = 0;
     public int outtakePosition = 0;
     public int intakePosition = 0;
 
-    // Motif patterns: 0=GPP, 1=PGP, 2=PPG
+    // Motif patterns: 1:green, 2: purple
     public int[][] motifPatterns = {
             {1, 2, 2},
             {2, 1, 2},
@@ -37,7 +38,7 @@ public class spindexer{
     // Outtake slots (servo positions)
     public double[] outtakeslots = {0.65,1,0.26};
 
-    public spindexer(Servo spindexerServo){
+    public spindexer(CRServo spindexerServo){
         this.spindexerServo=spindexerServo;
     }
 
