@@ -41,12 +41,15 @@ public class spindexerCR{
         this.spindexerServo=spindexerServo;
     }
 
-    public int rotateSpindexer() {
-        currentSpindexerPos++;
-        currentSpindexerPos%=2;
-        spindexerServo.setPosition(spindexerPos[currentSpindexerPos]);
-        return currentSpindexerPos;
-    }
+        public int rotateSpindexer() {
+            if (spindexerServo.getPosition()>spindexerPos[currentSpindexerPos]){
+                spindexerServo.setPosition(spindexerServo.getPosition()-0.01);
+            } else if (spindexerServo.getPosition()<spindexerPos[currentSpindexerPos]){
+                spindexerServo.setPosition(spindexerPos[currentSpindexerPos]);
+            }
+
+            return currentSpindexerPos;
+        }
 
 
     // calling intake if intakeuntilpixel until returns true
