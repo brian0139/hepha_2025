@@ -49,7 +49,7 @@ public class outtake {
     //  Drive = Error * Gain
     final double SPEED_GAIN  =  0.02  ;   //  Forward Speed Control "Gain". e.g. Ramp up to 50% power at a 25 inch error.   (0.50 / 25.0)
     final double STRAFE_GAIN =  0.015 ;   //  Strafe Speed Control "Gain".  e.g. Ramp up to 37% power at a 25 degree Yaw error.   (0.375 / 25.0)
-    final double TURN_GAIN   =  0.01  ;   //  Turn Control "Gain".  e.g. Ramp up to 25% power at a 25 degree error. (0.25 / 25.0)
+    final double TURN_GAIN   =  0.05 ;   //  Turn Control "Gain".  e.g. Ramp up to 25% power at a 25 degree error. (0.25 / 25.0)
 
     final double MAX_AUTO_SPEED = 0.5;   //  Clip the approach speed to this max value (adjust for your robot)
     final double MAX_AUTO_STRAFE= 0.5;   //  Clip the strafing speed to this max value (adjust for your robot)
@@ -75,6 +75,8 @@ public class outtake {
         //Init apriltag instance
         if (useTag) {
             this.apriltag = new aprilTagV3(hardwareMap);
+            this.apriltag.setPipeline(2);
+            this.apriltag.init();
         }
     }
     /**
@@ -85,25 +87,29 @@ public class outtake {
      * @return False if canceled or teamColor not found, True if successful
      */
     public boolean autoaim(){
-        this.apriltag.setPipeline(2);
         this.apriltag.scanOnce();
         if (!apriltag.hasValidTarget()){
+            leftFront.setPower(0);
+            rightFront.setPower(0);
+            leftBack.setPower(0);
+            rightBack.setPower(0);
             return false;
         }
         // Determine heading, range and Yaw (tag image rotation) error so we can use them to control the robot automatically.
-        double  headingError    = apriltag.getYaw();
+        double  headingError    = -apriltag.getYaw();
 
         // Use the speed and turn "gains" to calculate how we want the robot to move.
         double drive=0;
-        double turn   = Range.clip(headingError * TURN_GAIN, -MAX_AUTO_TURN, MAX_AUTO_TURN) ;
+        double twist   = Range.clip(headingError * TURN_GAIN, -MAX_AUTO_TURN, MAX_AUTO_TURN) ;
         double strafe=0;
 
         double[] speeds = {
-                (drive - strafe + turn), //forward-left motor
-                (drive + strafe + turn), //forward-right motor
-                (-drive - strafe + turn), //back-left motor
-                (-drive + strafe + turn)  //back-right motor
+                (drive - strafe - twist), //forward-left motor
+                (drive + strafe + twist), //forward-right motor
+                (drive + strafe - twist), //back-left motor
+                (drive - strafe + twist)  //back-right motor
         };
+
         // Loop through all values in the speeds[] array and find the greatest
         // *magnitude*.  Not the greatest velocity.
         double max = Math.abs(speeds[0]);
@@ -116,11 +122,12 @@ public class outtake {
         if (max > 1) {
             for (int i = 0; i < speeds.length; i++) speeds[i] /= max;
         }
+
         // apply the calculated values to the motors.
         leftFront.setPower(speeds[0]);
-        rightBack.setPower(speeds[1]);
+        rightFront.setPower(speeds[1]);
         leftBack.setPower(speeds[2]);
-        rightFront.setPower(speeds[3]);
+        rightBack.setPower(speeds[3]);
         return true;
     }
 

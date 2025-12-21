@@ -43,7 +43,7 @@ public class spindexerCR{
 
         public int rotateSpindexer() {
             if (spindexerServo.getPosition()>spindexerPos[currentSpindexerPos]){
-                spindexerServo.setPosition(spindexerServo.getPosition()-0.01);
+                spindexerServo.setPosition(spindexerServo.getPosition()-0.005);
             } else if (spindexerServo.getPosition()<spindexerPos[currentSpindexerPos]){
                 spindexerServo.setPosition(spindexerPos[currentSpindexerPos]);
             }

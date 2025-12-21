@@ -31,7 +31,7 @@ public class aprilTagV3 {
 
     public aprilTagV3(HardwareMap hwMap){
         limelight=hwMap.get(Limelight3A.class,"limelight");
-        limelight.pipelineSwitch(1);
+        limelight.pipelineSwitch(2);
 
         imu = hwMap.get(IMU.class,"imu");
         RevHubOrientationOnRobot revHubOrientationOnRobot=new RevHubOrientationOnRobot(
@@ -47,9 +47,9 @@ public class aprilTagV3 {
     // Scan for AprilTags once per loop
     public void scanOnce(){
 
-        // Update Limelight with robot orientation for better localization
-        YawPitchRollAngles orientation=imu.getRobotYawPitchRollAngles();
-        limelight.updateRobotOrientation(orientation.getYaw());
+//        // Update Limelight with robot orientation for better localization
+//        YawPitchRollAngles orientation=imu.getRobotYawPitchRollAngles();
+//        limelight.updateRobotOrientation(orientation.getYaw());
 
         // Get latest results from Limelight
         LLResult llResult=limelight.getLatestResult();
@@ -73,8 +73,8 @@ public class aprilTagV3 {
                 ty=llResult.getTy();
                 ta=llResult.getTa();
 
-                // Get robot pose
-                botPose=llResult.getBotpose_MT2();
+//                // Get robot pose
+//                botPose=llResult.getBotpose_MT2();
             } else {
                 // No AprilTags detected
                 currentTagId=-1;
