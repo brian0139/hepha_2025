@@ -15,7 +15,7 @@ import java.util.List;
  * - Provides distance, yaw, and simplified motif code (1, 2, 3)
  * - Maintains a list of all detected tags each scan
  *
- * INPUT: Webcam feed from "Webcam 1"
+ * INPUT: Webcam feed (default: "Webcam 1", can be specified in constructor)
  * OUTPUT: Motif code (1, 2, or 3), Tag ID, Distance, Yaw, and list of detections
  */
 public class aprilTag {
@@ -34,13 +34,12 @@ public class aprilTag {
     private static final int TAG_ID_B = 22; //pgp
     private static final int TAG_ID_C = 23; //ppg
 
-    /** Constructor: requires HardwareMap */
+    // Camera name (defaults to "Webcam 1")
+    private String cameraName = "limelight";
+
+    /** Constructor: requires HardwareMap (uses default camera name "Webcam 1") */
     public aprilTag(HardwareMap hwMap) {
         hardwareMap = hwMap;
-    }
-
-    /** Initialize AprilTag processor and VisionPortal */
-    public void init() {
         AprilTagProcessor.Builder builder = new AprilTagProcessor.Builder();
         builder.setDrawTagID(true)
                 .setDrawTagOutline(true)
@@ -49,7 +48,7 @@ public class aprilTag {
         tagProcessor = builder.build();
 
         visionPortal = VisionPortal.easyCreateWithDefaults(
-                hardwareMap.get(WebcamName.class, "Webcam 1"),
+                hardwareMap.get(WebcamName.class, cameraName),
                 tagProcessor
         );
     }

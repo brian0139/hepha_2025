@@ -1,10 +1,11 @@
 package org.firstinspires.ftc.teamcode.Alvin;
 
+import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
 public class intake {
-    private Servo intakeServo;
+    private DcMotor intakeMotor;
     private colorSensor colorDetector;
 
     private double intakePower = 1.0;    // Forward power
@@ -17,7 +18,7 @@ public class intake {
     private long pixelIntakeTimeoutMs = 0;
 
     public intake(HardwareMap hardwareMap, String servoDeviceName, String colorDeviceName) {
-        intakeServo = hardwareMap.get(Servo.class, servoDeviceName);
+        intakeMotor = hardwareMap.get(DcMotor.class, servoDeviceName);
         colorDetector = new colorSensor();
         colorDetector.init(hardwareMap, colorDeviceName);
         colorDetector.enableLight(true);
@@ -25,12 +26,8 @@ public class intake {
     }
 
     public void setPower(double power) {
-        if (intakeServo != null) {
-            // -1.0 power to 0.0 position (full reverse)
-            //  0.0 power to 0.5 position (stop)
-            //  1.0 power to 1.0 position (full forward)
-            double servoPosition = (power + 1.0) / 2.0;
-            intakeServo.setPosition(servoPosition);
+        if (intakeMotor != null) {
+            intakeMotor.setPower(power);
         }
     }
 

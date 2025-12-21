@@ -7,17 +7,17 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.Range;
 
-import org.firstinspires.ftc.teamcode.Aaron.aprilTagV3;
+import org.firstinspires.ftc.teamcode.Aaron.aprilTag;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 
 import java.util.List;
 import java.util.Objects;
 
-public class outtake {
+public class outtakeNewTransfer {
     //Team color
     String teamColor;
     //April tag processor
-    aprilTagV3 apriltag;
+    aprilTag apriltag;
     //Outtake flywheel
     public DcMotorEx flywheelDrive;
     //Outtake Hood Servo
@@ -56,7 +56,7 @@ public class outtake {
     final double MAX_AUTO_TURN  = 0.3;   //  Clip the turn speed to this max value (adjust for your robot)
     //vars
     int targetTagID=-1;
-    public outtake(HardwareMap hardwareMap, DcMotorEx flywheelDrive, String teamColor, DcMotor leftFront, DcMotor rightFront, DcMotor leftBack, DcMotor rightBack, CRServo hoodServo, Servo transfer, boolean useTag){
+    public outtakeNewTransfer(HardwareMap hardwareMap, DcMotorEx flywheelDrive, String teamColor, DcMotor leftFront, DcMotor rightFront, DcMotor leftBack, DcMotor rightBack, CRServo hoodServo, Servo transfer, boolean useTag){
         this.flywheelDrive=flywheelDrive;
         this.teamColor=teamColor;
         this.leftFront=leftFront;
@@ -74,9 +74,7 @@ public class outtake {
         }
         //Init apriltag instance
         if (useTag) {
-            this.apriltag = new aprilTagV3(hardwareMap);
-            this.apriltag.setPipeline(2);
-            this.apriltag.init();
+            this.apriltag = new aprilTag(hardwareMap);
         }
     }
     /**
@@ -84,32 +82,41 @@ public class outtake {
      * Currently using built-in april tag ID process.
      * Includes drivetrain control+emergency cancel switch.
      * Target tag set by teamColor variable in class, "Red" or "Blue"
+     * @param targetDistance Desired distance to tag in inches.
      * @return False if canceled or teamColor not found, True if successful
      */
-    public boolean autoaim(){
+    public boolean autoaim(int targetDistance){
         this.apriltag.scanOnce();
-        if (!apriltag.hasValidTarget()){
-            leftFront.setPower(0);
-            rightFront.setPower(0);
-            leftBack.setPower(0);
-            rightBack.setPower(0);
+        List<AprilTagDetection> detections=this.apriltag.getAllDetections();
+        AprilTagDetection targetDetection=null;
+        boolean foundtag=false;
+        for (AprilTagDetection detection : detections){
+            if (detection.id==this.targetTagID){
+                targetDetection=detection;
+                foundtag=true;
+            }
+        }
+        if (!foundtag){
             return false;
         }
         // Determine heading, range and Yaw (tag image rotation) error so we can use them to control the robot automatically.
-        double  headingError    = -apriltag.getYaw();
+        double  rangeError      = (targetDetection.ftcPose.range - targetDistance);
+        double  headingError    = targetDetection.ftcPose.bearing;
+        double  yawError        = targetDetection.ftcPose.yaw;
 
         // Use the speed and turn "gains" to calculate how we want the robot to move.
+//        double drive  = Range.clip(rangeError * SPEED_GAIN, -MAX_AUTO_SPEED, MAX_AUTO_SPEED);
         double drive=0;
-        double twist   = Range.clip(headingError * TURN_GAIN, -MAX_AUTO_TURN, MAX_AUTO_TURN) ;
+        double turn   = Range.clip(headingError * TURN_GAIN, -MAX_AUTO_TURN, MAX_AUTO_TURN) ;
+//        double strafe = Range.clip(-yawError * STRAFE_GAIN, -MAX_AUTO_STRAFE, MAX_AUTO_STRAFE);
         double strafe=0;
 
         double[] speeds = {
-                (drive - strafe - twist), //forward-left motor
-                (drive + strafe + twist), //forward-right motor
-                (drive + strafe - twist), //back-left motor
-                (drive - strafe + twist)  //back-right motor
+                (drive - strafe + turn), //forward-left motor
+                (drive + strafe + turn), //forward-right motor
+                (-drive - strafe + turn), //back-left motor
+                (-drive + strafe + turn)  //back-right motor
         };
-
         // Loop through all values in the speeds[] array and find the greatest
         // *magnitude*.  Not the greatest velocity.
         double max = Math.abs(speeds[0]);
@@ -122,12 +129,11 @@ public class outtake {
         if (max > 1) {
             for (int i = 0; i < speeds.length; i++) speeds[i] /= max;
         }
-
         // apply the calculated values to the motors.
         leftFront.setPower(speeds[0]);
-        rightFront.setPower(speeds[1]);
+        rightBack.setPower(speeds[1]);
         leftBack.setPower(speeds[2]);
-        rightBack.setPower(speeds[3]);
+        rightFront.setPower(speeds[3]);
         return true;
     }
 

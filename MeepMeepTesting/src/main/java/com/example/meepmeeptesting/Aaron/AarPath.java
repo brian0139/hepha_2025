@@ -15,7 +15,7 @@ public class AarPath {
                 .setConstraints(60, 60, Math.toRadians(180), Math.toRadians(180), 15)
                 .build();
 
-        myBot.runAction(myBot.getDrive().actionBuilder(new Pose2d(-60, 0, 0))// bottom left, facing up
+        myBot.runAction(myBot.getDrive().actionBuilder(new Pose2d(-51, -47, Math.toRadians(235)))// bottom left, facing up
                 // Drive forward into the field
                 .strafeTo(new Vector2d(-22, -25))
                 .strafeToSplineHeading(new Vector2d(-11, -25), Math.toRadians(270))
