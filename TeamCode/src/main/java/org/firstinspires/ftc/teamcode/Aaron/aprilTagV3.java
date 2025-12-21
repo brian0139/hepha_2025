@@ -29,11 +29,9 @@ public class aprilTagV3 {
     private double ta=0.0;
     private Pose3D botPose=null;
 
-    private final List<Integer> motifList=new ArrayList<>();
-
     public aprilTagV3(HardwareMap hwMap){
         limelight=hwMap.get(Limelight3A.class,"limelight");
-        limelight.pipelineSwitch(9); //TODO: AprilTag pipeline CHANGE THIS CUZ DK YET
+        limelight.pipelineSwitch(1);
 
         imu = hwMap.get(IMU.class,"imu");
         RevHubOrientationOnRobot revHubOrientationOnRobot=new RevHubOrientationOnRobot(
@@ -48,7 +46,6 @@ public class aprilTagV3 {
 
     // Scan for AprilTags once per loop
     public void scanOnce(){
-        motifList.clear();
 
         // Update Limelight with robot orientation for better localization
         YawPitchRollAngles orientation=imu.getRobotYawPitchRollAngles();
@@ -70,10 +67,6 @@ public class aprilTagV3 {
 
                 // Map to motif code
                 currentMotif=mapTagToMotif(currentTagId);
-
-                if (currentMotif!=-1){
-                    motifList.add(currentMotif);
-                }
 
                 // Store targeting data
                 tx=llResult.getTx();
@@ -100,8 +93,8 @@ public class aprilTagV3 {
     }
 
     // Returns all detected motif codes
-    public List<Integer> getAllDetections(){
-        return motifList;
+    public int getAllDetections(){
+        return currentMotif;
     }
 
     // Returns the raw AprilTag ID
@@ -170,7 +163,6 @@ public class aprilTagV3 {
     public void resetDetection(){
         currentTagId=-1;
         currentMotif=-1;
-        motifList.clear();
     }
 
     // Stop Limelight when done

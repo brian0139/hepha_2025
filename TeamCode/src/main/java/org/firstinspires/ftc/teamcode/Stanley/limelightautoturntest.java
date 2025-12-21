@@ -35,7 +35,7 @@ public class limelightautoturntest extends LinearOpMode {
 
         waitForStart();
         while (opModeIsActive()) {
-            outtakeOperator.autoaim(10);
+            outtakeOperator.autoaim();
         }
     }
 }
