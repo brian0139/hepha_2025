@@ -5,7 +5,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 
 @TeleOp
 
-public class spindexerTest extends LinearOpMode{
+public class espindexerTest extends LinearOpMode{
     Servo spindexer;
     Servo transfer;
 
