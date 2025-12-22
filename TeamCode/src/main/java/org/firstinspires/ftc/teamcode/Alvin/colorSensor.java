@@ -14,12 +14,12 @@ public class colorSensor {
     private final float[] hsv = new float[3];
 
     // Color threshold values
-    private float GREEN_H_MIN = 85f;
-    private float GREEN_H_MAX = 170f;
+    private float GREEN_H_MIN = 150f;
+    private float GREEN_H_MAX = 180f;
     private float PURPLE_H_MIN = 260f;
     private float PURPLE_H_MAX = 320f;
     private float MIN_SAT = 0.25f; // Adjust to prevent washed-out colors
-    private float MIN_VAL = 0.10f; // Adjust for low light sensitivity
+ // Adjust for low light sensitivity
     /**
      * Initializes the color sensor and enables the light for better detection.
      *
@@ -50,7 +50,7 @@ public class colorSensor {
      */
     public boolean isGreen() {
         readHSV();
-        return hsv[1] >= MIN_SAT && hsv[2] >= MIN_VAL && inRange(hsv[0], GREEN_H_MIN, GREEN_H_MAX);
+        return inRange(hsv[0], GREEN_H_MIN, GREEN_H_MAX);
     }
 
     /**
@@ -60,7 +60,7 @@ public class colorSensor {
      */
     public boolean isPurple() {
         readHSV();
-        return hsv[1] >= MIN_SAT && hsv[2] >= MIN_VAL && inRange(hsv[0], PURPLE_H_MIN, PURPLE_H_MAX);
+        return inRange(hsv[0], PURPLE_H_MIN, PURPLE_H_MAX);
     }
 
     /**
@@ -93,15 +93,11 @@ public class colorSensor {
      * @param greenMax      Maximum hue for green detection
      * @param purpleMin     Minimum hue for purple detection
      * @param purpleMax     Maximum hue for purple detection
-     * @param minSat        Minimum saturation threshold
-     * @param minVal        Minimum value threshold
      */
     public void setThresholds(float greenMin, float greenMax,
-                              float purpleMin, float purpleMax,
-                              float minSat, float minVal) {
+                              float purpleMin, float purpleMax) {
         GREEN_H_MIN = greenMin; GREEN_H_MAX = greenMax;
         PURPLE_H_MIN = purpleMin; PURPLE_H_MAX = purpleMax;
-        MIN_SAT = minSat; MIN_VAL = minVal;
     }
 
     /**
