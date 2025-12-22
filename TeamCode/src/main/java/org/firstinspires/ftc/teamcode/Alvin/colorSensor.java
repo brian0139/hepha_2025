@@ -1,7 +1,6 @@
 package org.firstinspires.ftc.teamcode.Alvin;
 
 import android.graphics.Color;
-
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.NormalizedColorSensor;
 import com.qualcomm.robotcore.hardware.NormalizedRGBA;
@@ -21,7 +20,6 @@ public class colorSensor {
     private float PURPLE_H_MAX = 320f;
     private float MIN_SAT = 0.25f; // Adjust to prevent washed-out colors
     private float MIN_VAL = 0.10f; // Adjust for low light sensitivity
-
     /**
      * Initializes the color sensor and enables the light for better detection.
      *
@@ -39,7 +37,7 @@ public class colorSensor {
      * @return float[] Array containing HSV values: [H, S, V]
      */
     public float[] readHSV() {
-        if (sensor == null) return new float[]{0f, 0f, 0f}; // Return default if sensor is not initialized
+//        if (sensor == null) return new float[]{0f, 0f, 0f}; // Return default if sensor is not initialized
         NormalizedRGBA n = sensor.getNormalizedColors();
         Color.colorToHSV(n.toColor(), hsv); // Convert the color to HSV
         return hsv;
