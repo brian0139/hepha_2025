@@ -16,8 +16,8 @@ public class colorSensor {
     // Color threshold values
     private float GREEN_H_MIN = 150f;
     private float GREEN_H_MAX = 180f;
-    private float PURPLE_H_MIN = 260f;
-    private float PURPLE_H_MAX = 320f;
+    private float PURPLE_H_MIN = 210f;
+    private float PURPLE_H_MAX = 245f;
     private float MIN_SAT = 0.25f; // Adjust to prevent washed-out colors
  // Adjust for low light sensitivity
     /**
