@@ -40,7 +40,6 @@ public class spindexerCR{
     public spindexerCR(Servo spindexerServo){
         this.spindexerServo=spindexerServo;
     }
-
         public int rotateSpindexer() {
             if (spindexerServo.getPosition()>spindexerPos[currentSpindexerPos]){
                 spindexerServo.setPosition(spindexerServo.getPosition()-0.005);
@@ -49,6 +48,15 @@ public class spindexerCR{
             }
 
             return currentSpindexerPos;
+        }
+
+        public double rotateSpindexer(double targetPos, double increment) {
+            if (spindexerServo.getPosition()>targetPos){
+                spindexerServo.setPosition(spindexerServo.getPosition()-increment);
+            } else if (spindexerServo.getPosition()<targetPos){
+                spindexerServo.setPosition(targetPos);
+            }
+            return targetPos;
         }
 
 
