@@ -87,7 +87,7 @@ public class intake {
                                    float purpleMin, float purpleMax,
                                    float minSat, float minVal) {
         if (colorDetector != null) {
-            colorDetector.setThresholds(greenMin, greenMax, purpleMin, purpleMax, minSat, minVal);
+            colorDetector.setThresholds(greenMin, greenMax, purpleMin, purpleMax);
         }
     }
 
