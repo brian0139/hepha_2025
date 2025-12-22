@@ -16,7 +16,7 @@ public class limelighttest extends LinearOpMode {
     public void runOpMode() throws InterruptedException
     {
         aprilTagOperator=new aprilTagV3(hardwareMap);
-        aprilTagOperator.setPipeline(4);
+        aprilTagOperator.setPipeline(3);
         aprilTagOperator.init();
         waitForStart();
         while (opModeIsActive()) {
