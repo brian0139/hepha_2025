@@ -11,7 +11,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 import java.lang.Math;
 @TeleOp
 
-public class espindexerTest extends LinearOpMode{
+public class spindexerTest extends LinearOpMode{
     Servo spindexer;
     Servo transfer;
 
