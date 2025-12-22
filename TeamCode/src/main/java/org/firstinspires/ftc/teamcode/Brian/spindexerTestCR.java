@@ -33,7 +33,8 @@ public class spindexerTestCR extends LinearOpMode {
     //0.75 is initial (wall at farthest), 0 is shooting (pushes balls to shooting)
     double spindexerDialation=0.01; // multiplier for left stick sensetivity
     double epsilon=0.05;
-    double[] spindexerpositions = {0,0.75};
+    double[] spindexerpositions={0,0.36,0.75};
+    int currentSpindexerPos=1;
     int spindexerAutoPos=1;
     boolean pasty=false;
     //button state storage
@@ -58,7 +59,6 @@ public class spindexerTestCR extends LinearOpMode {
         //servos
         hoodServo=hardwareMap.get(CRServo.class,"hoodServo");
         spindexer=hardwareMap.get(Servo.class,"spindexerServo");
-        spindexer.setPosition(0.75);
         transfer=hardwareMap.get(DcMotor.class,"par1");
         //spindexer
         spindexerCR spindexerCR=new spindexerCR(spindexer);
@@ -101,10 +101,10 @@ public class spindexerTestCR extends LinearOpMode {
 //                spindexerpos=0.75;
 //            }
             if (gamepad2.rightBumperWasPressed() || gamepad1.rightBumperWasPressed()){
-                spindexerCR.currentSpindexerPos++;
-                spindexerCR.currentSpindexerPos%=2;
+                currentSpindexerPos+=1;
+                currentSpindexerPos%=spindexerpositions.length;
             }
-            spindexerCR.rotateSpindexer();
+            spindexerCR.rotateSpindexer(/*target*/spindexerpositions[Math.abs(currentSpindexerPos-spindexerpositions.length)-1],0.005);
             telemetry.addData("currentspindexerpos",spindexerCR.currentSpindexerPos);
             telemetry.addData("spindexerpos",spindexerCR.spindexerServo.getPosition());
 //            if ((spindexer.getPosition()<=spindexerpositions[0]+epsilon) && (spindexer.getPosition()>=spindexerpositions[0]-epsilon) && spindexerAutoPos%2==0){
