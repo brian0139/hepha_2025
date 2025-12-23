@@ -1,43 +1,31 @@
 package org.firstinspires.ftc.teamcode.Stanley;
 
 import com.qualcomm.hardware.limelightvision.LLResult;
-import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
+import org.firstinspires.ftc.teamcode.Aaron.aprilTagV3;
 
 @TeleOp
 public class limelighttest extends LinearOpMode {
 
-    private Limelight3A limelight;
+    private aprilTagV3 aprilTagOperator;
 
     @Override
     public void runOpMode() throws InterruptedException
     {
-        limelight = hardwareMap.get(Limelight3A.class, "limelight");
-
-        telemetry.setMsTransmissionInterval(11);
-
-        limelight.pipelineSwitch(2);
-
-        /*
-         * Starts polling for data.
-         */
-        limelight.start();
+        aprilTagOperator=new aprilTagV3(hardwareMap);
+        aprilTagOperator.setPipeline(3);
+        aprilTagOperator.init();
         waitForStart();
         while (opModeIsActive()) {
-            LLResult result = limelight.getLatestResult();
-            if (result != null) {
-                if (result.isValid()) {
-                    Pose3D botpose = result.getBotpose();
-                    telemetry.addData("tx", result.getTx());
-                    telemetry.addData("ty", result.getTy());
-                    telemetry.addData("Botpose", botpose.toString());
-                    //telemetry.addData("ID",result.get)
-                    telemetry.update();
-                }
-            }
+            aprilTagOperator.scanOnce();
+            telemetry.addData("tx", aprilTagOperator.getYaw());
+            telemetry.addData("ty", aprilTagOperator.getPitch());
+            telemetry.addData("Botpose", aprilTagOperator.getBotPose());
+            telemetry.addData("Tag ID",aprilTagOperator.getTagId());
+            telemetry.update();
         }
     }
 }

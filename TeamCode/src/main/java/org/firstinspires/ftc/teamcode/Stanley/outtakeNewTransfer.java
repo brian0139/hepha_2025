@@ -7,7 +7,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.Range;
 
-import org.firstinspires.ftc.teamcode.Aaron.aprilTag;
+import org.firstinspires.ftc.teamcode.Aaron.aprilTagV3;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 
 import java.util.List;
@@ -17,7 +17,7 @@ public class outtakeNewTransfer {
     //Team color
     String teamColor;
     //April tag processor
-    aprilTag apriltag;
+    aprilTagV3 apriltag;
     //Outtake flywheel
     public DcMotorEx flywheelDrive;
     //Outtake Hood Servo
@@ -28,7 +28,7 @@ public class outtakeNewTransfer {
     //Degrees changed for every servo rotation
     double servoDegPerRot =20;
     //transfer positions(up, down)
-    public static double[] transferpositions ={0.68,0.875};
+    public static double[] transferpowers ={1,0};
     //hood angle transitions
     //save ms time for hood
     long savemstime=0;
@@ -39,7 +39,7 @@ public class outtakeNewTransfer {
     //hood angle(in degrees)
     public double hoodAngle=0;
     //transfer servo
-    public Servo transfer;
+    public DcMotor transfer;
     //drivetrain motors
     DcMotor leftFront;
     DcMotor leftBack;
@@ -56,7 +56,7 @@ public class outtakeNewTransfer {
     final double MAX_AUTO_TURN  = 0.3;   //  Clip the turn speed to this max value (adjust for your robot)
     //vars
     int targetTagID=-1;
-    public outtakeNewTransfer(HardwareMap hardwareMap, DcMotorEx flywheelDrive, String teamColor, DcMotor leftFront, DcMotor rightFront, DcMotor leftBack, DcMotor rightBack, CRServo hoodServo, Servo transfer, boolean useTag){
+    public outtakeNewTransfer(HardwareMap hardwareMap, DcMotorEx flywheelDrive, String teamColor, DcMotor leftFront, DcMotor rightFront, DcMotor leftBack, DcMotor rightBack, CRServo hoodServo, DcMotor transfer, boolean useTag){
         this.flywheelDrive=flywheelDrive;
         this.teamColor=teamColor;
         this.leftFront=leftFront;
@@ -74,7 +74,9 @@ public class outtakeNewTransfer {
         }
         //Init apriltag instance
         if (useTag) {
-            this.apriltag = new aprilTag(hardwareMap);
+            this.apriltag = new aprilTagV3(hardwareMap);
+            this.apriltag.setPipeline(4);
+            this.apriltag.init();
         }
     }
     /**
@@ -82,41 +84,32 @@ public class outtakeNewTransfer {
      * Currently using built-in april tag ID process.
      * Includes drivetrain control+emergency cancel switch.
      * Target tag set by teamColor variable in class, "Red" or "Blue"
-     * @param targetDistance Desired distance to tag in inches.
      * @return False if canceled or teamColor not found, True if successful
      */
-    public boolean autoaim(int targetDistance){
+    public boolean autoaim(){
         this.apriltag.scanOnce();
-        List<AprilTagDetection> detections=this.apriltag.getAllDetections();
-        AprilTagDetection targetDetection=null;
-        boolean foundtag=false;
-        for (AprilTagDetection detection : detections){
-            if (detection.id==this.targetTagID){
-                targetDetection=detection;
-                foundtag=true;
-            }
-        }
-        if (!foundtag){
+        if (!apriltag.hasValidTarget()){
+            leftFront.setPower(0);
+            rightFront.setPower(0);
+            leftBack.setPower(0);
+            rightBack.setPower(0);
             return false;
         }
         // Determine heading, range and Yaw (tag image rotation) error so we can use them to control the robot automatically.
-        double  rangeError      = (targetDetection.ftcPose.range - targetDistance);
-        double  headingError    = targetDetection.ftcPose.bearing;
-        double  yawError        = targetDetection.ftcPose.yaw;
+        double  headingError    = -apriltag.getYaw();
 
         // Use the speed and turn "gains" to calculate how we want the robot to move.
-//        double drive  = Range.clip(rangeError * SPEED_GAIN, -MAX_AUTO_SPEED, MAX_AUTO_SPEED);
         double drive=0;
-        double turn   = Range.clip(headingError * TURN_GAIN, -MAX_AUTO_TURN, MAX_AUTO_TURN) ;
-//        double strafe = Range.clip(-yawError * STRAFE_GAIN, -MAX_AUTO_STRAFE, MAX_AUTO_STRAFE);
+        double twist   = Range.clip(headingError * TURN_GAIN, -MAX_AUTO_TURN, MAX_AUTO_TURN) ;
         double strafe=0;
 
         double[] speeds = {
-                (drive - strafe + turn), //forward-left motor
-                (drive + strafe + turn), //forward-right motor
-                (-drive - strafe + turn), //back-left motor
-                (-drive + strafe + turn)  //back-right motor
+                (drive - strafe - twist), //forward-left motor
+                (drive + strafe + twist), //forward-right motor
+                (drive + strafe - twist), //back-left motor
+                (drive - strafe + twist)  //back-right motor
         };
+
         // Loop through all values in the speeds[] array and find the greatest
         // *magnitude*.  Not the greatest velocity.
         double max = Math.abs(speeds[0]);
@@ -129,11 +122,12 @@ public class outtakeNewTransfer {
         if (max > 1) {
             for (int i = 0; i < speeds.length; i++) speeds[i] /= max;
         }
+
         // apply the calculated values to the motors.
         leftFront.setPower(speeds[0]);
-        rightBack.setPower(speeds[1]);
+        rightFront.setPower(speeds[1]);
         leftBack.setPower(speeds[2]);
-        rightFront.setPower(speeds[3]);
+        rightBack.setPower(speeds[3]);
         return true;
     }
 
@@ -190,16 +184,16 @@ public class outtakeNewTransfer {
     }
 
     /**
-     * Transfer artifact to flywheel(move transfer up)
+     * Transfer artifact to flywheel(spin transfer)
      */
-    public void transferUp(){
-        this.transfer.setPosition(this.transferpositions[0]);
+    public void transferStart(){
+        this.transfer.setPower(this.transferpowers[0]);
     }
     /**
      * Lower Transfer
      */
-    public void transferDown(){
-        this.transfer.setPosition(this.transferpositions[1]);
+    public void transferStop(){
+        this.transfer.setPower(this.transferpowers[1]);
     }
 
     /**

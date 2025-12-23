@@ -10,7 +10,7 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
 import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
 
-@Autonomous
+@TeleOp
 public class limelightautoturntest extends LinearOpMode {
 
     private Limelight3A limelight;
@@ -31,11 +31,24 @@ public class limelightautoturntest extends LinearOpMode {
         //Reverse motor directions where needed
         leftFront.setDirection(DcMotorSimple.Direction.REVERSE);
         leftBack.setDirection(DcMotorSimple.Direction.REVERSE);
+        boolean aimtoggle=false;
         outtakeOperator=new outtake(hardwareMap,null,"Red",leftFront,rightFront,leftBack,rightBack,null,null,true);
 
         waitForStart();
         while (opModeIsActive()) {
-            outtakeOperator.autoaim();
+            outtakeOperator.TURN_GAIN-= gamepad1.left_stick_x*0.000001;
+            if (outtakeOperator.TURN_GAIN<0) outtakeOperator.TURN_GAIN=0;
+            if (gamepad1.dpadDownWasPressed()){
+                outtakeOperator.TURN_GAIN-=0.001;
+            }
+            if (gamepad1.dpadUpWasPressed()){
+                outtakeOperator.TURN_GAIN+=0.001;
+            }
+            if (gamepad1.yWasPressed()) aimtoggle=!aimtoggle;
+            if (aimtoggle) outtakeOperator.autoaim();
+            telemetry.addData("Turn Gain",outtakeOperator.TURN_GAIN);
+            telemetry.addData("Autoaiming",aimtoggle);
+            telemetry.update();
         }
     }
 }
