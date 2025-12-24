@@ -86,7 +86,7 @@ public class outtake {
      * Target tag set by teamColor variable in class, "Red" or "Blue"
      * @return False if canceled or teamColor not found, True if successful
      */
-    public boolean autoaim(){
+    public boolean autoturn(){
         this.apriltag.scanOnce();
         if (!apriltag.hasValidTarget()){
             leftFront.setPower(0);
