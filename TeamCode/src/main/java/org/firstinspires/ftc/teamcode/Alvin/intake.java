@@ -19,8 +19,7 @@ public class intake {
 
     public intake(HardwareMap hardwareMap, String servoDeviceName, String colorDeviceName) {
         intakeMotor = hardwareMap.get(DcMotor.class, servoDeviceName);
-        colorDetector = new colorSensor();
-        colorDetector.init(hardwareMap, colorDeviceName);
+        colorDetector = new colorSensor(hardwareMap, colorDeviceName);
         colorDetector.enableLight(true);
         stop();
     }

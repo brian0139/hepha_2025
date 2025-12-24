@@ -45,7 +45,7 @@ public class limelightautoturntest extends LinearOpMode {
                 outtakeOperator.TURN_GAIN+=0.001;
             }
             if (gamepad1.yWasPressed()) aimtoggle=!aimtoggle;
-            if (aimtoggle) outtakeOperator.autoaim();
+            if (aimtoggle) outtakeOperator.autoturn();
             telemetry.addData("Turn Gain",outtakeOperator.TURN_GAIN);
             telemetry.addData("Autoaiming",aimtoggle);
             telemetry.update();

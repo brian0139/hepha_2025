@@ -10,8 +10,7 @@ public class test extends OpMode {
 
     @Override
     public void init() {
-        color = new colorSensor();
-        color.init(hardwareMap, "colorSensor"); // hardware config name
+        color = new colorSensor(hardwareMap, "colorSensor");
 
         telemetry.addLine("Initialized");
         telemetry.update();
