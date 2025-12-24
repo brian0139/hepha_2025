@@ -26,7 +26,7 @@ public class colorSensor {
      * @param hardwareMap   HardwareMap for accessing sensors
      * @param deviceName    Name of the color sensor in the hardware configuration
      */
-    public void init(HardwareMap hardwareMap, String deviceName) {
+    public colorSensor(HardwareMap hardwareMap, String deviceName) {
         sensor = hardwareMap.get(NormalizedColorSensor.class, deviceName);
         enableLight(true); // Turn on the light to help with color detection
     }

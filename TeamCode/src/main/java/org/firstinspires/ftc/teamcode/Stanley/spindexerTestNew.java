@@ -17,9 +17,9 @@ public class spindexerTestNew extends LinearOpMode{
     public void runOpMode() {
         //initiate drivetrain motors
         spindexer=hardwareMap.get(CRServo.class,"spindexerServo");
-        transfer=hardwareMap.get(DcMotor.class,"transferServo");
+        transfer=hardwareMap.get(DcMotor.class,"par1");
         intake=hardwareMap.get(DcMotor.class,"intake");
-        double spindexerPower=1;
+        double spindexerPower=0.5;
         double transferPower=1;
         boolean runtransfer=false;
         boolean runspindexer=false;
@@ -43,8 +43,11 @@ public class spindexerTestNew extends LinearOpMode{
             if (runspindexer){
                 spindexer.setPower(spindexerPower);
             }else{
-                spindexer.setPower(0);
+                spindexer.setPower(-gamepad1.left_stick_x);
             }
+            telemetry.addData("Running spindexer",runspindexer);
+            telemetry.addData("Running transfer",runtransfer);
+            telemetry.update();
         }
     }
 }
