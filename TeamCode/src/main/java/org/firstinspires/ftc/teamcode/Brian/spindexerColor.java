@@ -26,7 +26,7 @@ public class spindexerColor {
         this.spindexerServo=spindexerServo;
     }
 
-    public boolean spinToMotif(double power) {
+    public boolean spinToMotif(double spinpower, double stoppower) {
         int nextmotif=currentMotifPattern[motifIndex];
         int timeout=0;
         while (colorsensor.getDetected()!=nextmotif&&timeout<3) {
@@ -34,6 +34,7 @@ public class spindexerColor {
             timeout++;
         }
         if (colorsensor.getDetected()==nextmotif&&timeout<3){
+            spindexerServo.setPower(stoppower);
             motifIndex++;
             return true;
         } else {
