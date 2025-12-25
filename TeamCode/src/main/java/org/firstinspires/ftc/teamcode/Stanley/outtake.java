@@ -10,7 +10,9 @@ import com.qualcomm.robotcore.util.Range;
 import org.firstinspires.ftc.teamcode.Aaron.aprilTagV3;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 public class outtake {
@@ -131,6 +133,242 @@ public class outtake {
         return true;
     }
 
+    /**
+     * Find optimal launch angle and velocity to hit a target with specific impact angle constraints.
+     *
+     * @param targetX horizontal distance to target (inches)
+     * @param targetY vertical height of target above launch point (inches)
+     * @param minAngleDeg minimum hood angle range (degrees from horizontal)
+     * @param maxAngleDeg maximum hood angle range (degrees from horizontal)
+     * @param maxVelocity maximum launch velocity (inches/second)
+     * @param minImpactAngleDeg minimum acceptable impact angle (degrees from horizontal, 180=straight down)
+     * @param maxImpactAngleDeg maximum acceptable impact angle (degrees from horizontal, 180=straight down)
+     * @param g gravitational acceleration (inches/s^2, default 386.4 for Earth)
+     * @param yEpsilon acceptable y-position error for hitting target (inches)
+     * @param angleEpsilon convergence threshold for angle binary search (degrees)
+     * @param maxIterations maximum iterations before giving up
+     * @return Map<string,string> with keys: angle, velocity, impactAngle, yError, impactAngleError, success, reason
+     */
+    public static Map<String,String> findOptimalLaunch(double targetX, double targetY,
+                                                       double minAngleDeg, double maxAngleDeg,
+                                                       double maxVelocity,
+                                                       double minImpactAngleDeg, double maxImpactAngleDeg,
+                                                       double g, double yEpsilon, double angleEpsilon,
+                                                       int maxIterations) {
+
+        // Convert angles to radians for calculations
+        double minAngle = Math.toRadians(minAngleDeg);
+        double maxAngle = Math.toRadians(maxAngleDeg);
+        double minImpactAngle = Math.toRadians(minImpactAngleDeg);
+        double maxImpactAngle = Math.toRadians(maxImpactAngleDeg);
+        double medianImpactAngle = (minImpactAngle + maxImpactAngle) / 2.0;
+
+        // Track best solution found so far
+        Map<String,String> bestSolution = null;
+        double bestDistanceToMedian = Double.POSITIVE_INFINITY;
+
+        // Binary search on launch angle
+        double lowAngle = minAngle;
+        double highAngle = maxAngle;
+
+        String reason = "";
+
+        for (int iteration = 0; iteration < maxIterations; iteration++) {
+            // Check convergence: if angle range is very small, we've converged
+            if ((highAngle - lowAngle) < Math.toRadians(angleEpsilon)) {
+                reason = "converged";
+                break;
+            }
+
+            double midAngle = (lowAngle + highAngle) / 2.0;
+
+            // Binary search on velocity for this angle
+            double foundVelocity = -1;
+            double lowVelocity = 0;
+            double highVelocity = maxVelocity;
+
+            for (int velIteration = 0; velIteration < 100; velIteration++) {
+                double midVelocity = (lowVelocity + highVelocity) / 2.0;
+
+                // Calculate y position at target x using projectile motion equation
+                // y = x*tan(θ) - (g*x²)/(2*v²*cos²(θ))
+                double yAtTarget;
+                try {
+                    double cosAngle = Math.cos(midAngle);
+                    if (midVelocity == 0 || cosAngle == 0) {
+                        // Velocity too low, causes numerical issues
+                        lowVelocity = midVelocity;
+                        continue;
+                    }
+                    yAtTarget = targetX * Math.tan(midAngle) -
+                            (g * targetX * targetX) / (2.0 * midVelocity * midVelocity * cosAngle * cosAngle);
+                } catch (Exception e) {
+                    // Velocity too low, causes numerical issues
+                    lowVelocity = midVelocity;
+                    continue;
+                }
+
+                // Check if we hit the target within epsilon
+                if (Math.abs(yAtTarget - targetY) < yEpsilon) {
+                    foundVelocity = midVelocity;
+                    break;
+                } else if (yAtTarget < targetY) {
+                    // Undershooting, need more velocity
+                    lowVelocity = midVelocity;
+                } else {
+                    // Overshooting, need less velocity
+                    highVelocity = midVelocity;
+                }
+            }
+
+            // Case 1: No valid velocity found (even max velocity undershoots)
+            if (foundVelocity == -1) {
+                // At max velocity, check if we're undershooting or can't reach
+                double cosAngle = Math.cos(midAngle);
+                double yAtTargetMaxVel = targetX * Math.tan(midAngle) -
+                        (g * targetX * targetX) / (2.0 * maxVelocity * maxVelocity * cosAngle * cosAngle);
+
+                if (yAtTargetMaxVel < targetY) {
+                    // We're undershooting - could be angle too low OR too high
+                    // Check if we can even reach target_x horizontally (max range formula)
+                    double maxRange = (maxVelocity * maxVelocity * Math.sin(2.0 * midAngle)) / g;
+
+                    if (maxRange < targetX) {
+                        // Can't reach target horizontally - angle too high (too steep)
+                        highAngle = midAngle;
+                    } else {
+                        // Can reach horizontally but undershooting vertically
+                        // Need to check vertex position to determine if angle is too high or too low
+                        double tVertex = maxVelocity * Math.sin(midAngle) / g;
+                        double vertexX = maxVelocity * Math.cos(midAngle) * tVertex;
+
+                        if (vertexX < targetX) {
+                            // Vertex before target - on descending part of parabola
+                            // Undershooting means angle is too high (falling too steeply)
+                            highAngle = midAngle;
+                        } else {
+                            // Vertex at/after target - on ascending part of parabola
+                            // Undershooting means angle is too low (not enough height)
+                            lowAngle = midAngle;
+                        }
+                    }
+                }
+            }
+            // Case 2: Valid velocity found, check impact angle
+            else {
+                // Calculate impact angle (angle of velocity vector at target)
+                // v_x = v*cos(θ) (constant)
+                // v_y = v*sin(θ) - g*t
+                // At target x: t = x/(v*cos(θ))
+                double tImpact = targetX / (foundVelocity * Math.cos(midAngle));
+                double vX = foundVelocity * Math.cos(midAngle);
+                double vY = foundVelocity * Math.sin(midAngle) - g * tImpact;
+
+                // Impact angle from horizontal (negative v_y means going down)
+                // atan2 gives angle from positive x-axis
+                double impactAngle = Math.atan2(vY, vX);
+                // Convert to 0-180 range where 180 is straight down
+                if (impactAngle < 0) {
+                    impactAngle = Math.PI + impactAngle;  // Convert negative angles
+                }
+
+                // Check if impact angle is within acceptable range
+                if (minImpactAngle <= impactAngle && impactAngle <= maxImpactAngle) {
+                    // Valid solution! Check if it's closer to median than previous best
+                    double distanceToMedian = Math.abs(impactAngle - medianImpactAngle);
+                    // Calculate y position at target x using projectile motion equation
+                    // y = x*tan(θ) - (g*x²)/(2*v²*cos²(θ))
+                    double yAtTarget;
+                    double cosAngle = Math.cos(midAngle);
+                    yAtTarget = targetX * Math.tan(midAngle) -
+                            (g * targetX * targetX) / (2.0 * foundVelocity * foundVelocity * cosAngle * cosAngle);
+                    if (distanceToMedian <= bestDistanceToMedian) {
+                        bestDistanceToMedian = distanceToMedian;
+                        bestSolution = new HashMap<>(Map.of(
+                                "angle",Double.toString(Math.toDegrees(midAngle)),
+                                "velocity",Double.toString(foundVelocity),
+                                "impactAngle",Double.toString(Math.toDegrees(impactAngle)),
+                                "yError",Double.toString(Math.abs(targetY-yAtTarget)), // Within epsilon by definition
+                                "impactAngleError",Double.toString(distanceToMedian), // Within range by definition
+                                "success","true",
+                                "reason","valid_solution"
+                        ));
+                    }
+
+                    // Update angle search based on impact angle relative to median
+                    if (impactAngle < medianImpactAngle) {
+                        // Impact too shallow, launch angle too low
+                        highAngle = midAngle;
+                    } else {
+                        // Impact too steep, launch angle too high
+                        lowAngle = midAngle;
+                    }
+                } else {
+                    // Impact angle outside acceptable range
+                    if (impactAngle > maxImpactAngle) {
+                        // Impact too steep, launch angle too high
+                        highAngle = midAngle;
+                    } else {
+                        // Impact too shallow, launch angle too low
+                        lowAngle = midAngle;
+                    }
+                    // Calculate y position at target x using projectile motion equation
+                    // y = x*tan(θ) - (g*x²)/(2*v²*cos²(θ))
+                    double yAtTarget;
+                    double cosAngle = Math.cos(midAngle);
+                    yAtTarget = targetX * Math.tan(midAngle) -
+                            (g * targetX * targetX) / (2.0 * foundVelocity * foundVelocity * cosAngle * cosAngle);
+                    // Store as backup solution if we don't find anything better
+                    double impactAngleError = Math.min(Math.abs(impactAngle - minImpactAngle),
+                            Math.abs(impactAngle - maxImpactAngle));
+                    if (bestSolution == null || impactAngleError < Double.parseDouble(bestSolution.get("impactAngleError"))) {
+                        bestSolution = new HashMap<>(Map.of(
+                                "angle",Double.toString(Math.toDegrees(midAngle)),
+                                "velocity",Double.toString(foundVelocity),
+                                "impactAngle",Double.toString(Math.toDegrees(impactAngle)),
+                                "yError",Double.toString(Math.abs(targetY-yAtTarget)), // Within epsilon by definition
+                                "impactAngleError",Double.toString(impactAngleError), // Within range by definition
+                                "success","false",
+                                "reason","impact_angle_out_of_range"
+                        ));
+                    }
+                }
+            }
+        }
+
+        // If loop completed without convergence
+        if (reason.isEmpty()) {
+            reason = "max_iterations";
+        }
+
+        // If we found a valid solution, return it
+        if (bestSolution != null && Boolean.parseBoolean(bestSolution.get("success"))) {
+            return bestSolution;
+        }
+
+        // Otherwise, return best effort
+        if (bestSolution == null) {
+            // No solution attempted velocity at all
+            bestSolution = new HashMap<>(Map.of(
+                    "angle",Double.toString(-1.0),
+                    "velocity",Double.toString(-1.0),
+                    "impactAngle",Double.toString(-1.0),
+                    "yError",Double.toString(Double.POSITIVE_INFINITY), // Within epsilon by definition
+                    "impactAngleError",Double.toString(Double.POSITIVE_INFINITY), // Within range by definition
+                    "success","false",
+                    "reason","no_solution_found"
+            ));
+        }
+
+        return bestSolution;
+    }
+
+    /**
+     * Set the hood angle to a specific degree
+     * @param degrees degrees from hood to horizontal(cnt. clockwise)
+     * @param override stop current running action and start new action
+     * @return if hood is at position
+     */
     public boolean setHood(double degrees, boolean override){
         double rotations=(degrees-this.hoodAngle)/this.servoDegPerRot;
         //time needed to rotate for in ms

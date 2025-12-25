@@ -4,14 +4,11 @@ import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
-import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.teamcode.Aaron.aprilTagV3;
-import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
@@ -115,8 +112,8 @@ public class outtakeNewTransfer {
         // Loop through all values in the speeds[] array and find the greatest
         // *magnitude*.  Not the greatest velocity.
         double max = Math.abs(speeds[0]);
-        for(int i = 0; i < speeds.length; i++) {
-            if ( max < Math.abs(speeds[i]) ) max = Math.abs(speeds[i]);
+        for (double speed : speeds) {
+            if (max < Math.abs(speed)) max = Math.abs(speed);
         }
 
         // If and only if the maximum is outside of the range we want it to be,
@@ -425,13 +422,13 @@ public class outtakeNewTransfer {
      * Transfer artifact to flywheel(spin transfer)
      */
     public void transferStart(){
-        this.transfer.setPower(this.transferpowers[0]);
+        this.transfer.setPower(transferpowers[0]);
     }
     /**
      * Lower Transfer
      */
     public void transferStop(){
-        this.transfer.setPower(this.transferpowers[1]);
+        this.transfer.setPower(transferpowers[1]);
     }
 
     /**
@@ -443,11 +440,6 @@ public class outtakeNewTransfer {
     public boolean spin_flywheel(double targetSpeed, int tolerance){
         DcMotorEx flywheelDriveEx=this.flywheelDrive;
         flywheelDriveEx.setVelocity(targetSpeed);
-        if (targetSpeed-tolerance<=flywheelDriveEx.getVelocity() && flywheelDriveEx.getVelocity()<=targetSpeed+tolerance){
-            return true;
-        }
-        else{
-            return false;
-        }
+        return targetSpeed - tolerance <= flywheelDriveEx.getVelocity() && flywheelDriveEx.getVelocity() <= targetSpeed + tolerance;
     }
 }
