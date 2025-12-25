@@ -32,6 +32,10 @@ public class holdPosition {
         this.initialPosition=drive.localizer.getPose();
     }
 
+    public double hold(){
+
+    }
+
     /**
      * Set initial position to robot current position
      * @return Pose2d value initialPosition has been set to
