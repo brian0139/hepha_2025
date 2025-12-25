@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.Stanley.testingClasses;
+package org.firstinspires.ftc.teamcode.Stanley.testingClass;
 
 public class classes {
     public class DcMotor{

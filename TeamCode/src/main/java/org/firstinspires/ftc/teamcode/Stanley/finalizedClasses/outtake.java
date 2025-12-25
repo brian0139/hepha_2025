@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.Stanley;
+package org.firstinspires.ftc.teamcode.Stanley.finalizedClasses;
 
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -35,7 +35,7 @@ public class outtake {
     //save ms time for hood
     long savemstime=0;
     //save hood angle for starting hood angle
-    double savehoodAngle=0;
+    public double savehoodAngle=0;
     //if hood running
     public boolean runninghood=false;
     //hood angle(in degrees)
@@ -51,7 +51,7 @@ public class outtake {
     //  Drive = Error * Gain
     final double SPEED_GAIN  =  0.02  ;   //  Forward Speed Control "Gain". e.g. Ramp up to 50% power at a 25 inch error.   (0.50 / 25.0)
     final double STRAFE_GAIN =  0.015 ;   //  Strafe Speed Control "Gain".  e.g. Ramp up to 37% power at a 25 degree Yaw error.   (0.375 / 25.0)
-    double TURN_GAIN   =  0.025  ;   //  Turn Control "Gain".  e.g. Ramp up to 25% power at a 25 degree error. (0.25 / 25.0)
+    public double TURN_GAIN   =  0.025  ;   //  Turn Control "Gain".  e.g. Ramp up to 25% power at a 25 degree error. (0.25 / 25.0)
 
     final double MAX_AUTO_SPEED = 0.5;   //  Clip the approach speed to this max value (adjust for your robot)
     final double MAX_AUTO_STRAFE= 0.5;   //  Clip the strafing speed to this max value (adjust for your robot)

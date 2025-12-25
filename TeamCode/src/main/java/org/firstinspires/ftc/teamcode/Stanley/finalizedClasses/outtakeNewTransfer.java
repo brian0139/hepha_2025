@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.Stanley;
+package org.firstinspires.ftc.teamcode.Stanley.finalizedClasses;
 
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
