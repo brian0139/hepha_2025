@@ -4,6 +4,7 @@ import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.teamcode.Aaron.aprilTagV3;
@@ -29,8 +30,8 @@ public class outtakeNewTransfer {
     //transfer positions(up, down)
     public static double[] transferpowers ={1,0};
     //hood angle transitions
-    //save ms time for hood
-    long savemstime=0;
+    //timer
+    ElapsedTime timer=new ElapsedTime();
     //save hood angle for starting hood angle
     double savehoodAngle=0;
     //if hood running
@@ -375,7 +376,7 @@ public class outtakeNewTransfer {
             //update current hood angle
             this.updateHoodAngle(degrees);
             //Initialize variables for new position
-            this.savemstime=System.currentTimeMillis();
+            this.timer.reset();
             this.savehoodAngle=this.hoodAngle;
             if (rotations > 0) {
                 this.hoodServo.setPower(1);
@@ -383,18 +384,8 @@ public class outtakeNewTransfer {
                 this.hoodServo.setPower(-1);
             }
         }
-        //Exit condition
-        if (System.currentTimeMillis()-this.savemstime>=time){
-            //Update hood position
-            this.updateHoodAngle(degrees);
-            //set runninghood to false(no longer running hood)
-            this.runninghood=false;
-            //stop hood servo
-            this.hoodServo.setPower(0);
-            return true;
-        }
         if (!runninghood) {
-            this.savemstime=System.currentTimeMillis();
+            timer.reset();
             this.savehoodAngle=this.hoodAngle;
             if (rotations > 0) {
                 this.hoodServo.setPower(1);
@@ -402,6 +393,16 @@ public class outtakeNewTransfer {
                 this.hoodServo.setPower(-1);
             }
             this.runninghood=true;
+        }
+        //Exit condition
+        if (timer.milliseconds()>=time){
+            //Update hood position
+            this.updateHoodAngle(degrees);
+            //set runninghood to false(no longer running hood)
+            this.runninghood=false;
+            //stop hood servo
+            this.hoodServo.setPower(0);
+            return true;
         }
         return false;
     }
@@ -413,7 +414,7 @@ public class outtakeNewTransfer {
     public void updateHoodAngle(double degrees){
         double rotations=(degrees-this.hoodAngle)/this.servoDegPerRot;
         //Update hood position
-        double elapsed = System.currentTimeMillis() - this.savemstime;
+        double elapsed = timer.milliseconds();
         double totalRotation = (elapsed * this.servoRPM) / 60000.0;
         this.hoodAngle = this.savehoodAngle + (rotations > 0 ? 1 : -1) * totalRotation * this.servoDegPerRot;
     }
