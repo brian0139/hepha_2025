@@ -1,7 +1,10 @@
 package org.firstinspires.ftc.teamcode.Stanley.finalizedClasses;
 
 import com.acmerobotics.roadrunner.Pose2d;
+import com.acmerobotics.roadrunner.PoseVelocity2d;
+import com.acmerobotics.roadrunner.Vector2d;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.MecanumDrive;
 
@@ -13,6 +16,13 @@ public class holdPosition {
     private DcMotor leftBack=null;
     private DcMotor rightFront=null;
     private DcMotor rightBack=null;
+    //PID variables {Kp,Ki,Kd}
+    double[] Kx={0,0,0};
+    double[] Ky={0,0,0};
+    double[] Kt={0,0,0};
+    PID xPID=new PID(Kx[0],Kx[1],Kx[2]);
+    PID yPID=new PID(Ky[0],Ky[1],Ky[2]);
+    PID tPID=new PID(Kt[0],Kt[1],Kt[2]);
 
     /**
      * Constructor
@@ -33,7 +43,12 @@ public class holdPosition {
     }
 
     public double hold(){
+        updateCurrentPosition();
+        double powerX=xPID.update(initialPosition.position.x,currentPosition.position.x);
+        double powerY=yPID.update(initialPosition.position.y,currentPosition.position.y);
 
+        double powerT=tPID.update(initialPosition.heading.toDouble(),currentPosition.head);
+        drive.setDrivePowers(new PoseVelocity2d(new Vector2d(0,0),0));
     }
 
     /**
@@ -43,6 +58,9 @@ public class holdPosition {
     public Pose2d setInitialPosition(){
         drive.updatePoseEstimate();
         initialPosition=drive.localizer.getPose();
+        xPID.init();
+        yPID.init();
+        tPID.init();
         return initialPosition;
     }
 
