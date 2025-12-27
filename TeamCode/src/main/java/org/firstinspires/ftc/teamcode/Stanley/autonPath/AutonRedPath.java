@@ -3,7 +3,6 @@ package org.firstinspires.ftc.teamcode.Stanley.autonPath;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.Pose2d;
-import com.acmerobotics.roadrunner.Trajectory;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
@@ -19,7 +18,7 @@ import org.firstinspires.ftc.teamcode.MecanumDrive;
 import org.firstinspires.ftc.teamcode.Stanley.finalizedClasses.outtake;
 
 @Autonomous
-public class AutonBluePath extends LinearOpMode {
+public class AutonRedPath extends LinearOpMode {
     Servo spindexerServo=null;
     DcMotor intakeMotor=null;
     Servo transfer=null;
@@ -39,12 +38,12 @@ public class AutonBluePath extends LinearOpMode {
         transfer=hardwareMap.servo.get("transferServo");
         hood=hardwareMap.crservo.get("hoodServo");
         spindexerOperator=new spindexer(spindexerServo);
-        Pose2d beginPose=new Pose2d(-57.5, -43.5, Math.toRadians(54));
+        Pose2d beginPose=new Pose2d(-57.5, 43.5, Math.toRadians(360-54));
         MecanumDrive drive=new MecanumDrive(hardwareMap,beginPose);
-        final Vector2d shootingPos=new Vector2d(-34,-23);
+        final Vector2d shootingPos=new Vector2d(-34,23);
         final double shootingAngle=Math.toRadians(225);
-        final double intakeFinishy =-36;
-        final double intakeStarty=-13;
+        final double intakeFinishy =36;
+        final double intakeStarty=13;
 
         waitForStart();
         Actions.runBlocking(
@@ -52,7 +51,7 @@ public class AutonBluePath extends LinearOpMode {
                     .strafeToLinearHeading(shootingPos, shootingAngle)
 
                     .waitSeconds(0.5)
-                    .strafeToLinearHeading(new Vector2d(-15, intakeStarty), Math.toRadians(270))
+                    .strafeToLinearHeading(new Vector2d(-15, intakeStarty), Math.toRadians(360-270))
 //                        .stopAndAdd(new spinSpindexer(spindexerOperator,0,false))
 //                        .stopAndAdd(new intakeStart(intakeMotor,1))
                     .strafeTo(new Vector2d(-15, intakeFinishy))
@@ -60,7 +59,7 @@ public class AutonBluePath extends LinearOpMode {
 //                        .stopAndAdd(new spinSpindexer(spindexerOperator,1,false))
 //                        .waitSeconds(1)
 //                        .stopAndAdd(new intakeStart(intakeMotor,0.8))
-                    .strafeTo(new Vector2d(-15,intakeFinishy-10))
+                    .strafeTo(new Vector2d(-15,intakeFinishy+10))
 //                        .waitSeconds(1)
 //                        .stopAndAdd(new intakeStop(intakeMotor))
 //                        .stopAndAdd(new spinSpindexer(spindexerOperator,2,false))
@@ -72,13 +71,13 @@ public class AutonBluePath extends LinearOpMode {
                     .waitSeconds(3)
                     .strafeToLinearHeading(shootingPos, shootingAngle)
                     .waitSeconds(3)
-                    .strafeToLinearHeading(new Vector2d(10, intakeStarty+7), Math.toRadians(275))
+                    .strafeToLinearHeading(new Vector2d(10, intakeStarty-7), Math.toRadians(360-275))
                     .strafeTo(new Vector2d(10, intakeFinishy+3))
                     .waitSeconds(3)
                     .strafeToLinearHeading(shootingPos, shootingAngle)
                     .waitSeconds(3)
-                    .strafeToLinearHeading(new Vector2d(35, intakeStarty+10), Math.toRadians(270))
-                    .strafeTo(new Vector2d(35, intakeFinishy+10))
+                    .strafeToLinearHeading(new Vector2d(35, intakeStarty-10), Math.toRadians(360-270))
+                    .strafeTo(new Vector2d(35, intakeFinishy-10))
                     .waitSeconds(3)
                     .strafeToLinearHeading(shootingPos, shootingAngle)
                     .waitSeconds(3)

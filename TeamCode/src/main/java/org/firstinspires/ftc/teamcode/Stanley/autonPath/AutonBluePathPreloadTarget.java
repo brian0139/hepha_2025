@@ -15,7 +15,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.teamcode.Brian.spindexer;
 import org.firstinspires.ftc.teamcode.MecanumDrive;
-import org.firstinspires.ftc.teamcode.Stanley.outtake;
+import org.firstinspires.ftc.teamcode.Stanley.finalizedClasses.outtake;
 
 @Autonomous
 public class AutonBluePathPreloadTarget extends LinearOpMode {
