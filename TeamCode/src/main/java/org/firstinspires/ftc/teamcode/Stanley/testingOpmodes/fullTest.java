@@ -18,7 +18,8 @@ public class fullTest extends LinearOpMode{
     private DcMotor rightFront=null;
     private DcMotor rightBack=null;
     //other motors
-    private DcMotorEx flywheel=null;
+    private DcMotorEx flywheelR =null;
+    private DcMotorEx flywheel = null;
     private DcMotorEx intake=null;
     private DcMotor transfer=null;
     //servos
@@ -54,8 +55,9 @@ public class fullTest extends LinearOpMode{
         leftFront.setDirection(DcMotorSimple.Direction.REVERSE);
         leftBack.setDirection(DcMotorSimple.Direction.REVERSE);
         //other motors
-        flywheel=(DcMotorEx) hardwareMap.get(DcMotor.class,"flywheel");
-        flywheel.setDirection(DcMotorSimple.Direction.REVERSE);
+        flywheelR= hardwareMap.get(DcMotorEx.class,"flywheelR");
+        flywheelR.setDirection(DcMotorSimple.Direction.REVERSE);
+        flywheel=hardwareMap.get(DcMotorEx.class,"flywheel");
         intake=(DcMotorEx) hardwareMap.get(DcMotor.class,"intake");
         //servos
         hoodServo=hardwareMap.get(CRServo.class,"hoodServo");
@@ -85,15 +87,17 @@ public class fullTest extends LinearOpMode{
                 flywheelToggle=!flywheelToggle;
                 if (flywheelToggle) {
                     targetspeed=flywheelspeed;
+                    flywheelR.setVelocity(targetspeed);
                     flywheel.setVelocity(targetspeed);
                 } else{
                     targetspeed=0;
+                    flywheelR.setVelocity(0);
                     flywheel.setVelocity(0);
                 }
             }
             telemetry.addLine("Flywheel Speed:"+flywheelspeed+" encoder ticks/s, "+flywheelspeed*60/28+" RPM");
             telemetry.addLine("Flywheel Speed:"+targetspeed+" encoder ticks/s, "+targetspeed*60/28+" RPM");
-            telemetry.addLine("Flywheel Speed:"+flywheel.getVelocity()+" encoder ticks/s, "+flywheel.getVelocity()*60/28+" RPM");
+            telemetry.addLine("Flywheel Speed:"+flywheelR.getVelocity()+" encoder ticks/s, "+flywheelR.getVelocity()*60/28+" RPM");
             //spindexer
 //            if (spindexerpos-gamepad1.left_stick_x*spindexerDialation>=0 && spindexerpos-gamepad1.left_stick_x*spindexerDialation<=0.75){
 //                spindexerpos-=gamepad1.left_stick_x*spindexerDialation;
