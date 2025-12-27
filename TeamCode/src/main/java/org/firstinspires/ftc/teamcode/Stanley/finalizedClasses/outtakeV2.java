@@ -14,13 +14,14 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
-public class outtake {
+public class outtakeV2 {
     //Team color
     String teamColor;
     //April tag processor
     aprilTagV3 apriltag;
     //Outtake flywheel
-    public DcMotorEx flywheelDrive;
+    public DcMotorEx flywheelDriveR;
+    public DcMotor flywheelDrive;
     //Outtake Hood Servo
     CRServo hoodServo;
     //TODO: get servo RPM
@@ -57,8 +58,9 @@ public class outtake {
     final double MAX_AUTO_TURN  = 0.3;   //  Clip the turn speed to this max value (adjust for your robot)
     //vars
     int targetTagID=-1;
-    public outtake(HardwareMap hardwareMap, DcMotorEx flywheelDrive, String teamColor, DcMotor leftFront, DcMotor rightFront, DcMotor leftBack, DcMotor rightBack, CRServo hoodServo, Servo transfer, boolean useTag){
-        this.flywheelDrive = flywheelDrive;
+    public outtakeV2(HardwareMap hardwareMap, DcMotor flywheelDrive, DcMotorEx flywheelDriveR, String teamColor, DcMotor leftFront, DcMotor rightFront, DcMotor leftBack, DcMotor rightBack, CRServo hoodServo, Servo transfer, boolean useTag){
+        this.flywheelDriveR = flywheelDriveR;
+        this.flywheelDrive=flywheelDrive;
         this.teamColor=teamColor;
         this.leftFront=leftFront;
         this.rightFront=rightFront;
@@ -440,7 +442,7 @@ public class outtake {
      * @return If flywheel is up to speed.
      */
     public boolean spin_flywheel(double targetSpeed, int tolerance){
-        DcMotorEx flywheelDriveEx=this.flywheelDrive;
+        DcMotorEx flywheelDriveEx=this.flywheelDriveR;
         flywheelDriveEx.setVelocity(targetSpeed);
         if (targetSpeed-tolerance<=flywheelDriveEx.getVelocity() && flywheelDriveEx.getVelocity()<=targetSpeed+tolerance){
             return true;

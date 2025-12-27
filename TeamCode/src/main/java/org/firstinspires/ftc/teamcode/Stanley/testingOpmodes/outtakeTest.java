@@ -9,6 +9,7 @@ import com.qualcomm.robotcore.hardware.CRServo;
 public class outtakeTest extends LinearOpMode{
     private CRServo hoodServo=null;
 
+
     //main loop
     @Override
     public void runOpMode() {
