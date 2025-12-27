@@ -1,13 +1,20 @@
 package org.firstinspires.ftc.teamcode.Stanley.testingOpmodes;
 import org.firstinspires.ftc.teamcode.Stanley.finalizedClasses.outtake;
+import org.firstinspires.ftc.teamcode.Stanley.finalizedClasses.outtakeV2;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.CRServo;
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
+
 @TeleOp
 
 public class outtakeTest extends LinearOpMode{
     private CRServo hoodServo=null;
+    DcMotorEx flywheelDrive=null;
+    DcMotorEx flywheelDriveR=null;
+    DcMotor transfer=null;
 
 
     //main loop
@@ -18,7 +25,10 @@ public class outtakeTest extends LinearOpMode{
         double hoodAngle=30;
         //outtake instance
         hoodServo=hardwareMap.get(CRServo.class,"hoodServo");
-        outtake outtakeOperator = new outtake(hardwareMap, null, "Red",null,null,null,null,hoodServo,null,false);
+        flywheelDrive=hardwareMap.get(DcMotorEx.class,"flywheelDrive");
+        flywheelDriveR=hardwareMap.get(DcMotorEx.class,"flywheelDriveR");
+        transfer=hardwareMap.get(DcMotor.class,"transfer");
+        outtakeV2 outtakeOperator = new outtakeV2(hardwareMap, flywheelDrive, flywheelDriveR,"Red",null,null,null,null,hoodServo,transfer,false);
         outtakeOperator.hoodAngle=hoodAngle;
         outtakeOperator.savehoodAngle=hoodAngle;
 
