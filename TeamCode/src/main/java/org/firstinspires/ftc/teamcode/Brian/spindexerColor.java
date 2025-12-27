@@ -31,13 +31,16 @@ public class spindexerColor {
         int timeout=0;
         while (colorsensor.getDetected()!=nextmotif&&timeout<3) {
             spindexerServo.setPower(0.5);
-            timeout++;
+            if (colorsensor.getDetected()==1||colorsensor.getDetected()==2) {
+                timeout++;
+            }
         }
         if (colorsensor.getDetected()==nextmotif&&timeout<3){
             spindexerServo.setPower(stoppower);
             motifIndex++;
             return true;
         } else {
+            spindexerServo.setPower(stoppower);
             return false;
         }
     }
