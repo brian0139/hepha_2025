@@ -23,6 +23,9 @@ public class holdPosition {
     PID xPID=new PID(Kx[0],Kx[1],Kx[2]);
     PID yPID=new PID(Ky[0],Ky[1],Ky[2]);
     PID tPID=new PID(Kt[0],Kt[1],Kt[2]);
+    double powerX;
+    double powerY;
+    double powerT;
 
     /**
      * Constructor
@@ -44,11 +47,12 @@ public class holdPosition {
 
     public double hold(){
         updateCurrentPosition();
-        double powerX=xPID.update(initialPosition.position.x,currentPosition.position.x);
-        double powerY=yPID.update(initialPosition.position.y,currentPosition.position.y);
+        powerX=xPID.update(initialPosition.position.x,currentPosition.position.x);
+        powerY=yPID.update(initialPosition.position.y,currentPosition.position.y);
         double errorT= initialPosition.heading.imag * currentPosition.heading.real - initialPosition.heading.real * currentPosition.heading.imag;
-        double powerT=tPID.update(errorT);
+        powerT=tPID.update(errorT);
         drive.setDrivePowers(new PoseVelocity2d(new Vector2d(powerX,powerY),powerT));
+        return Math.sqrt((initialPosition.position.x-currentPosition.position.x)*(initialPosition.position.x-currentPosition.position.x)+(initialPosition.position.y-currentPosition.position.y)*(initialPosition.position.y-currentPosition.position.y));
     }
 
     /**

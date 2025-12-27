@@ -43,10 +43,15 @@ public class PID {
         double dt=timer.seconds();
         error=target-current;
         double P=Kp*error;
-        integral+=error*dt;
         double I=Ki*integral;
         derivative=(error-lastError)/dt;
         double D=Kd*derivative;
+        double candidateOutput=P+I+D;
+        //Integral conditional clamping
+        if (!(candidateOutput>=maxOutput && error>0) && !(candidateOutput<=minOutput && error<0)) {
+            integral += error * dt;
+            I=Ki*integral;
+        }
         lastError=error;
         //Reset timer for dt
         timer.reset();
@@ -61,10 +66,15 @@ public class PID {
     public double update(double error){
         double dt=timer.seconds();
         double P=Kp*error;
-        integral+=error*dt;
         double I=Ki*integral;
         derivative=(error-lastError)/dt;
         double D=Kd*derivative;
+        double candidateOutput=P+I+D;
+        //Integral conditional clamping
+        if (!(candidateOutput>=maxOutput && error>0) && !(candidateOutput<=minOutput && error<0)) {
+            integral += error * dt;
+            I=Ki*integral;
+        }
         lastError=error;
         //Reset timer for dt
         timer.reset();
