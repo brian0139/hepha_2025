@@ -46,9 +46,9 @@ public class holdPosition {
         updateCurrentPosition();
         double powerX=xPID.update(initialPosition.position.x,currentPosition.position.x);
         double powerY=yPID.update(initialPosition.position.y,currentPosition.position.y);
-
-        double powerT=tPID.update(initialPosition.heading.toDouble(),currentPosition.head);
-        drive.setDrivePowers(new PoseVelocity2d(new Vector2d(0,0),0));
+        double errorT= initialPosition.heading.imag * currentPosition.heading.real - initialPosition.heading.real * currentPosition.heading.imag;
+        double powerT=tPID.update(errorT);
+        drive.setDrivePowers(new PoseVelocity2d(new Vector2d(powerX,powerY),powerT));
     }
 
     /**

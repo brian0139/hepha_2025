@@ -10,6 +10,8 @@ public class PID {
     public double lastError=0;
     public double integral;
     public double derivative;
+    public double maxOutput=1;
+    public double minOutput=0;
     ElapsedTime timer=new ElapsedTime();
 
     /**
@@ -40,6 +42,24 @@ public class PID {
     public double update(double target, double current){
         double dt=timer.seconds();
         error=target-current;
+        double P=Kp*error;
+        integral+=error*dt;
+        double I=Ki*integral;
+        derivative=(error-lastError)/dt;
+        double D=Kd*derivative;
+        lastError=error;
+        //Reset timer for dt
+        timer.reset();
+        return P+I+D;
+    }
+
+    /**
+     * Update PID output + values
+     * @param error Error value
+     * @return PID output
+     */
+    public double update(double error){
+        double dt=timer.seconds();
         double P=Kp*error;
         integral+=error*dt;
         double I=Ki*integral;
