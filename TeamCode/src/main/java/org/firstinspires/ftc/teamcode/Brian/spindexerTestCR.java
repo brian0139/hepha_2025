@@ -104,7 +104,7 @@ public class spindexerTestCR extends LinearOpMode {
                 spindexerCR.currentSpindexerPos++;
                 spindexerCR.currentSpindexerPos%=2;
             }
-            spindexerCR.rotateSpindexer();
+            spindexerCR.rotateSpindexer(0.3,0.005);
             telemetry.addData("currentspindexerpos",spindexerCR.currentSpindexerPos);
             telemetry.addData("spindexerpos",spindexerCR.spindexerServo.getPosition());
 //            if ((spindexer.getPosition()<=spindexerpositions[0]+epsilon) && (spindexer.getPosition()>=spindexerpositions[0]-epsilon) && spindexerAutoPos%2==0){
