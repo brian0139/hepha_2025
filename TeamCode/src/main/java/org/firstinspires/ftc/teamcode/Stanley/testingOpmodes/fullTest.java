@@ -197,7 +197,7 @@ public class fullTest extends LinearOpMode{
 //            leftBack.setPower(speeds[2]);
 //            rightBack.setPower(speeds[3]);
             telemetry.update();
-            dashboardTelemetry.update();
+//            dashboardTelemetry.update();
         }
     }
 }
