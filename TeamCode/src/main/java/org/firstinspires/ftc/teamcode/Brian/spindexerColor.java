@@ -36,7 +36,7 @@ public class spindexerColor {
         int nextmotif=dummyMotif[motifIndex];
         int timeout=0;
         boolean detectedLastLoop=false;
-        if (outtakesensor.getDetected()!=nextmotif&&timeout<3) {
+        while (outtakesensor.getDetected()!=nextmotif&&timeout<3) {
             spindexerServo.setPower(0.75);
             if ((outtakesensor.getDetected()==1||outtakesensor.getDetected()==2) && !detectedLastLoop){
                 timeout++;
@@ -67,7 +67,7 @@ public class spindexerColor {
         int nextMotif=dummyMotif[motifIndex];
         int timeout=0;
         boolean detectedLastLoop=false;
-        if ((intakesensor.getDetected()!=0)&&timeout<3){
+        while ((intakesensor.getDetected()!=0)&&timeout<3){
             spindexerServo.setPower(0.75);
             if ((intakesensor.getDetected()==0)&&!detectedLastLoop) {
                 timeout++;
