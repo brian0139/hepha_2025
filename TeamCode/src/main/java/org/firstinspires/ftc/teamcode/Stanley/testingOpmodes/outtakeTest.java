@@ -7,6 +7,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 @TeleOp
 
@@ -28,6 +29,7 @@ public class outtakeTest extends LinearOpMode{
         flywheelDrive=hardwareMap.get(DcMotorEx.class,"flywheel");
         flywheelDriveR=hardwareMap.get(DcMotorEx.class,"flywheelR");
         transfer=hardwareMap.get(DcMotor.class,"par1");
+        ElapsedTime timer=new ElapsedTime();
         outtakeV2 outtakeOperator = new outtakeV2(hardwareMap, flywheelDrive, flywheelDriveR,"Red",null,null,null,null,hoodServo,transfer,false);
         outtakeOperator.hoodAngle=hoodAngle;
         outtakeOperator.savehoodAngle=hoodAngle;
@@ -41,19 +43,22 @@ public class outtakeTest extends LinearOpMode{
             hoodAngle+=gamepad1.left_stick_y*0.15;
             hoodServo.setPower(-gamepad1.right_stick_y);
             if (gamepad1.rightBumperWasPressed()){
-                hoodServo.setPower(1);
-                sleep(msPerRotation);
+                timer.reset();
+                while (timer.milliseconds()<msPerRotation) hoodServo.setPower(1);
                 hoodServo.setPower(0);
             }
             if (gamepad1.leftBumperWasPressed()){
-                hoodServo.setPower(-1);
-                sleep(msPerRotation);
+                timer.reset();
+                while (timer.milliseconds()<msPerRotation) hoodServo.setPower(-1);
                 hoodServo.setPower(0);
             }
             if (gamepad1.yWasPressed()){
                 outtakeOperator.setHood(hoodAngle,true);
             }
+            telemetry.addData("Running hood",outtakeOperator.runninghood);
             telemetry.addData("targethoodangle",hoodAngle);
+            outtakeOperator.updateHoodAngle(hoodAngle);
+            telemetry.addData("Expected hood angle",outtakeOperator.hoodAngle);
             telemetry.update();
         }
     }
