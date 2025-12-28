@@ -11,7 +11,7 @@ import org.firstinspires.ftc.teamcode.Stanley.finalizedClasses.holdPosition;
 @TeleOp
 public class holdPositionTest extends LinearOpMode {
     holdPosition holdPositionOperator=null;
-    double change=1;
+    double change=0.1;
     int x=0;
     int y=0;
     boolean correctingtoggle=false;
@@ -24,6 +24,7 @@ public class holdPositionTest extends LinearOpMode {
         waitForStart();
         while (opModeIsActive()){
             if (gamepad1.yWasPressed()) correctingtoggle=!correctingtoggle;
+            if (gamepad1.leftStickButtonWasPressed()) holdPositionOperator.setInitialPosition();
             //shift speed
             if (gamepad1.rightBumperWasPressed()){
                 change*=10;
@@ -106,12 +107,17 @@ public class holdPositionTest extends LinearOpMode {
                 }
                 line3+=", ";
             }
-            telemetry.addData("X",x);
-            telemetry.addData("Y",y);
+//            telemetry.addData("X",x);
+//            telemetry.addData("Y",y);
+            if (correctingtoggle){
+                holdPositionOperator.hold();
+            }
+            holdPositionOperator.updateCurrentPosition();
 
             telemetry.addLine(line1);
             telemetry.addLine(line2);
             telemetry.addLine(line3);
+            telemetry.addData("Holding",correctingtoggle);
             telemetry.addData("XOffset",holdPositionOperator.initialPosition.position.x-holdPositionOperator.currentPosition.position.x);
             telemetry.addData("YOffset",holdPositionOperator.initialPosition.position.y-holdPositionOperator.currentPosition.position.y);
             telemetry.addData("TOffset",holdPositionOperator.initialPosition.heading.imag * holdPositionOperator.currentPosition.heading.real - holdPositionOperator.initialPosition.heading.real * holdPositionOperator.currentPosition.heading.imag);
