@@ -32,8 +32,6 @@ public class spindexerColorTest extends LinearOpMode{
         //repeat until opmode ends
         while (opModeIsActive()){
             if (gamepad1.yWasPressed()) spindexercolor.spinToMotif(spinpower, stoppower);
-//            if (gamepad1.dpadUpWasPressed())
-//            if (gamepad1.dpadDownWasPressed()
             int detected = colorsensoroperator.getDetected();
 
             String result;
@@ -52,7 +50,7 @@ public class spindexerColorTest extends LinearOpMode{
             telemetry.addData("Sat", hsv[1]);
             telemetry.addData("Val", hsv[2]);
 
-            telemetry.addData("spindexer Power",spinpower);
+            telemetry.addData("spindexer power",spinpower);
             telemetry.addData("stopping power",stoppower);
             telemetry.update();
         }
