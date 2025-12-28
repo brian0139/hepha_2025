@@ -14,6 +14,7 @@ public class spindexerColor {
     ElapsedTime timer=new ElapsedTime();
     ElapsedTime nonetime=new ElapsedTime();
     public double nonetimer=0;
+    public int timeout=0;
     colorSensor outtakesensor;
     colorSensor intakesensor;
     public int currentPosition=0;
@@ -36,7 +37,7 @@ public class spindexerColor {
 
     public boolean spinToMotif() {
         int nextmotif=dummyMotif[motifIndex];
-        int timeout=0;
+        timeout=0;
         boolean detectedLastLoop=false;
         while (outtakesensor.getDetected()!=nextmotif&&timeout<3) {
             spindexerServo.setPower(0.75);
@@ -67,7 +68,7 @@ public class spindexerColor {
     }
     public boolean spinToIntake(){
         int nextMotif=dummyMotif[motifIndex];
-        int timeout=0;
+        timeout=0;
         boolean noneTrue=false;
         boolean detectedLastLoop=false;
         nonetime.reset();
@@ -79,7 +80,7 @@ public class spindexerColor {
             }else{
                 detectedLastLoop=false;
             }
-            if (nonetime.milliseconds()>=1000){
+            if (nonetime.milliseconds()>=2000){
                 noneTrue=true;
                 nonetimer=nonetime.milliseconds();
             }else{
