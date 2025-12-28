@@ -109,6 +109,9 @@ public class holdPositionTest extends LinearOpMode {
             }
 //            telemetry.addData("X",x);
 //            telemetry.addData("Y",y);
+            if (gamepad1.xWasPressed()){
+                holdPositionOperator.updatePID();
+            }
             if (correctingtoggle){
                 holdPositionOperator.hold();
             }
