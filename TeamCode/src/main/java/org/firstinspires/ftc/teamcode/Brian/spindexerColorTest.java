@@ -6,6 +6,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.teamcode.Alvin.colorSensor;
 import java.util.Vector;
+import java.util.*;
 
 @TeleOp
 
@@ -20,7 +21,8 @@ public class spindexerColorTest extends LinearOpMode{
         //initiate drivetrain motors
         spindexer=hardwareMap.get(CRServo.class,"spindexerServo");
         colorsensoroperator=new colorSensor(hardwareMap,"colorSensor");
-        spindexercolor=new spindexerColor(spindexer);
+
+        spindexercolor=new spindexerColor(spindexer,hardwareMap);
         double spinpower=0.5;
         double stoppower=0.001;
         //telemetry message to signify robot waiting
@@ -31,9 +33,11 @@ public class spindexerColorTest extends LinearOpMode{
         waitForStart();
         //repeat until opmode ends
         while (opModeIsActive()){
-            if (gamepad1.yWasPressed()) spindexercolor.spinToMotif(spinpower, stoppower);
-//            if (gamepad1.dpadUpWasPressed())
-//            if (gamepad1.dpadDownWasPressed()
+//            if (gamepad1.yWasPressed()) spindexercolor.spinToMotif();
+            if (gamepad1.yWasPressed()) spindexercolor.spinToIntake();
+            telemetry.addData("motif", Arrays.toString(spindexercolor.spindexerSlots));
+//            telemetry.addData("current motif index", spindexercolor.motifIndex);
+//            telemetry.addData("current motif color", spindexercolor.dummyMotif[spindexercolor.motifIndex]);
             int detected = colorsensoroperator.getDetected();
 
             String result;
@@ -52,8 +56,8 @@ public class spindexerColorTest extends LinearOpMode{
             telemetry.addData("Sat", hsv[1]);
             telemetry.addData("Val", hsv[2]);
 
-            telemetry.addData("spindexer Power",spinpower);
-            telemetry.addData("stopping power",stoppower);
+            telemetry.addData("spindexer power",0.75);
+            telemetry.addData("stopping power",-0.01);
             telemetry.update();
         }
     }
