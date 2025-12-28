@@ -20,7 +20,7 @@ public class spindexerColorTest extends LinearOpMode{
     public void runOpMode() {
         //initiate drivetrain motors
         spindexer=hardwareMap.get(CRServo.class,"spindexerServo");
-        colorsensoroperator=new colorSensor(hardwareMap,"outtakeSensor");
+        colorsensoroperator=new colorSensor(hardwareMap,"intakeSensor");
 
         spindexercolor=new spindexerColor(spindexer,hardwareMap);
         double spinpower=0.5;
@@ -35,7 +35,8 @@ public class spindexerColorTest extends LinearOpMode{
         while (opModeIsActive()){
 //            if (gamepad1.yWasPressed()) spindexercolor.spinToMotif();
             if (gamepad1.yWasPressed()) spindexercolor.spinToIntake();
-            telemetry.addData("motif", Arrays.toString(spindexercolor.spindexerSlots));
+            telemetry.addData("spindexer slots", Arrays.toString(spindexercolor.spindexerSlots));
+            telemetry.addData("time elapsed", spindexercolor.nonetimer);
 //            telemetry.addData("current motif index", spindexercolor.motifIndex);
 //            telemetry.addData("current motif color", spindexercolor.dummyMotif[spindexercolor.motifIndex]);
             int detected = colorsensoroperator.getDetected();
