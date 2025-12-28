@@ -17,8 +17,6 @@ public class hoodtest extends LinearOpMode{
     double motorSpeed =0;
     double expectedSpeed =0;
     double motorDialation=10;
-    boolean lasty=false;
-    boolean lastx=false;
     double spindexerpos=0;
     double spindexerDialation=0.001;
     double transferDialation=0.003;
@@ -28,8 +26,6 @@ public class hoodtest extends LinearOpMode{
     double transferPos=transferpositions[1];
     int outtakePos=0;
     int transferListPos=0;
-    boolean lastb=false;
-    boolean lasta=false;
     //main loop
     @Override
     public void runOpMode() {
@@ -44,19 +40,13 @@ public class hoodtest extends LinearOpMode{
             if (motorSpeed -gamepad1.right_stick_y*motorDialation>=0){
                 motorSpeed -=gamepad1.right_stick_y*motorDialation;
             }
-            if (gamepad1.y && !lasty){
-                lasty=true;
+            if (gamepad1.yWasPressed()) {
                 tmpmotor.setVelocity(motorSpeed);
                 expectedSpeed = motorSpeed;
-            }else if(!gamepad1.y && lasty){
-                lasty=false;
             }
-            if (gamepad1.x && !lastx) {
-                lastx = true;
+            if (gamepad1.xWasPressed()) {
                 tmpmotor.setVelocity(0);
                 expectedSpeed = 0;
-            }else if(!gamepad1.x && lastx){
-                lastx=false;
             }
             tmpservo.setPower(power);
             if (spindexerpos-gamepad1.left_stick_x*spindexerDialation>=0 && spindexerpos-gamepad1.left_stick_x*spindexerDialation<=0.75){
@@ -65,19 +55,13 @@ public class hoodtest extends LinearOpMode{
             if (transferPos+gamepad1.left_stick_y*transferDialation>=0.6 && transferPos+gamepad1.left_stick_y*transferDialation<=0.9){
                 transferPos+=gamepad1.left_stick_y*transferDialation;
             }
-            if (gamepad1.a && !lasta){
-                lasta=true;
+            if (gamepad1.aWasPressed()){
                 outtakePos++;
                 spindexerpos=outtakeslots[outtakePos%3];
-            }else if (!gamepad1.a){
-                lasta=false;
             }
-            if (gamepad1.b && !lastb){
-                lastb=true;
+            if (gamepad1.bWasPressed()){
                 transferListPos++;
                 transferPos= transferpositions[transferListPos%2];
-            }else if (!gamepad1.b){
-                lastb=false;
             }
             spindexer.setPosition(spindexerpos);
             transfer.setPosition(transferPos);
