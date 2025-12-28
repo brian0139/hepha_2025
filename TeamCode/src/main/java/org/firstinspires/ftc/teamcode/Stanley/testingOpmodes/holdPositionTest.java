@@ -114,6 +114,8 @@ public class holdPositionTest extends LinearOpMode {
             }
             if (correctingtoggle){
                 holdPositionOperator.hold();
+            }else{
+                holdPositionOperator.stop();
             }
             holdPositionOperator.updateCurrentPosition();
 

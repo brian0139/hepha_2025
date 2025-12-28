@@ -43,6 +43,10 @@ public class holdPosition {
         tPID.init();
     }
 
+    public void stop(){
+        drive.setDrivePowers(new PoseVelocity2d(new Vector2d(0,0),0));
+    }
+
     public double hold(){
         updateCurrentPosition();
         powerX=xPID.update(initialPosition.position.x,currentPosition.position.x);
