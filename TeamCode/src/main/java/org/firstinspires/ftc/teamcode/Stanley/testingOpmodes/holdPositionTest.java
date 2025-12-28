@@ -35,7 +35,7 @@ public class holdPositionTest extends LinearOpMode {
         // Reverse motor directions where needed
         leftFront.setDirection(DcMotorSimple.Direction.REVERSE);
         leftBack.setDirection(DcMotorSimple.Direction.REVERSE);
-        drive=new MecanumDrive(hardwareMap,new Pose2d(new Vector2d(0,0),0));
+        drive=new MecanumDrive(hardwareMap,new Pose2d(new Vector2d(0,0),Math.toRadians(90)));
         holdPositionOperator=new holdPosition(drive,leftFront,leftBack,rightFront,rightBack);
         waitForStart();
         while (opModeIsActive()){
@@ -88,8 +88,8 @@ public class holdPositionTest extends LinearOpMode {
                 }
             }
             String line1="Kx: ";
-            String line2="Ky:";
-            String line3="Kt:";
+            String line2="Ky: ";
+            String line3="Kt: ";
             for (int i=0;i<=2;i++){
                 if (i==x && y==0){
                     line1+="{";
@@ -138,6 +138,9 @@ public class holdPositionTest extends LinearOpMode {
             telemetry.addLine(line1);
             telemetry.addLine(line2);
             telemetry.addLine(line3);
+            telemetry.addData("powerX",holdPositionOperator.powerX);
+            telemetry.addData("powerY",holdPositionOperator.powerY);
+            telemetry.addData("powerT",holdPositionOperator.powerT);
             telemetry.addData("Holding",correctingtoggle);
             telemetry.addData("XOffset",holdPositionOperator.initialPosition.position.x-holdPositionOperator.currentPosition.position.x);
             telemetry.addData("YOffset",holdPositionOperator.initialPosition.position.y-holdPositionOperator.currentPosition.position.y);
