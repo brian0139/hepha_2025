@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.Stanley.testingOpmodes;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.CRServo;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.Alvin.colorSensor;
 import java.util.Vector;
@@ -11,6 +12,7 @@ import java.util.Vector;
 public class colorSensorTestNew extends LinearOpMode{
     CRServo spindexer;
     colorSensor colorsensoroperator;
+    ElapsedTime timer=new ElapsedTime();
 
     //main loop
     @Override
@@ -18,7 +20,9 @@ public class colorSensorTestNew extends LinearOpMode{
         //initiate drivetrain motors
         spindexer=hardwareMap.get(CRServo.class,"spindexerServo");
         colorsensoroperator=new colorSensor(hardwareMap,"colorSensor");
-        double spindexerPower=0;
+        double spindexerPower=0.75;
+        int waittime=400;
+        boolean waiting=false;
         //telemetry message to signify robot waiting
         telemetry.addLine("Robot Ready.");
         telemetry.update();
@@ -30,6 +34,9 @@ public class colorSensorTestNew extends LinearOpMode{
             if (gamepad1.yWasPressed()) spindexer.setPower(spindexerPower);
             if (gamepad1.dpadUpWasPressed()) spindexerPower+=0.01;
             if (gamepad1.dpadDownWasPressed()) spindexerPower-=0.01;
+            if (gamepad1.dpadRightWasPressed()) waittime+=10;
+            if (gamepad1.dpadLeftWasPressed()) waittime-=10;
+
             int detected = colorsensoroperator.getDetected();
 
             String result;
@@ -41,6 +48,8 @@ public class colorSensorTestNew extends LinearOpMode{
                 result = "NONE";
             }
 
+
+
             telemetry.addData("Detected", result);
 
             float[] hsv = colorsensoroperator.readHSV();
@@ -48,7 +57,16 @@ public class colorSensorTestNew extends LinearOpMode{
             telemetry.addData("Sat", hsv[1]);
             telemetry.addData("Val", hsv[2]);
 
-            if (result.equals("GREEN")) spindexer.setPower(0);
+            if (result.equals("GREEN")) {
+                spindexer.setPower(-0.01);
+                waiting=true;
+                timer.reset();
+            }
+            if (waiting && timer.milliseconds()>=waittime){
+                waiting=false;
+                spindexer.setPower(0);
+            }
+
 //            if (colorsensoroperator.getDetected()==1) detections.add("Green");
 //            if (colorsensoroperator.getDetected()==2) detections.add("Purple");
 //            String tmp="";
@@ -57,6 +75,8 @@ public class colorSensorTestNew extends LinearOpMode{
 //            }
 //            telemetry.addLine(tmp);
             telemetry.addData("spindexer Power",spindexerPower);
+            telemetry.addData("Servo Power",spindexer.getPower());
+            telemetry.addData("Waittime",waittime);
             telemetry.update();
         }
     }
