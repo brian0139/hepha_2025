@@ -10,6 +10,11 @@ import org.firstinspires.ftc.teamcode.MecanumDrive;
 
 public class holdPosition {
     MecanumDrive drive;
+    // Drivetrain motors
+    private DcMotor leftFront = null;
+    private DcMotor leftBack = null;
+    private DcMotor rightFront = null;
+    private DcMotor rightBack = null;
     public Pose2d initialPosition;
     public Pose2d currentPosition;
     //PID variables {Kp,Ki,Kd}
@@ -27,7 +32,11 @@ public class holdPosition {
      * Constructor
      * @param drive MecanumDrive object for robot
      */
-    public holdPosition(MecanumDrive drive){
+    public holdPosition(MecanumDrive drive, DcMotor leftFront,DcMotor leftBack,DcMotor rightFront,DcMotor rightBack){
+        this.leftFront=leftFront;
+        this.leftBack=leftBack;
+        this.rightFront=rightFront;
+        this.rightBack=rightBack;
         this.drive=drive;
         drive.updatePoseEstimate();
         this.initialPosition=this.drive.localizer.getPose();
@@ -53,7 +62,33 @@ public class holdPosition {
         powerY=yPID.update(initialPosition.position.y,currentPosition.position.y);
         double errorT= initialPosition.heading.imag * currentPosition.heading.real - initialPosition.heading.real * currentPosition.heading.imag;
         powerT=tPID.update(errorT);
-        drive.setDrivePowers(new PoseVelocity2d(new Vector2d(powerX,powerY),powerT));
+        // Calculate mecanum wheel speeds
+        double[] speeds = {
+                (powerY - powerX - powerT), // leftFront
+                (powerY + powerX + powerT), // rightFront
+                (powerY + powerX - powerT), // leftBack
+                (powerY - powerX + powerT)  // rightBack
+        };
+
+        // Normalize speeds if any exceed 1.0
+        double max = Math.abs(speeds[0]);
+        for (int i = 1; i < speeds.length; i++) {
+            if (Math.abs(speeds[i]) > max) {
+                max = Math.abs(speeds[i]);
+            }
+        }
+
+        if (max > 1.0) {
+            for (int i = 0; i < speeds.length; i++) {
+                speeds[i] /= max;
+            }
+        }
+
+        // Apply speeds to motors
+        leftFront.setPower(speeds[0]);
+        rightFront.setPower(speeds[1]);
+        leftBack.setPower(speeds[2]);
+        rightBack.setPower(speeds[3]);
         return Math.sqrt((initialPosition.position.x-currentPosition.position.x)*(initialPosition.position.x-currentPosition.position.x)+(initialPosition.position.y-currentPosition.position.y)*(initialPosition.position.y-currentPosition.position.y));
     }
 

@@ -4,6 +4,8 @@ import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
 import org.firstinspires.ftc.teamcode.MecanumDrive;
 import org.firstinspires.ftc.teamcode.Stanley.finalizedClasses.holdPosition;
@@ -11,6 +13,11 @@ import org.firstinspires.ftc.teamcode.Stanley.finalizedClasses.holdPosition;
 @TeleOp
 public class holdPositionTest extends LinearOpMode {
     holdPosition holdPositionOperator=null;
+    // Drivetrain motors
+    private DcMotor leftFront = null;
+    private DcMotor leftBack = null;
+    private DcMotor rightFront = null;
+    private DcMotor rightBack = null;
     double change=0.1;
     int x=0;
     int y=0;
@@ -19,8 +26,17 @@ public class holdPositionTest extends LinearOpMode {
 
     @Override
     public void runOpMode(){
+        // Initialize drivetrain motors
+        leftFront = hardwareMap.get(DcMotor.class, "leftFront");
+        leftBack = hardwareMap.get(DcMotor.class, "leftBack");
+        rightFront = hardwareMap.get(DcMotor.class, "rightFront");
+        rightBack = hardwareMap.get(DcMotor.class, "rightBack");
+
+        // Reverse motor directions where needed
+        leftFront.setDirection(DcMotorSimple.Direction.REVERSE);
+        leftBack.setDirection(DcMotorSimple.Direction.REVERSE);
         drive=new MecanumDrive(hardwareMap,new Pose2d(new Vector2d(0,0),0));
-        holdPositionOperator=new holdPosition(drive);
+        holdPositionOperator=new holdPosition(drive,leftFront,leftBack,rightFront,rightBack);
         waitForStart();
         while (opModeIsActive()){
             if (gamepad1.yWasPressed()) correctingtoggle=!correctingtoggle;
