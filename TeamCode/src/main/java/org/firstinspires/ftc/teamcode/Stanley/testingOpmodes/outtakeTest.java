@@ -54,6 +54,7 @@ public class outtakeTest extends LinearOpMode{
                 outtakeOperator.setHood(hoodAngle,true);
             }
             telemetry.addData("targethoodangle",hoodAngle);
+            telemetry.update();
         }
     }
 }

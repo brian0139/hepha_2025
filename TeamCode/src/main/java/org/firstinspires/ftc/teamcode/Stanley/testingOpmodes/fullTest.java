@@ -74,7 +74,7 @@ public class fullTest extends LinearOpMode{
         turret=hardwareMap.get(CRServo.class,"turretServo");
         outtake=new outtakeV2(hardwareMap,flywheel,flywheelR,"Red",leftFront,rightFront,leftBack,rightBack,hoodServo,transfer,false);
         dashboard = FtcDashboard.getInstance();
-        telemetry = dashboard.getTelemetry();
+        dashboardTelemetry = dashboard.getTelemetry();
 
         //telemetry message to signify robot waiting
         telemetry.addLine("Robot Ready.");
@@ -107,8 +107,12 @@ public class fullTest extends LinearOpMode{
                 }
             }
             telemetry.addLine("Flywheel Speed:"+flywheelspeed+" encoder ticks/s, "+flywheelspeed*60/28+" RPM");
-            telemetry.addLine("Flywheel Speed:"+targetspeed+" encoder ticks/s, "+targetspeed*60/28+" RPM");
-            telemetry.addLine("Flywheel Speed:"+flywheelR.getVelocity()+" encoder ticks/s, "+flywheelR.getVelocity()*60/28+" RPM");
+            telemetry.addLine("Flywheel Target Speed:"+targetspeed+" encoder ticks/s, "+targetspeed*60/28+" RPM");
+            telemetry.addLine("Flywheel Real Speed:"+flywheelR.getVelocity()+" encoder ticks/s, "+flywheelR.getVelocity()*60/28+" RPM");
+            dashboardTelemetry.addData("Flywheel Target Speed ets",targetspeed);
+            dashboardTelemetry.addData("Flywheel Target Speed rpm",targetspeed*60/28);
+            dashboardTelemetry.addData("Flywheel Real Speed ets",flywheelR.getVelocity());
+            dashboardTelemetry.addData("Flywheel Real Speed rpm",flywheelR.getVelocity()*60/28);
             //spindexer
 //            if (spindexerpos-gamepad1.left_stick_x*spindexerDialation>=0 && spindexerpos-gamepad1.left_stick_x*spindexerDialation<=0.75){
 //                spindexerpos-=gamepad1.left_stick_x*spindexerDialation;
@@ -197,7 +201,7 @@ public class fullTest extends LinearOpMode{
 //            leftBack.setPower(speeds[2]);
 //            rightBack.setPower(speeds[3]);
             telemetry.update();
-//            dashboardTelemetry.update();
+            dashboardTelemetry.update();
         }
     }
 }
