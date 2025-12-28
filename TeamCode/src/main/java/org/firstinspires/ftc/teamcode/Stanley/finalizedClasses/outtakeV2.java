@@ -14,12 +14,13 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
-public class outtake {
+public class outtakeV2 {
     //Team color
     String teamColor;
     //April tag processor
     aprilTagV3 apriltag;
     //Outtake flywheel
+    public DcMotorEx flywheelDriveR;
     public DcMotorEx flywheelDrive;
     //Outtake Hood Servo
     CRServo hoodServo;
@@ -29,7 +30,7 @@ public class outtake {
     //Degrees changed for every servo rotation
     double servoDegPerRot =20;
     //transfer positions(up, down)
-    public static double[] transferpositions ={0.68,0.875};
+    public static double[] transferpowers ={0.5,0};
     //hood angle transitions
     //timer
     ElapsedTime timer=new ElapsedTime();
@@ -40,7 +41,7 @@ public class outtake {
     //hood angle(in degrees)
     public double hoodAngle=0;
     //transfer servo
-    public Servo transfer;
+    public DcMotor transfer;
     //drivetrain motors
     DcMotor leftFront;
     DcMotor leftBack;
@@ -57,8 +58,9 @@ public class outtake {
     final double MAX_AUTO_TURN  = 0.3;   //  Clip the turn speed to this max value (adjust for your robot)
     //vars
     int targetTagID=-1;
-    public outtake(HardwareMap hardwareMap, DcMotorEx flywheelDrive, String teamColor, DcMotor leftFront, DcMotor rightFront, DcMotor leftBack, DcMotor rightBack, CRServo hoodServo, Servo transfer, boolean useTag){
-        this.flywheelDrive = flywheelDrive;
+    public outtakeV2(HardwareMap hardwareMap, DcMotorEx flywheelDrive, DcMotorEx flywheelDriveR, String teamColor, DcMotor leftFront, DcMotor rightFront, DcMotor leftBack, DcMotor rightBack, CRServo hoodServo, DcMotor transfer, boolean useTag){
+        this.flywheelDriveR = flywheelDriveR;
+        this.flywheelDrive=flywheelDrive;
         this.teamColor=teamColor;
         this.leftFront=leftFront;
         this.rightFront=rightFront;
@@ -82,8 +84,6 @@ public class outtake {
     }
     /**
      * Autoaim to april tag.
-     * Currently using built-in april tag ID process.
-     * Includes drivetrain control+emergency cancel switch.
      * Target tag set by teamColor variable in class, "Red" or "Blue"
      * @return False if canceled or teamColor not found, True if successful
      */
@@ -423,14 +423,12 @@ public class outtake {
     /**
      * Transfer artifact to flywheel(move transfer up)
      */
-    public void transferUp(){
-        this.transfer.setPosition(this.transferpositions[0]);
-    }
+    public void transferUp(){this.transfer.setPower(this.transferpowers[0]);}
     /**
      * Lower Transfer
      */
     public void transferDown(){
-        this.transfer.setPosition(this.transferpositions[1]);
+        this.transfer.setPower(this.transferpowers[1]);
     }
 
     /**
@@ -440,8 +438,9 @@ public class outtake {
      * @return If flywheel is up to speed.
      */
     public boolean spin_flywheel(double targetSpeed, int tolerance){
-        DcMotorEx flywheelDriveEx=this.flywheelDrive;
+        DcMotorEx flywheelDriveEx=this.flywheelDriveR;
         flywheelDriveEx.setVelocity(targetSpeed);
+        flywheelDrive.setVelocity(targetSpeed);
         if (targetSpeed-tolerance<=flywheelDriveEx.getVelocity() && flywheelDriveEx.getVelocity()<=targetSpeed+tolerance){
             return true;
         }
