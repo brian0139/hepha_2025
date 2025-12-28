@@ -43,7 +43,7 @@ public class holdPositionTest extends LinearOpMode {
         drive=new MecanumDrive(hardwareMap,new Pose2d(new Vector2d(0,0),Math.toRadians(90)));
         holdPositionOperator=new holdPosition(drive,leftFront,leftBack,rightFront,rightBack);
         dashboard = FtcDashboard.getInstance();
-        dashboardTelemetry = dashboard.getTelemetry();
+        telemetry = dashboard.getTelemetry();
         waitForStart();
         while (opModeIsActive()){
             if (gamepad1.yWasPressed()) correctingtoggle=!correctingtoggle;
@@ -145,7 +145,7 @@ public class holdPositionTest extends LinearOpMode {
             telemetry.addLine(line1);
             telemetry.addLine(line2);
             telemetry.addLine(line3);
-            telemetry.addData("powerX",holdPositionOperator.powerX);
+            telemetry.addData("powerX",-holdPositionOperator.powerX);
             telemetry.addData("powerY",holdPositionOperator.powerY);
             telemetry.addData("powerT",holdPositionOperator.powerT);
             telemetry.addData("Holding",correctingtoggle);
@@ -153,7 +153,6 @@ public class holdPositionTest extends LinearOpMode {
             telemetry.addData("YOffset",holdPositionOperator.initialPosition.position.y-holdPositionOperator.currentPosition.position.y);
             telemetry.addData("TOffset",holdPositionOperator.initialPosition.heading.imag * holdPositionOperator.currentPosition.heading.real - holdPositionOperator.initialPosition.heading.real * holdPositionOperator.currentPosition.heading.imag);
             telemetry.update();
-            dashboardTelemetry.update();
         }
     }
 }
