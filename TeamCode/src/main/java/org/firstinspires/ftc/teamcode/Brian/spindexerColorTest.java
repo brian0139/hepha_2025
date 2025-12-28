@@ -6,6 +6,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.teamcode.Alvin.colorSensor;
 import java.util.Vector;
+import java.util.*;
 
 @TeleOp
 
@@ -20,6 +21,7 @@ public class spindexerColorTest extends LinearOpMode{
         //initiate drivetrain motors
         spindexer=hardwareMap.get(CRServo.class,"spindexerServo");
         colorsensoroperator=new colorSensor(hardwareMap,"colorSensor");
+
         spindexercolor=new spindexerColor(spindexer,hardwareMap);
         double spinpower=0.5;
         double stoppower=0.001;
@@ -31,9 +33,11 @@ public class spindexerColorTest extends LinearOpMode{
         waitForStart();
         //repeat until opmode ends
         while (opModeIsActive()){
-            if (gamepad1.yWasPressed()) spindexercolor.spinToMotif();
-            telemetry.addData("motif", spindexercolor.dummyMotif);
-            telemetry.addData("next motif index", spindexercolor.dummyMotif[spindexercolor.motifIndex]);
+//            if (gamepad1.yWasPressed()) spindexercolor.spinToMotif();
+            if (gamepad1.yWasPressed()) spindexercolor.spinToIntake();
+            telemetry.addData("motif", Arrays.toString(spindexercolor.spindexerSlots));
+//            telemetry.addData("current motif index", spindexercolor.motifIndex);
+//            telemetry.addData("current motif color", spindexercolor.dummyMotif[spindexercolor.motifIndex]);
             int detected = colorsensoroperator.getDetected();
 
             String result;

@@ -12,7 +12,8 @@ import org.firstinspires.ftc.teamcode.Alvin.colorSensor;
 public class spindexerColor {
     public CRServo spindexerServo=null;
     ElapsedTime timer=new ElapsedTime();
-    colorSensor colorsensor;
+    colorSensor outtakesensor;
+    colorSensor intakesensor;
     public int currentPosition=0;
     public int numPurple,numGreen;
     public int[] spindexerSlots={0,0,0}; //0 none, 1 green, 2 purple
@@ -24,28 +25,34 @@ public class spindexerColor {
     public int motifIndex=0;
     public int[] dummyMotif={1,2,2};
     public int[] currentMotifPattern=null;
-    public boolean successfulrotate=false;
     public static final double servoSpeed=0.5;
     public spindexerColor(CRServo spindexerServo, HardwareMap hardwareMap){
         this.spindexerServo=spindexerServo;
-        colorsensor=new colorSensor(hardwareMap,"colorSensor");
+        outtakesensor=new colorSensor(hardwareMap,"outtakeSensor");
+        intakesensor=new colorSensor(hardwareMap, "intakeSensor");
     }
 
     public boolean spinToMotif() {
         int nextmotif=dummyMotif[motifIndex];
         int timeout=0;
-        while (colorsensor.getDetected()!=nextmotif&&timeout<3) {
-            spindexerServo.setPower(0.5);
-            timeout++;
+        boolean detectedLastLoop=false;
+        if (outtakesensor.getDetected()!=nextmotif&&timeout<3) {
+            spindexerServo.setPower(0.75);
+            if ((outtakesensor.getDetected()==1||outtakesensor.getDetected()==2) && !detectedLastLoop){
+                timeout++;
+                detectedLastLoop=true;
+            }else{
+                detectedLastLoop=false;
+            }
         }
-        if (colorsensor.getDetected()==nextmotif&&timeout<3){
+        if (outtakesensor.getDetected()==nextmotif&&timeout<3){
             motifIndex++;
+            motifIndex%=3;
             timer.reset();
             spindexerServo.setPower(-0.01);
             if (timer.milliseconds()>=400){
                 spindexerServo.setPower(0);
             }
-            successfulrotate=true;
             return true;
         } else {
             timer.reset();
@@ -53,7 +60,42 @@ public class spindexerColor {
             if (timer.milliseconds()>=400){
                 spindexerServo.setPower(0);
             }
-            successfulrotate=false;
+            return false;
+        }
+    }
+    public boolean spinToIntake(){
+        int nextMotif=dummyMotif[motifIndex];
+        int timeout=0;
+        boolean detectedLastLoop=false;
+        if ((intakesensor.getDetected()!=0)&&timeout<3){
+            spindexerServo.setPower(0.75);
+            if ((intakesensor.getDetected()==0)&&!detectedLastLoop) {
+                timeout++;
+                detectedLastLoop = true;
+            }else{
+                detectedLastLoop=false;
+            }
+        }
+        if (intakesensor.getDetected()==0&&timeout<3){
+            for (int i=0; i<3;i++){
+                if (spindexerSlots[i]!=0){
+                    continue;
+                }else if(spindexerSlots[i]==0){
+                    spindexerSlots[i]=intakesensor.getDetected();
+                }
+            }
+            timer.reset();
+            spindexerServo.setPower(-0.01);
+            if (timer.milliseconds()>=400){
+                spindexerServo.setPower(0);
+            }
+            return true;
+        }else{
+            timer.reset();
+            spindexerServo.setPower(-0.01);
+            if (timer.milliseconds()>=400){
+                spindexerServo.setPower(0);
+            }
             return false;
         }
     }
