@@ -34,6 +34,15 @@ public class holdPosition {
         this.currentPosition=this.drive.localizer.getPose();
     }
 
+    public void updatePID(){
+        this.xPID=new PID(Kx[0],Kx[1],Kx[2]);
+        this.yPID=new PID(Ky[0],Ky[1],Ky[2]);
+        this.tPID=new PID(Kt[0],Kt[1],Kt[2]);
+        xPID.init();
+        yPID.init();
+        tPID.init();
+    }
+
     public double hold(){
         updateCurrentPosition();
         powerX=xPID.update(initialPosition.position.x,currentPosition.position.x);

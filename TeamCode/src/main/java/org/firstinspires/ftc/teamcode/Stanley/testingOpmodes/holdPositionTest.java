@@ -88,7 +88,7 @@ public class holdPositionTest extends LinearOpMode {
                 if (i==x && y==1){
                     line2+="{";
                 }
-                holdPositionOperator.Ky[i]=(double) Math.round(holdPositionOperator.Kx[i] * Math.pow(10, 5)) / Math.pow(10, 5);
+                holdPositionOperator.Ky[i]=(double) Math.round(holdPositionOperator.Ky[i] * Math.pow(10, 5)) / Math.pow(10, 5);
                 line2+=holdPositionOperator.Ky[i];
                 if (i==x && y==1){
                     line2+="}";
@@ -99,7 +99,7 @@ public class holdPositionTest extends LinearOpMode {
                 if (i==x && y==2){
                     line3+="{";
                 }
-                holdPositionOperator.Kt[i]=(double) Math.round(holdPositionOperator.Kx[i] * Math.pow(10, 5)) / Math.pow(10, 5);
+                holdPositionOperator.Kt[i]=(double) Math.round(holdPositionOperator.Kt[i] * Math.pow(10, 5)) / Math.pow(10, 5);
                 line3+=holdPositionOperator.Kt[i];
                 if (i==x && y==2){
                     line3+="}";
