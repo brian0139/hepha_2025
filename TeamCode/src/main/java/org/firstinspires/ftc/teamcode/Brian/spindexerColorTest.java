@@ -20,7 +20,7 @@ public class spindexerColorTest extends LinearOpMode{
     public void runOpMode() {
         //initiate drivetrain motors
         spindexer=hardwareMap.get(CRServo.class,"spindexerServo");
-        colorsensoroperator=new colorSensor(hardwareMap,"outtakeSensor");
+        colorsensoroperator=new colorSensor(hardwareMap,"intakeSensor");
 
         spindexercolor=new spindexerColor(spindexer,hardwareMap);
         double spinpower=0.5;
