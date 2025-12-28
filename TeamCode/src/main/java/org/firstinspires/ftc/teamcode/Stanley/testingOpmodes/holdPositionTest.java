@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.Stanley.testingOpmodes;
 
+import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -7,6 +8,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.MecanumDrive;
 import org.firstinspires.ftc.teamcode.Stanley.finalizedClasses.holdPosition;
 
@@ -22,6 +24,9 @@ public class holdPositionTest extends LinearOpMode {
     int x=0;
     int y=0;
     boolean correctingtoggle=false;
+    //FTC dashboard telemetry
+    FtcDashboard dashboard=null;
+    Telemetry dashboardTelemetry=null;
     MecanumDrive drive;
 
     @Override
@@ -37,6 +42,8 @@ public class holdPositionTest extends LinearOpMode {
         leftBack.setDirection(DcMotorSimple.Direction.REVERSE);
         drive=new MecanumDrive(hardwareMap,new Pose2d(new Vector2d(0,0),Math.toRadians(90)));
         holdPositionOperator=new holdPosition(drive,leftFront,leftBack,rightFront,rightBack);
+        dashboard = FtcDashboard.getInstance();
+        dashboardTelemetry = dashboard.getTelemetry();
         waitForStart();
         while (opModeIsActive()){
             if (gamepad1.yWasPressed()) correctingtoggle=!correctingtoggle;
@@ -146,6 +153,7 @@ public class holdPositionTest extends LinearOpMode {
             telemetry.addData("YOffset",holdPositionOperator.initialPosition.position.y-holdPositionOperator.currentPosition.position.y);
             telemetry.addData("TOffset",holdPositionOperator.initialPosition.heading.imag * holdPositionOperator.currentPosition.heading.real - holdPositionOperator.initialPosition.heading.real * holdPositionOperator.currentPosition.heading.imag);
             telemetry.update();
+            dashboardTelemetry.update();
         }
     }
 }
