@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.Stanley.testingOpmodes;
 
+import com.acmerobotics.dashboard.FtcDashboard;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.CRServo;
@@ -8,6 +9,8 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.Servo;
+
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 
 @TeleOp
 
@@ -29,6 +32,9 @@ public class fullTest extends LinearOpMode{
     //sensitivity(& other configs)
     double flywheelSensitivity=10;
     double hoodspeed=0.5;
+    //FTC dashboard telemetry
+    FtcDashboard dashboard=null;
+    Telemetry dashboardTelemetry=null;
     //vars
     int flywheelspeed=2000;
     int targetspeed=0;
@@ -64,6 +70,8 @@ public class fullTest extends LinearOpMode{
         spindexer=hardwareMap.get(CRServo.class,"spindexerServo");
         transfer=hardwareMap.get(DcMotor.class,"par1");
         turret=hardwareMap.get(CRServo.class,"turretServo");
+        dashboard = FtcDashboard.getInstance();
+        dashboardTelemetry = dashboard.getTelemetry();
 
         //telemetry message to signify robot waiting
         telemetry.addLine("Robot Ready.");
@@ -185,6 +193,7 @@ public class fullTest extends LinearOpMode{
 //            leftBack.setPower(speeds[2]);
 //            rightBack.setPower(speeds[3]);
             telemetry.update();
+            dashboardTelemetry.update();
         }
     }
 }

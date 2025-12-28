@@ -39,7 +39,7 @@ public class outtakeTest extends LinearOpMode{
         waitForStart();
         while (opModeIsActive()){
             hoodAngle+=gamepad1.left_stick_y*0.15;
-            hoodServo.setPower(-gamepad1.right_stick_x);
+            hoodServo.setPower(-gamepad1.right_stick_y);
             if (gamepad1.rightBumperWasPressed()){
                 hoodServo.setPower(1);
                 sleep(msPerRotation);
@@ -53,6 +53,7 @@ public class outtakeTest extends LinearOpMode{
             if (gamepad1.yWasPressed()){
                 outtakeOperator.setHood(hoodAngle,true);
             }
+            telemetry.addData("targethoodangle",hoodAngle);
         }
     }
 }
