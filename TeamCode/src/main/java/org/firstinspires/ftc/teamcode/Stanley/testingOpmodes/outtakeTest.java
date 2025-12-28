@@ -22,7 +22,7 @@ public class outtakeTest extends LinearOpMode{
     @Override
     public void runOpMode() {
         double servoRPM=50;
-        int msPerRotation=1/50*60*1000;
+        double msPerRotation=60000/servoRPM;
         double hoodAngle=30;
         //outtake instance
         hoodServo=hardwareMap.get(CRServo.class,"hoodServo");
@@ -40,8 +40,8 @@ public class outtakeTest extends LinearOpMode{
         //wait for driver to press play
         waitForStart();
         while (opModeIsActive()){
-            hoodAngle+=gamepad1.left_stick_y*0.15;
-            hoodServo.setPower(-gamepad1.right_stick_y);
+            hoodAngle-=gamepad1.left_stick_y*0.001;
+            hoodServo.setPower(gamepad1.right_stick_y);
             if (gamepad1.rightBumperWasPressed()){
                 timer.reset();
                 while (timer.milliseconds()<msPerRotation) hoodServo.setPower(1);
