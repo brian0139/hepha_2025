@@ -74,7 +74,7 @@ public class fullTest extends LinearOpMode{
         turret=hardwareMap.get(CRServo.class,"turretServo");
         outtake=new outtakeV2(hardwareMap,flywheel,flywheelR,"Red",leftFront,rightFront,leftBack,rightBack,hoodServo,transfer,false);
         dashboard = FtcDashboard.getInstance();
-        dashboardTelemetry = dashboard.getTelemetry();
+        telemetry = dashboard.getTelemetry();
 
         //telemetry message to signify robot waiting
         telemetry.addLine("Robot Ready.");

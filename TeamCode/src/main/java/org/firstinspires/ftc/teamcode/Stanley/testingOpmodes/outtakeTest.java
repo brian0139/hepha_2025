@@ -27,7 +27,7 @@ public class outtakeTest extends LinearOpMode{
         hoodServo=hardwareMap.get(CRServo.class,"hoodServo");
         flywheelDrive=hardwareMap.get(DcMotorEx.class,"flywheel");
         flywheelDriveR=hardwareMap.get(DcMotorEx.class,"flywheelR");
-        transfer=hardwareMap.get(DcMotor.class,"transfer");
+        transfer=hardwareMap.get(DcMotor.class,"par1");
         outtakeV2 outtakeOperator = new outtakeV2(hardwareMap, flywheelDrive, flywheelDriveR,"Red",null,null,null,null,hoodServo,transfer,false);
         outtakeOperator.hoodAngle=hoodAngle;
         outtakeOperator.savehoodAngle=hoodAngle;
