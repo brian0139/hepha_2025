@@ -12,14 +12,10 @@ public class holdPosition {
     MecanumDrive drive;
     public Pose2d initialPosition;
     public Pose2d currentPosition;
-    private DcMotor leftFront=null;
-    private DcMotor leftBack=null;
-    private DcMotor rightFront=null;
-    private DcMotor rightBack=null;
     //PID variables {Kp,Ki,Kd}
-    double[] Kx={0,0,0};
-    double[] Ky={0,0,0};
-    double[] Kt={0,0,0};
+    public double[] Kx={0,0,0};
+    public double[] Ky={0,0,0};
+    public double[] Kt={0,0,0};
     PID xPID=new PID(Kx[0],Kx[1],Kx[2]);
     PID yPID=new PID(Ky[0],Ky[1],Ky[2]);
     PID tPID=new PID(Kt[0],Kt[1],Kt[2]);
@@ -30,19 +26,12 @@ public class holdPosition {
     /**
      * Constructor
      * @param drive MecanumDrive object for robot
-     * @param leftFront Drivetrain motor
-     * @param leftBack Drivetrain motor
-     * @param rightFront Drivetrain motor
-     * @param rightBack Drivetrain motor
      */
-    public holdPosition(MecanumDrive drive, DcMotor leftFront, DcMotor leftBack, DcMotor rightFront, DcMotor rightBack){
+    public holdPosition(MecanumDrive drive){
         this.drive=drive;
-        this.leftFront=leftFront;
-        this.leftBack=leftBack;
-        this.rightFront=rightFront;
-        this.rightBack=rightBack;
         drive.updatePoseEstimate();
-        this.initialPosition=drive.localizer.getPose();
+        this.initialPosition=this.drive.localizer.getPose();
+        this.currentPosition=this.drive.localizer.getPose();
     }
 
     public double hold(){
