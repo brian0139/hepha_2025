@@ -20,7 +20,7 @@ public class spindexerColorTest extends LinearOpMode{
         //initiate drivetrain motors
         spindexer=hardwareMap.get(CRServo.class,"spindexerServo");
         colorsensoroperator=new colorSensor(hardwareMap,"colorSensor");
-        spindexercolor=new spindexerColor(spindexer);
+        spindexercolor=new spindexerColor(spindexer,hardwareMap);
         double spinpower=0.5;
         double stoppower=0.001;
         //telemetry message to signify robot waiting
@@ -31,7 +31,9 @@ public class spindexerColorTest extends LinearOpMode{
         waitForStart();
         //repeat until opmode ends
         while (opModeIsActive()){
-            if (gamepad1.yWasPressed()) spindexercolor.spinToMotif(spinpower, stoppower);
+            if (gamepad1.yWasPressed()) spindexercolor.spinToMotif();
+            telemetry.addData("motif", spindexercolor.dummyMotif);
+            telemetry.addData("next motif index", spindexercolor.dummyMotif[spindexercolor.motifIndex]);
             int detected = colorsensoroperator.getDetected();
 
             String result;
@@ -50,8 +52,8 @@ public class spindexerColorTest extends LinearOpMode{
             telemetry.addData("Sat", hsv[1]);
             telemetry.addData("Val", hsv[2]);
 
-            telemetry.addData("spindexer power",spinpower);
-            telemetry.addData("stopping power",stoppower);
+            telemetry.addData("spindexer power",0.75);
+            telemetry.addData("stopping power",-0.01);
             telemetry.update();
         }
     }
