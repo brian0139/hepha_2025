@@ -12,6 +12,8 @@ import org.firstinspires.ftc.teamcode.Alvin.colorSensor;
 public class spindexerColor {
     public CRServo spindexerServo=null;
     ElapsedTime timer=new ElapsedTime();
+    ElapsedTime nonetime=new ElapsedTime();
+    public double nonetimer=0;
     colorSensor outtakesensor;
     colorSensor intakesensor;
     public int currentPosition=0;
@@ -66,14 +68,22 @@ public class spindexerColor {
     public boolean spinToIntake(){
         int nextMotif=dummyMotif[motifIndex];
         int timeout=0;
+        boolean noneTrue=false;
         boolean detectedLastLoop=false;
-        while ((intakesensor.getDetected()!=0)&&timeout<3){
-            spindexerServo.setPower(0.75);
+        nonetime.reset();
+        while ((intakesensor.getDetected()!=0)&&timeout<3&&!noneTrue){
+            spindexerServo.setPower(1);
             if ((intakesensor.getDetected()==0)&&!detectedLastLoop) {
                 timeout++;
                 detectedLastLoop = true;
             }else{
                 detectedLastLoop=false;
+            }
+            if (nonetime.milliseconds()>=1000){
+                noneTrue=true;
+                nonetimer=nonetime.milliseconds();
+            }else{
+                noneTrue=false;
             }
         }
         if (intakesensor.getDetected()==0&&timeout<3){

@@ -36,6 +36,7 @@ public class spindexerColorTest extends LinearOpMode{
 //            if (gamepad1.yWasPressed()) spindexercolor.spinToMotif();
             if (gamepad1.yWasPressed()) spindexercolor.spinToIntake();
             telemetry.addData("spindexer slots", Arrays.toString(spindexercolor.spindexerSlots));
+            telemetry.addData("time elapsed", spindexercolor.nonetimer);
 //            telemetry.addData("current motif index", spindexercolor.motifIndex);
 //            telemetry.addData("current motif color", spindexercolor.dummyMotif[spindexercolor.motifIndex]);
             int detected = colorsensoroperator.getDetected();
