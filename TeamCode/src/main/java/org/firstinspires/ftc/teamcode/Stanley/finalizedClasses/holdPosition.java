@@ -19,9 +19,9 @@ public class holdPosition {
     public Pose2d initialPosition;
     public Pose2d currentPosition;
     //PID variables {Kp,Ki,Kd}
-    public double[] Kx={0,0,0};
-    public double[] Ky={0,0,0};
-    public double[] Kt={0,0,0};
+    public double[] Kx={0.7,2,0.05};
+    public double[] Ky={0.3,2,0.05};
+    public double[] Kt={2,0.3,0};
     PID xPID=new PID(Kx[0],Kx[1],Kx[2]);
     PID yPID=new PID(Ky[0],Ky[1],Ky[2]);
     PID tPID=new PID(Kt[0],Kt[1],Kt[2]);
@@ -54,7 +54,7 @@ public class holdPosition {
     }
 
     public void stop(){
-        drive.setDrivePowers(new PoseVelocity2d(new Vector2d(0,0),0));
+            drive.setDrivePowers(new PoseVelocity2d(new Vector2d(0,0),0));
     }
 
     public double hold(){
