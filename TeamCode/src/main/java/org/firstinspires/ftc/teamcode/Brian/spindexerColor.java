@@ -79,8 +79,6 @@ public class spindexerColor {
         if (intakesensor.getDetected()==0&&timeout<3){
             for (int i=0; i<3;i++){
                 if (spindexerSlots[i]!=0){
-                    continue;
-                }else if(spindexerSlots[i]==0){
                     spindexerSlots[i]=intakesensor.getDetected();
                 }
             }
