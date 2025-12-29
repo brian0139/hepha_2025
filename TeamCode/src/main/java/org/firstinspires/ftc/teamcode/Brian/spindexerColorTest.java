@@ -1,4 +1,5 @@
 package org.firstinspires.ftc.teamcode.Brian;
+import com.acmerobotics.dashboard.FtcDashboard;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.CRServo;
@@ -25,6 +26,8 @@ public class spindexerColorTest extends LinearOpMode{
         spindexercolor=new spindexerColor(spindexer,hardwareMap);
         double spinpower=0.5;
         double stoppower=0.001;
+//        FtcDashboard dashboard=FtcDashboard.getInstance();
+//        telemetry= dashboard.getTelemetry();
         //telemetry message to signify robot waiting
         telemetry.addLine("Robot Ready.");
         telemetry.update();

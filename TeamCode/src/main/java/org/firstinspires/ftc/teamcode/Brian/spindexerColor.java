@@ -70,23 +70,44 @@ public class spindexerColor {
         int nextMotif=dummyMotif[motifIndex];
         timeout=0;
         boolean noneTrue=false;
-        boolean detectedLastLoop=false;
+        boolean detectedLastLoop=true;  // Start as true (assume we start on filled)
         nonetime.reset();
-        while ((intakesensor.getDetected()!=0)&&timeout<3&&!noneTrue){
-            spindexerServo.setPower(1);
-            if ((intakesensor.getDetected()==0)&&!detectedLastLoop) {
+        ElapsedTime emptyTimer = new ElapsedTime();
+        boolean seenEmpty = false;
+
+        while (timeout<3 && nonetime.milliseconds()<2000){
+            int currentReading = intakesensor.getDetected();
+
+            // Count when transitioning from filled (1 or 2) to empty (0)
+            if (currentReading==0 && detectedLastLoop==true) {
                 timeout++;
-                detectedLastLoop = true;
-            }else{
-                detectedLastLoop=false;
+                detectedLastLoop = false;
+            } else if (currentReading!=0) {
+                detectedLastLoop=true;
             }
-            if (nonetime.milliseconds()>=2000){
-                noneTrue=true;
-                nonetimer=nonetime.milliseconds();
-            }else{
-                noneTrue=false;
+
+            // Slow down when we see empty readings
+            if (currentReading==0) {
+                if (!seenEmpty) {
+                    emptyTimer.reset();
+                    seenEmpty = true;
+                }
+
+                // Wait 300ms to confirm it's a real empty slot, not a gap
+                if (emptyTimer.milliseconds() >= 300) {
+                    spindexerServo.setPower(0.1);  // Very slow for final positioning
+                    if (emptyTimer.milliseconds() >= 400) {
+                        break;  // Definitely a real empty slot
+                    }
+                } else {
+                    spindexerServo.setPower(0.4);  // Continue at normal speed
+                }
+            } else {
+                spindexerServo.setPower(0.4);  // Normal speed on filled slots
+                seenEmpty = false;
             }
         }
+
         if (intakesensor.getDetected()==0&&timeout<3){
             for (int i=0; i<3;i++){
                 if (spindexerSlots[i]!=0){
