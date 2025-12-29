@@ -59,7 +59,7 @@ public class outtake {
     final double MAX_AUTO_TURN  = 0.3;   //  Clip the turn speed to this max value (adjust for your robot)
     //vars
     int targetTagID=-1;
-    public outtake(HardwareMap hardwareMap, DcMotorEx flywheelDrive, String teamColor, DcMotor leftFront, DcMotor rightFront, DcMotor leftBack, DcMotor rightBack, CRServo hoodServo, Servo transfer, boolean useTag){
+    public outtake(HardwareMap hardwareMap, DcMotorEx flywheelDrive, String teamColor, DcMotor leftFront, DcMotor rightFront, DcMotor leftBack, DcMotor rightBack, CRServo hoodServo, AnalogInput hoodSensor, Servo transfer, boolean useTag){
         this.flywheelDrive = flywheelDrive;
         this.teamColor=teamColor;
         this.leftFront=leftFront;
@@ -67,6 +67,7 @@ public class outtake {
         this.leftBack=leftBack;
         this.rightBack=rightBack;
         this.hoodServo=hoodServo;
+        this.hoodSensor=hoodSensor;
         this.transfer=transfer;
         //set target april tag number to aim at depending on team color.
         if (Objects.equals(this.teamColor, "Red") && this.targetTagID!=-1){
