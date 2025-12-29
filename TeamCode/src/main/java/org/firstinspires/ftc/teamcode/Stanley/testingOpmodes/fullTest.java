@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.Stanley.testingOpmodes;
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.AnalogInput;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
@@ -30,6 +31,7 @@ public class fullTest extends LinearOpMode{
     private CRServo hoodServo=null;
     private CRServo spindexer=null;
     private CRServo turret=null;
+    AnalogInput hoodAnalog=null;
     outtakeV2 outtake=null;
     //sensitivity(& other configs)
     double flywheelSensitivity=10;
@@ -72,6 +74,7 @@ public class fullTest extends LinearOpMode{
         spindexer=hardwareMap.get(CRServo.class,"spindexerServo");
         transfer=hardwareMap.get(DcMotor.class,"par1");
         turret=hardwareMap.get(CRServo.class,"turretServo");
+        hoodAnalog=hardwareMap.get(AnalogInput.class,"hoodAnalog");
         outtake=new outtakeV2(hardwareMap,flywheel,flywheelR,"Red",leftFront,rightFront,leftBack,rightBack,hoodServo,transfer,false);
         dashboard = FtcDashboard.getInstance();
         dashboardTelemetry = dashboard.getTelemetry();
@@ -109,10 +112,12 @@ public class fullTest extends LinearOpMode{
             telemetry.addLine("Flywheel Speed:"+flywheelspeed+" encoder ticks/s, "+flywheelspeed*60/28+" RPM");
             telemetry.addLine("Flywheel Target Speed:"+targetspeed+" encoder ticks/s, "+targetspeed*60/28+" RPM");
             telemetry.addLine("Flywheel Real Speed:"+flywheelR.getVelocity()+" encoder ticks/s, "+flywheelR.getVelocity()*60/28+" RPM");
+            telemetry.addData("Hood voltage",hoodAnalog.getVoltage());
             dashboardTelemetry.addData("Flywheel Target Speed ets",targetspeed);
             dashboardTelemetry.addData("Flywheel Target Speed rpm",targetspeed*60/28);
             dashboardTelemetry.addData("Flywheel Real Speed ets",flywheelR.getVelocity());
             dashboardTelemetry.addData("Flywheel Real Speed rpm",flywheelR.getVelocity()*60/28);
+            dashboardTelemetry.addData("Hood voltage",hoodAnalog.getVoltage());
             //spindexer
 //            if (spindexerpos-gamepad1.left_stick_x*spindexerDialation>=0 && spindexerpos-gamepad1.left_stick_x*spindexerDialation<=0.75){
 //                spindexerpos-=gamepad1.left_stick_x*spindexerDialation;

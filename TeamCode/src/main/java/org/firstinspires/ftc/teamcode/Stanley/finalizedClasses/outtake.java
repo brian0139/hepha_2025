@@ -25,11 +25,12 @@ public class outtake {
     //Outtake Hood Servo
     CRServo hoodServo;
     AnalogInput hoodSensor;
-    //TODO: get servo RPM
-    //Servo RPM
-    double servoRPM=50;
     //Degrees changed for every servo rotation
     double servoDegPerRot =20;
+    //hood Axon voltage last loop
+    double lastVolt=-1;
+    //# of rotations hood servo has
+    int rotations=0;
     //transfer positions(up, down)
     public static double[] transferpositions ={0.68,0.875};
     //hood angle transitions
@@ -368,60 +369,25 @@ public class outtake {
     /**
      * Set the hood angle to a specific degree
      * @param degrees degrees from hood to horizontal(cnt. clockwise)
-     * @param override stop current running action and start new action
      * @return if hood is at position
      */
-    public boolean setHood(double degrees, boolean override){
-        double rotations=(degrees-this.hoodAngle)/this.servoDegPerRot;
-        //time needed to rotate for in ms
-        double time=Math.abs(rotations*60*1000/this.servoRPM);
-        //If overriding to new position and servo is already running
-        if (override && runninghood){
-            //update current hood angle
-            this.updateHoodAngle(degrees);
-            //Initialize variables for new position
-            this.timer.reset();
-            this.savehoodAngle=this.hoodAngle;
-            if (rotations > 0) {
-                this.hoodServo.setPower(1);
-            } else if (rotations < 0) {
-                this.hoodServo.setPower(-1);
-            }
-        }
-        if (!runninghood) {
-            timer.reset();
-            this.savehoodAngle=this.hoodAngle;
-            if (rotations > 0) {
-                this.hoodServo.setPower(1);
-            } else if (rotations < 0) {
-                this.hoodServo.setPower(-1);
-            }
-            this.runninghood=true;
-        }
-        //Exit condition
-        if (timer.milliseconds()>=time){
-            //Update hood position
-            this.updateHoodAngle(degrees);
-            //set runninghood to false(no longer running hood)
-            this.runninghood=false;
-            //stop hood servo
-            this.hoodServo.setPower(0);
-            return true;
-        }
+    public boolean setHood(double degrees){
+        //TODO:Finish function
         return false;
     }
 
     /**
      * Helper function to update current angle of hood
-     * @param degrees Target degrees the hood is currently trying to get to
+     * @param volt current Axon voltage reading
      */
-    public void updateHoodAngle(double degrees){
-        if (this.runninghood) {
-            double rotations = (degrees - this.hoodAngle) / this.servoDegPerRot;
-            //Update hood position
-            double elapsed = timer.milliseconds();
-            double totalRotation = (elapsed * this.servoRPM) / 60000.0;
-            this.hoodAngle = this.savehoodAngle + (rotations > 0 ? 1 : -1) * totalRotation * this.servoDegPerRot;
+    public void updateHoodAngle(double volt){
+        //TODO:Finish function
+        //If last loop there was no voltage(first loop)
+        if (lastVolt==-1){
+            //initialize lastvolt
+            lastVolt=volt;
+        }else{//Otherwise calculate position
+
         }
     }
 

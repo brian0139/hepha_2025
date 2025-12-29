@@ -199,10 +199,10 @@ public class AutonBluePath extends LinearOpMode {
         @Override
         public boolean run(TelemetryPacket telemetryPacket){
             if (this.wait) {
-                return this.outtakeOperator.setHood(this.angle,false);
+                return this.outtakeOperator.setHood(this.angle);
             }
             else{
-                this.outtakeOperator.setHood(this.angle,false);
+                this.outtakeOperator.setHood(this.angle);
                 return false;
             }
         }
