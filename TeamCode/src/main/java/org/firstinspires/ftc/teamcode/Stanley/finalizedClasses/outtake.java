@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.Stanley.finalizedClasses;
 
+import com.qualcomm.robotcore.hardware.AnalogInput;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
@@ -23,6 +24,7 @@ public class outtake {
     public DcMotorEx flywheelDrive;
     //Outtake Hood Servo
     CRServo hoodServo;
+    AnalogInput hoodSensor;
     //TODO: get servo RPM
     //Servo RPM
     double servoRPM=50;
