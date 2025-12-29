@@ -60,6 +60,11 @@ public class outtake {
     final double MAX_AUTO_TURN  = 0.3;   //  Clip the turn speed to this max value (adjust for your robot)
     //vars
     int targetTagID=-1;
+    //voltage jump to be considered a rotation
+    double maxVJump=3.3*0.75;
+    //initial hood angle(max with gear off hood)
+    //TODO:Get actual value
+    double initialHoodAngle=60;
     public outtake(HardwareMap hardwareMap, DcMotorEx flywheelDrive, String teamColor, DcMotor leftFront, DcMotor rightFront, DcMotor leftBack, DcMotor rightBack, CRServo hoodServo, AnalogInput hoodSensor, Servo transfer, boolean useTag){
         this.flywheelDrive = flywheelDrive;
         this.teamColor=teamColor;
@@ -387,7 +392,18 @@ public class outtake {
             //initialize lastvolt
             lastVolt=volt;
         }else{//Otherwise calculate position
-
+            if (volt-lastVolt>=maxVJump){
+                rotations++;
+                hoodAngle=(rotations+3.3/volt)*servoDegPerRot;
+                lastVolt=volt;
+            }else if(volt-lastVolt<=maxVJump){
+                rotations--;
+                hoodAngle=(rotations+3.3/volt)*servoDegPerRot;
+                lastVolt=volt;
+            }else{
+                hoodAngle=(rotations+3.3/volt)*servoDegPerRot;
+                lastVolt=volt;
+            }
         }
     }
 
