@@ -53,7 +53,7 @@ public class outtakeTest extends LinearOpMode{
                 hoodServo.setPower(0);
             }
             if (gamepad1.yWasPressed()){
-                outtakeOperator.setHood(hoodAngle,true);
+                outtakeOperator.setHood(hoodAngle);
             }
             telemetry.addData("Running hood",outtakeOperator.runninghood);
             telemetry.addData("targethoodangle",hoodAngle);

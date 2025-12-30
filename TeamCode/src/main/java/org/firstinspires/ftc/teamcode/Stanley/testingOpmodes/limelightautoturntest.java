@@ -30,7 +30,7 @@ public class limelightautoturntest extends LinearOpMode {
         leftFront.setDirection(DcMotorSimple.Direction.REVERSE);
         leftBack.setDirection(DcMotorSimple.Direction.REVERSE);
         boolean aimtoggle=false;
-        outtakeOperator=new outtake(hardwareMap,null,"Red",leftFront,rightFront,leftBack,rightBack,null,null,null,true);
+        outtakeOperator=new outtake(hardwareMap,null,"Red",leftFront,rightFront,leftBack,rightBack,null,null,true);
 
         waitForStart();
         while (opModeIsActive()) {

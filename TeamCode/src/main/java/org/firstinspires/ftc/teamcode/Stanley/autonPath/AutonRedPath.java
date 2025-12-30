@@ -17,6 +17,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 import org.firstinspires.ftc.teamcode.Brian.spindexer;
 import org.firstinspires.ftc.teamcode.MecanumDrive;
 import org.firstinspires.ftc.teamcode.Stanley.finalizedClasses.outtake;
+import org.firstinspires.ftc.teamcode.Stanley.finalizedClasses.outtakeV2;
 
 @Autonomous
 public class AutonRedPath extends LinearOpMode {
@@ -191,13 +192,13 @@ public class AutonRedPath extends LinearOpMode {
     public class moveHood implements Action{
         double angle;
         CRServo hood;
-        outtake outtakeOperator;
+        outtakeV2 outtakeOperator;
         boolean wait=false;
         public moveHood(double angle, CRServo hood,boolean wait){
             this.angle=angle;
             this.hood=hood;
             this.wait=wait;
-            this.outtakeOperator=new outtake(hardwareMap,null,null,null,null,null,null,hood,hoodSensor,null,false);
+            this.outtakeOperator=new outtakeV2(hardwareMap,null,null,null,null,null,null,null,hood,hoodSensor,null,false);
         }
         @Override
         public boolean run(TelemetryPacket telemetryPacket){
@@ -220,7 +221,7 @@ public class AutonRedPath extends LinearOpMode {
             this.flywheel = flywheel;
             this.targetSpeed=targetSpeed;
             this.wait=wait;
-            this.outtakeOperator = new outtake(hardwareMap, flywheel, null, null, null, null, null, null, null,null,false);
+            this.outtakeOperator = new outtake(hardwareMap, flywheel, null, null, null, null, null, null, null,false);
         }
         @Override
         public boolean run(TelemetryPacket telemetryPacket){
@@ -244,7 +245,7 @@ public class AutonRedPath extends LinearOpMode {
         public moveTransfer(Servo transfer, boolean position){
             this.transfer=transfer;
             this.position=position;
-            this.outtakeOperator=new outtake(hardwareMap,null,null,null,null,null,null,null,null,transfer,false);
+            this.outtakeOperator=new outtake(hardwareMap,null,null,null,null,null,null,null,transfer,false);
         }
         @Override
         public boolean run(TelemetryPacket telemetryPacket){

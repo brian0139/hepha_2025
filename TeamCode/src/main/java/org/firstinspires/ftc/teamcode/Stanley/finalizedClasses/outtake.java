@@ -1,6 +1,5 @@
 package org.firstinspires.ftc.teamcode.Stanley.finalizedClasses;
 
-import com.qualcomm.robotcore.hardware.AnalogInput;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
@@ -24,13 +23,11 @@ public class outtake {
     public DcMotorEx flywheelDrive;
     //Outtake Hood Servo
     CRServo hoodServo;
-    AnalogInput hoodSensor;
+    //TODO: get servo RPM
+    //Servo RPM
+    double servoRPM=50;
     //Degrees changed for every servo rotation
     double servoDegPerRot =20;
-    //hood Axon voltage last loop
-    double lastVolt=-1;
-    //# of rotations hood servo has
-    int rotations=0;
     //transfer positions(up, down)
     public static double[] transferpositions ={0.68,0.875};
     //hood angle transitions
@@ -60,12 +57,7 @@ public class outtake {
     final double MAX_AUTO_TURN  = 0.3;   //  Clip the turn speed to this max value (adjust for your robot)
     //vars
     int targetTagID=-1;
-    //voltage jump to be considered a rotation
-    double maxVJump=3.3*0.75;
-    //initial hood angle(max with gear off hood)
-    //TODO:Get actual value
-    double initialHoodAngle=60;
-    public outtake(HardwareMap hardwareMap, DcMotorEx flywheelDrive, String teamColor, DcMotor leftFront, DcMotor rightFront, DcMotor leftBack, DcMotor rightBack, CRServo hoodServo, AnalogInput hoodSensor, Servo transfer, boolean useTag){
+    public outtake(HardwareMap hardwareMap, DcMotorEx flywheelDrive, String teamColor, DcMotor leftFront, DcMotor rightFront, DcMotor leftBack, DcMotor rightBack, CRServo hoodServo, Servo transfer, boolean useTag){
         this.flywheelDrive = flywheelDrive;
         this.teamColor=teamColor;
         this.leftFront=leftFront;
@@ -73,7 +65,6 @@ public class outtake {
         this.leftBack=leftBack;
         this.rightBack=rightBack;
         this.hoodServo=hoodServo;
-        this.hoodSensor=hoodSensor;
         this.transfer=transfer;
         //set target april tag number to aim at depending on team color.
         if (Objects.equals(this.teamColor, "Red") && this.targetTagID!=-1){
@@ -374,37 +365,59 @@ public class outtake {
     /**
      * Set the hood angle to a specific degree
      * @param degrees degrees from hood to horizontal(cnt. clockwise)
+     * @param override stop current running action and start new action
      * @return if hood is at position
      */
-    public boolean setHood(double degrees){
-        //TODO:Finish function
+    public boolean setHood(double degrees, boolean override){
+        double rotations=(degrees-this.hoodAngle)/this.servoDegPerRot;
+        //time needed to rotate for in ms
+        double time=Math.abs(rotations*60*1000/this.servoRPM);
+        //If overriding to new position and servo is already running
+        if (override && runninghood){
+            //update current hood angle
+            this.updateHoodAngle(degrees);
+            //Initialize variables for new position
+            this.timer.reset();
+            this.savehoodAngle=this.hoodAngle;
+            if (rotations > 0) {
+                this.hoodServo.setPower(1);
+            } else if (rotations < 0) {
+                this.hoodServo.setPower(-1);
+            }
+        }
+        if (!runninghood) {
+            timer.reset();
+            this.savehoodAngle=this.hoodAngle;
+            if (rotations > 0) {
+                this.hoodServo.setPower(1);
+            } else if (rotations < 0) {
+                this.hoodServo.setPower(-1);
+            }
+            this.runninghood=true;
+        }
+        //Exit condition
+        if (timer.milliseconds()>=time){
+            //Update hood position
+            this.updateHoodAngle(degrees);
+            //set runninghood to false(no longer running hood)
+            this.runninghood=false;
+            //stop hood servo
+            this.hoodServo.setPower(0);
+            return true;
+        }
         return false;
     }
 
     /**
      * Helper function to update current angle of hood
-     * @param volt current Axon voltage reading
+     * @param degrees Target degrees the hood is currently trying to get to
      */
-    public void updateHoodAngle(double volt){
-        //TODO:Finish function
-        //If last loop there was no voltage(first loop)
-        if (lastVolt==-1){
-            //initialize lastvolt
-            lastVolt=volt;
-        }else{//Otherwise calculate position
-            if (volt-lastVolt>=maxVJump){
-                rotations++;
-                hoodAngle=(rotations+3.3/volt)*servoDegPerRot;
-                lastVolt=volt;
-            }else if(volt-lastVolt<=maxVJump){
-                rotations--;
-                hoodAngle=(rotations+3.3/volt)*servoDegPerRot;
-                lastVolt=volt;
-            }else{
-                hoodAngle=(rotations+3.3/volt)*servoDegPerRot;
-                lastVolt=volt;
-            }
-        }
+    public void updateHoodAngle(double degrees){
+        double rotations=(degrees-this.hoodAngle)/this.servoDegPerRot;
+        //Update hood position
+        double elapsed = timer.milliseconds();
+        double totalRotation = (elapsed * this.servoRPM) / 60000.0;
+        this.hoodAngle = this.savehoodAngle + (rotations > 0 ? 1 : -1) * totalRotation * this.servoDegPerRot;
     }
 
     /**
