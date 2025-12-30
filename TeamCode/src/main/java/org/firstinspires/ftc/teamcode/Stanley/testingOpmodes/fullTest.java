@@ -69,8 +69,8 @@ public class fullTest extends LinearOpMode{
         leftBack.setDirection(DcMotorSimple.Direction.REVERSE);
         //other motors
         flywheelR= hardwareMap.get(DcMotorEx.class,"flywheelR");
-        flywheelR.setDirection(DcMotorSimple.Direction.REVERSE);
         flywheel=hardwareMap.get(DcMotorEx.class,"flywheel");
+        flywheel.setDirection(DcMotorSimple.Direction.REVERSE);
         intake=(DcMotorEx) hardwareMap.get(DcMotor.class,"intake");
         //servos
         hoodServo=hardwareMap.get(CRServo.class,"hoodServo");
@@ -79,7 +79,7 @@ public class fullTest extends LinearOpMode{
         turret=hardwareMap.get(CRServo.class,"turretServo");
         hoodAnalog=hardwareMap.get(AnalogInput.class,"hoodAnalog");
         battery=hardwareMap.get(VoltageSensor.class,"Control Hub");
-        outtake=new outtakeV2(hardwareMap,flywheel,flywheelR,"Red",leftFront,rightFront,leftBack,rightBack,hoodServo,transfer,false);
+        outtake=new outtakeV2(hardwareMap,flywheel,flywheelR,"Red",leftFront,rightFront,leftBack,rightBack,hoodServo,hoodAnalog,transfer,false);
         dashboard = FtcDashboard.getInstance();
         dashboardTelemetry = dashboard.getTelemetry();
 
@@ -121,8 +121,8 @@ public class fullTest extends LinearOpMode{
             telemetry.addData("Hood voltage",hoodAnalog.getVoltage());
             dashboardTelemetry.addData("Flywheel Target Speed ets",targetspeed);
             dashboardTelemetry.addData("Flywheel Target Speed rpm",targetspeed*60/28);
-            dashboardTelemetry.addData("Flywheel Real Speed ets",flywheelR.getVelocity());
-            dashboardTelemetry.addData("Flywheel Real Speed rpm",flywheelR.getVelocity()*60/28);
+            dashboardTelemetry.addData("Flywheel Real Speed ets",-flywheelR.getVelocity());
+            dashboardTelemetry.addData("Flywheel Real Speed rpm",-flywheelR.getVelocity()*60/28);
             dashboardTelemetry.addData("Hood voltage",hoodAnalog.getVoltage());
             dashboardTelemetry.addData("Battery Voltage",battery.getVoltage());
             dashboardTelemetry.addData("Distance",distance);

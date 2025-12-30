@@ -52,17 +52,15 @@ public class outtakeV2 {
     DcMotor rightBack;
     //auto aim vars
     //  Drive = Error * Gain
-    final double SPEED_GAIN  =  0.02  ;   //  Forward Speed Control "Gain". e.g. Ramp up to 50% power at a 25 inch error.   (0.50 / 25.0)
-    final double STRAFE_GAIN =  0.015 ;   //  Strafe Speed Control "Gain".  e.g. Ramp up to 37% power at a 25 degree Yaw error.   (0.375 / 25.0)
     public double TURN_GAIN   =  0.025  ;   //  Turn Control "Gain".  e.g. Ramp up to 25% power at a 25 degree error. (0.25 / 25.0)
-
-    final double MAX_AUTO_SPEED = 0.5;   //  Clip the approach speed to this max value (adjust for your robot)
-    final double MAX_AUTO_STRAFE= 0.5;   //  Clip the strafing speed to this max value (adjust for your robot)
     final double MAX_AUTO_TURN  = 0.3;   //  Clip the turn speed to this max value (adjust for your robot)
     //vars
     int targetTagID=-1;
     //voltage jump to be considered a rotation
     double maxVJump=3.3*0.75;
+    //PID instance for hood
+    double[] Kh={0,0,0};
+    public PID hoodPID=new PID(Kh[0],Kh[1],Kh[2]);
     //initial hood angle(max with gear off hood)
     //TODO:Get actual value
     double initialHoodAngle=60;
@@ -378,6 +376,8 @@ public class outtakeV2 {
      */
     public boolean setHood(double degrees){
         //TODO:Finish function
+        double targetRotations=degrees/servoDegPerRot;
+
         return false;
     }
 
@@ -394,14 +394,14 @@ public class outtakeV2 {
         }else{//Otherwise calculate position
             if (volt-lastVolt>=maxVJump){
                 rotations++;
-                hoodAngle=(rotations+3.3/volt)*servoDegPerRot;
+                hoodAngle=rotations+3.3/volt;
                 lastVolt=volt;
             }else if(volt-lastVolt<=maxVJump){
                 rotations--;
-                hoodAngle=(rotations+3.3/volt)*servoDegPerRot;
+                hoodAngle=rotations+3.3/volt;
                 lastVolt=volt;
             }else{
-                hoodAngle=(rotations+3.3/volt)*servoDegPerRot;
+                hoodAngle=rotations+3.3/volt;
                 lastVolt=volt;
             }
         }
