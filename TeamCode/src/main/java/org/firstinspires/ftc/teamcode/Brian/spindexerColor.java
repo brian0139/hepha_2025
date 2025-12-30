@@ -17,8 +17,6 @@ public class spindexerColor {
     public int timeout=0;
     colorSensor outtakesensor;
     colorSensor intakesensor;
-    public int currentPosition=0;
-    public int numPurple,numGreen;
     public int[] spindexerSlots={0,0,0}; //0 none, 1 green, 2 purple
     public int[][] motifPatterns = {
             {1, 2, 2},
@@ -27,8 +25,22 @@ public class spindexerColor {
     };
     public int motifIndex=0;
     public int[] dummyMotif={1,2,2};
+    private boolean isSpinningToMotif = false;
+    private boolean detectedLastLoopMotif = false;
+    private int timeoutMotif = 0;
+    private boolean isBrakingMotif = false;
+    private ElapsedTime brakeTimerMotif = new ElapsedTime();
     public int[] currentMotifPattern=null;
-    public static final double servoSpeed=0.5;
+    private boolean isSpinning = false;
+    private boolean seenEmpty = false;
+    private int detectedColor = 0;
+    private boolean isSpinningToIntake = false;
+    private boolean detectedLastLoop = true;
+    private boolean seenEmptyIntake = false;
+    private ElapsedTime emptyTimerIntake = new ElapsedTime();
+    private ElapsedTime spinStartTime = new ElapsedTime();
+    private boolean isBraking = false;
+    private ElapsedTime brakeTimer = new ElapsedTime();
     public spindexerColor(CRServo spindexerServo, HardwareMap hardwareMap){
         this.spindexerServo=spindexerServo;
         outtakesensor=new colorSensor(hardwareMap,"outtakeSensor");
@@ -36,97 +48,178 @@ public class spindexerColor {
     }
 
     public boolean spinToMotif() {
-        int nextmotif=dummyMotif[motifIndex];
-        timeout=0;
-        boolean detectedLastLoop=false;
-        while (outtakesensor.getDetected()!=nextmotif&&timeout<3) {
+        int nextmotif = dummyMotif[motifIndex];
+
+        // If not currently spinning, start the process
+        if (!isSpinningToMotif) {
+            timeoutMotif = 0;
+            detectedLastLoopMotif = false;
+            isBrakingMotif = false;
+            isSpinningToMotif = true;
             spindexerServo.setPower(0.75);
-            if ((outtakesensor.getDetected()==1||outtakesensor.getDetected()==2) && !detectedLastLoop){
-                timeout++;
-                detectedLastLoop=true;
-            }else{
-                detectedLastLoop=false;
-            }
+            return false;  // Not done yet
         }
-        if (outtakesensor.getDetected()==nextmotif&&timeout<3){
-            motifIndex++;
-            motifIndex%=3;
-            timer.reset();
-            spindexerServo.setPower(-0.01);
-            if (timer.milliseconds()>=400){
+
+        // Check if we're currently braking
+        if (isBrakingMotif) {
+            if (brakeTimerMotif.milliseconds() >= 400) {
                 spindexerServo.setPower(0);
+                isSpinningToMotif = false;
+
+                // Check if we succeeded or failed
+                if (outtakesensor.getDetected() == nextmotif && timeoutMotif < 3) {
+                    motifIndex++;
+                    motifIndex %= 3;
+                    return true;  // Success!
+                }
+                return false;  // Failed
             }
-            return true;
-        } else {
-            timer.reset();
-            spindexerServo.setPower(-0.01);
-            if (timer.milliseconds()>=400){
-                spindexerServo.setPower(0);
-            }
-            return false;
+            return false;  // Still braking
         }
+
+        // Check if we found the target motif or timed out
+        if (outtakesensor.getDetected() == nextmotif || timeoutMotif >= 3) {
+            // Start braking
+            isBrakingMotif = true;
+            brakeTimerMotif.reset();
+            spindexerServo.setPower(-0.01);
+            timeout = timeoutMotif;  // Update global timeout
+            return false;  // Not done yet, braking
+        }
+
+        // Continue spinning
+        spindexerServo.setPower(0.75);
+
+        // Count slots passed
+        if ((outtakesensor.getDetected() == 1 || outtakesensor.getDetected() == 2) && !detectedLastLoopMotif) {
+            timeoutMotif++;
+            detectedLastLoopMotif = true;
+        } else if (outtakesensor.getDetected() == 0) {
+            detectedLastLoopMotif = false;
+        }
+
+        return false;  // Still spinning
     }
     public boolean spinToIntake(){
-        int nextMotif=dummyMotif[motifIndex];
-        timeout=0;
-        boolean noneTrue=false;
-        boolean detectedLastLoop=true;  // Start as true (assume we start on filled)
-        nonetime.reset();
-        ElapsedTime emptyTimer = new ElapsedTime();
-        boolean seenEmpty = false;
-
-        while (timeout<3 && nonetime.milliseconds()<2000){
-            int currentReading = intakesensor.getDetected();
-
-            // Count when transitioning from filled (1 or 2) to empty (0)
-            if (currentReading==0 && detectedLastLoop==true) {
-                timeout++;
-                detectedLastLoop = false;
-            } else if (currentReading!=0) {
-                detectedLastLoop=true;
-            }
-
-            // Slow down when we see empty readings
-            if (currentReading==0) {
-                if (!seenEmpty) {
-                    emptyTimer.reset();
-                    seenEmpty = true;
-                }
-
-                // Wait 300ms to confirm it's a real empty slot, not a gap
-                if (emptyTimer.milliseconds() >= 300) {
-                    spindexerServo.setPower(0.1);  // Very slow for final positioning
-                    if (emptyTimer.milliseconds() >= 400) {
-                        break;  // Definitely a real empty slot
-                    }
-                } else {
-                    spindexerServo.setPower(0.4);  // Continue at normal speed
-                }
-            } else {
-                spindexerServo.setPower(0.4);  // Normal speed on filled slots
-                seenEmpty = false;
-            }
+        // If not currently spinning, start the process
+        if (!isSpinningToIntake) {
+            timeout = 0;
+            detectedLastLoop = true;
+            seenEmptyIntake = false;
+            isBraking = false;
+            spinStartTime.reset();
+            isSpinningToIntake = true;
+            spindexerServo.setPower(0.4);
+            return false;  // Not done yet
         }
 
-        if (intakesensor.getDetected()==0&&timeout<3){
-            for (int i=0; i<3;i++){
-                if (spindexerSlots[i]!=0){
-                    spindexerSlots[i]=intakesensor.getDetected();
-                }
-            }
-            timer.reset();
-            spindexerServo.setPower(-0.01);
-            if (timer.milliseconds()>=400){
+        // Check timeout conditions
+        if (timeout >= 3 || spinStartTime.milliseconds() >= 2000) {
+            // Timeout - apply brake and finish
+            if (!isBraking) {
+                isBraking = true;
+                brakeTimer.reset();
+                spindexerServo.setPower(-0.01);
+            } else if (brakeTimer.milliseconds() >= 400) {
                 spindexerServo.setPower(0);
-            }
-            return true;
-        }else{
-            timer.reset();
-            spindexerServo.setPower(-0.01);
-            if (timer.milliseconds()>=400){
-                spindexerServo.setPower(0);
+                isSpinningToIntake = false;
+                return false;  // Failed
             }
             return false;
         }
+
+        int currentReading = intakesensor.getDetected();
+
+        // Count when transitioning from filled (1 or 2) to empty (0)
+        if (currentReading == 0 && detectedLastLoop == true) {
+            timeout++;
+            detectedLastLoop = false;
+        } else if (currentReading != 0) {
+            detectedLastLoop = true;
+        }
+
+        // Handle empty readings
+        if (currentReading == 0) {
+            if (!seenEmptyIntake) {
+                emptyTimerIntake.reset();
+                seenEmptyIntake = true;
+            }
+
+            // Wait 300ms to confirm it's a real empty slot, not a gap
+            if (emptyTimerIntake.milliseconds() >= 300) {
+                spindexerServo.setPower(0.1);  // Very slow for final positioning
+                if (emptyTimerIntake.milliseconds() >= 400) {
+                    // Found empty slot - apply brake
+                    if (!isBraking) {
+                        isBraking = true;
+                        brakeTimer.reset();
+                        spindexerServo.setPower(-0.01);
+                    } else if (brakeTimer.milliseconds() >= 400) {
+                        spindexerServo.setPower(0);
+
+                        // Update slots
+                        for (int i = 0; i < 3; i++) {
+                            if (spindexerSlots[i] != 0) {
+                                spindexerSlots[i] = intakesensor.getDetected();
+                            }
+                        }
+
+                        isSpinningToIntake = false;
+                        return true;  // Success!
+                    }
+                }
+            } else {
+                spindexerServo.setPower(0.4);  // Continue at normal speed
+            }
+        } else {
+            spindexerServo.setPower(0.4);  // Normal speed on filled slots
+            seenEmptyIntake = false;
+        }
+
+        return false;  // Still spinning
+    }
+    // Add these as class variables at the top of your spindexerColor class
+
+
+    public boolean spinOnDetection() {
+        // If not currently spinning, check if we should start
+        if (!isSpinning) {
+            int currentReading = intakesensor.getDetected();
+            if (currentReading == 1 || currentReading == 2) {
+                // Start spinning
+                isSpinning = true;
+                seenEmpty = false;
+                detectedColor = currentReading;
+                nonetime.reset();
+                spindexerServo.setPower(0.75);
+            }
+            return false;  // Not done yet or nothing to do
+        }
+
+        // Currently spinning - check if we found empty slot
+        int currentReading = intakesensor.getDetected();
+
+        if (currentReading == 0) {
+            if (!seenEmpty) {
+                // Just started seeing empty, start timer
+                seenEmpty = true;
+                nonetime.reset();
+            } else if (nonetime.milliseconds() >= 400) {
+                // Been empty for 400ms, apply brake and finish
+                timer.reset();
+                spindexerServo.setPower(-0.01);
+                if (timer.milliseconds() >= 400) {
+                    spindexerServo.setPower(0);
+                    isSpinning = false;  // Reset state
+                    return true;  // Done!
+                }
+            }
+        } else {
+            // Seeing a ball, reset empty tracking and keep spinning
+            seenEmpty = false;
+            spindexerServo.setPower(0.75);
+        }
+
+        return false;  // Still spinning
     }
 }
