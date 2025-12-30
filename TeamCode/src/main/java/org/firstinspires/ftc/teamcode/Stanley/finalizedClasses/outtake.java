@@ -21,8 +21,7 @@ public class outtake {
     //April tag processor
     aprilTagV3 apriltag;
     //Outtake flywheel
-    public DcMotorEx flywheel;
-
+    public DcMotorEx flywheelDrive;
     //Outtake Hood Servo
     CRServo hoodServo;
     AnalogInput hoodSensor;
@@ -34,7 +33,11 @@ public class outtake {
     int rotations=0;
     //transfer positions(up, down)
     public static double[] transferpositions ={0.68,0.875};
-    public double targetHoodAngle=0;
+    //hood angle transitions
+    //timer
+    ElapsedTime timer=new ElapsedTime();
+    //save hood angle for starting hood angle
+    public double savehoodAngle=0;
     //if hood running
     public boolean runninghood=false;
     //hood angle(in degrees)
@@ -48,35 +51,22 @@ public class outtake {
     DcMotor rightBack;
     //auto aim vars
     //  Drive = Error * Gain
+    final double SPEED_GAIN  =  0.02  ;   //  Forward Speed Control "Gain". e.g. Ramp up to 50% power at a 25 inch error.   (0.50 / 25.0)
+    final double STRAFE_GAIN =  0.015 ;   //  Strafe Speed Control "Gain".  e.g. Ramp up to 37% power at a 25 degree Yaw error.   (0.375 / 25.0)
     public double TURN_GAIN   =  0.025  ;   //  Turn Control "Gain".  e.g. Ramp up to 25% power at a 25 degree error. (0.25 / 25.0)
+
+    final double MAX_AUTO_SPEED = 0.5;   //  Clip the approach speed to this max value (adjust for your robot)
+    final double MAX_AUTO_STRAFE= 0.5;   //  Clip the strafing speed to this max value (adjust for your robot)
     final double MAX_AUTO_TURN  = 0.3;   //  Clip the turn speed to this max value (adjust for your robot)
     //vars
     int targetTagID=-1;
     //voltage jump to be considered a rotation
     double maxVJump=3.3*0.75;
-    //PID instance
-    PID hoodPID=null;
     //initial hood angle(max with gear off hood)
     //TODO:Get actual value
     double initialHoodAngle=60;
-
-    /**
-     * Constructor
-     * @param hardwareMap
-     * @param flywheel
-     * @param flywheelR
-     * @param teamColor
-     * @param leftFront
-     * @param rightFront
-     * @param leftBack
-     * @param rightBack
-     * @param hoodServo
-     * @param hoodSensor
-     * @param transfer
-     * @param useTag
-     */
-    public outtake(HardwareMap hardwareMap, DcMotorEx flywheel, DcMotorEx flywheelR, String teamColor, DcMotor leftFront, DcMotor rightFront, DcMotor leftBack, DcMotor rightBack, CRServo hoodServo, AnalogInput hoodSensor, Servo transfer, boolean useTag){
-        this.flywheelDrive = flywheel;
+    public outtake(HardwareMap hardwareMap, DcMotorEx flywheelDrive, String teamColor, DcMotor leftFront, DcMotor rightFront, DcMotor leftBack, DcMotor rightBack, CRServo hoodServo, AnalogInput hoodSensor, Servo transfer, boolean useTag){
+        this.flywheelDrive = flywheelDrive;
         this.teamColor=teamColor;
         this.leftFront=leftFront;
         this.rightFront=rightFront;
@@ -388,7 +378,6 @@ public class outtake {
      */
     public boolean setHood(double degrees){
         //TODO:Finish function
-
         return false;
     }
 
@@ -397,6 +386,7 @@ public class outtake {
      * @param volt current Axon voltage reading
      */
     public void updateHoodAngle(double volt){
+        //TODO:Finish function
         //If last loop there was no voltage(first loop)
         if (lastVolt==-1){
             //initialize lastvolt
