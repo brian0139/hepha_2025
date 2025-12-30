@@ -21,7 +21,8 @@ public class outtake {
     //April tag processor
     aprilTagV3 apriltag;
     //Outtake flywheel
-    public DcMotorEx flywheelDrive;
+    public DcMotorEx flywheel;
+
     //Outtake Hood Servo
     CRServo hoodServo;
     AnalogInput hoodSensor;
@@ -62,7 +63,8 @@ public class outtake {
     /**
      * Constructor
      * @param hardwareMap
-     * @param flywheelDrive
+     * @param flywheel
+     * @param flywheelR
      * @param teamColor
      * @param leftFront
      * @param rightFront
@@ -73,8 +75,8 @@ public class outtake {
      * @param transfer
      * @param useTag
      */
-    public outtake(HardwareMap hardwareMap, DcMotorEx flywheelDrive, String teamColor, DcMotor leftFront, DcMotor rightFront, DcMotor leftBack, DcMotor rightBack, CRServo hoodServo, AnalogInput hoodSensor, Servo transfer, boolean useTag){
-        this.flywheelDrive = flywheelDrive;
+    public outtake(HardwareMap hardwareMap, DcMotorEx flywheel, DcMotorEx flywheelR, String teamColor, DcMotor leftFront, DcMotor rightFront, DcMotor leftBack, DcMotor rightBack, CRServo hoodServo, AnalogInput hoodSensor, Servo transfer, boolean useTag){
+        this.flywheelDrive = flywheel;
         this.teamColor=teamColor;
         this.leftFront=leftFront;
         this.rightFront=rightFront;
