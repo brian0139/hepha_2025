@@ -413,13 +413,11 @@ public class outtake {
      * @param degrees Target degrees the hood is currently trying to get to
      */
     public void updateHoodAngle(double degrees){
-        if (this.runninghood) {
-            double rotations = (degrees - this.hoodAngle) / this.servoDegPerRot;
-            //Update hood position
-            double elapsed = timer.milliseconds();
-            double totalRotation = (elapsed * this.servoRPM) / 60000.0;
-            this.hoodAngle = this.savehoodAngle + (rotations > 0 ? 1 : -1) * totalRotation * this.servoDegPerRot;
-        }
+        double rotations=(degrees-this.hoodAngle)/this.servoDegPerRot;
+        //Update hood position
+        double elapsed = timer.milliseconds();
+        double totalRotation = (elapsed * this.servoRPM) / 60000.0;
+        this.hoodAngle = this.savehoodAngle + (rotations > 0 ? 1 : -1) * totalRotation * this.servoDegPerRot;
     }
 
     /**

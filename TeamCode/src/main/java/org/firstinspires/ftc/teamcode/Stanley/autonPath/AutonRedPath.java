@@ -7,6 +7,7 @@ import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.AnalogInput;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
@@ -16,6 +17,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 import org.firstinspires.ftc.teamcode.Brian.spindexer;
 import org.firstinspires.ftc.teamcode.MecanumDrive;
 import org.firstinspires.ftc.teamcode.Stanley.finalizedClasses.outtake;
+import org.firstinspires.ftc.teamcode.Stanley.finalizedClasses.outtakeV2;
 
 @Autonomous
 public class AutonRedPath extends LinearOpMode {
@@ -24,6 +26,7 @@ public class AutonRedPath extends LinearOpMode {
     Servo transfer=null;
     DcMotorEx flywheel=null;
     CRServo hood=null;
+    AnalogInput hoodSensor=null;
     //TODO:get values for shooting hood angle and flywheel speed
     final double hoodAngle=0;
     final int flywheelSpeed=1000;
@@ -33,6 +36,7 @@ public class AutonRedPath extends LinearOpMode {
     public void runOpMode() throws InterruptedException{
         spindexerServo=hardwareMap.servo.get("spindexerServo");
         intakeMotor=hardwareMap.dcMotor.get("intake");
+        hoodSensor=hardwareMap.get(AnalogInput.class,"hoodAnalog");
         flywheel=(DcMotorEx) hardwareMap.dcMotor.get("flywheel");
         flywheel.setDirection(DcMotorSimple.Direction.REVERSE);
         transfer=hardwareMap.servo.get("transferServo");
@@ -188,21 +192,21 @@ public class AutonRedPath extends LinearOpMode {
     public class moveHood implements Action{
         double angle;
         CRServo hood;
-        outtake outtakeOperator;
+        outtakeV2 outtakeOperator;
         boolean wait=false;
         public moveHood(double angle, CRServo hood,boolean wait){
             this.angle=angle;
             this.hood=hood;
             this.wait=wait;
-            this.outtakeOperator=new outtake(hardwareMap,null,null,null,null,null,null,hood,null,false);
+            this.outtakeOperator=new outtakeV2(hardwareMap,null,null,null,null,null,null,null,hood,hoodSensor,null,false);
         }
         @Override
         public boolean run(TelemetryPacket telemetryPacket){
             if (this.wait) {
-                return this.outtakeOperator.setHood(this.angle,false);
+                return this.outtakeOperator.setHood(this.angle);
             }
             else{
-                this.outtakeOperator.setHood(this.angle,false);
+                this.outtakeOperator.setHood(this.angle);
                 return false;
             }
         }

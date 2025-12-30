@@ -16,6 +16,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 import org.firstinspires.ftc.teamcode.Brian.spindexer;
 import org.firstinspires.ftc.teamcode.MecanumDrive;
 import org.firstinspires.ftc.teamcode.Stanley.finalizedClasses.outtake;
+import org.firstinspires.ftc.teamcode.Stanley.finalizedClasses.outtakeV2;
 
 @Autonomous
 public class AutonBluePath extends LinearOpMode {
@@ -188,21 +189,22 @@ public class AutonBluePath extends LinearOpMode {
     public class moveHood implements Action{
         double angle;
         CRServo hood;
-        outtake outtakeOperator;
+        outtakeV2 outtakeOperator;
         boolean wait=false;
         public moveHood(double angle, CRServo hood,boolean wait){
             this.angle=angle;
             this.hood=hood;
             this.wait=wait;
-            this.outtakeOperator=new outtake(hardwareMap,null,null,null,null,null,null,hood,null,false);
+            //TODO:add hood sensor
+            this.outtakeOperator=new outtakeV2(hardwareMap,null,null,null,null,null,null,null,hood,null,null,false);
         }
         @Override
         public boolean run(TelemetryPacket telemetryPacket){
             if (this.wait) {
-                return this.outtakeOperator.setHood(this.angle,false);
+                return this.outtakeOperator.setHood(this.angle);
             }
             else{
-                this.outtakeOperator.setHood(this.angle,false);
+                this.outtakeOperator.setHood(this.angle);
                 return false;
             }
         }
@@ -217,7 +219,7 @@ public class AutonBluePath extends LinearOpMode {
             this.flywheel = flywheel;
             this.targetSpeed=targetSpeed;
             this.wait=wait;
-            this.outtakeOperator = new outtake(hardwareMap, flywheel, null, null, null, null, null, null, null,false);
+            this.outtakeOperator = new outtake(hardwareMap, flywheel, null, null, null, null, null, null,null,false);
         }
         @Override
         public boolean run(TelemetryPacket telemetryPacket){

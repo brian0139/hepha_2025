@@ -3,12 +3,14 @@ package org.firstinspires.ftc.teamcode.Stanley.testingOpmodes;
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.AnalogInput;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.hardware.VoltageSensor;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.Stanley.finalizedClasses.outtakeV2;
@@ -30,16 +32,19 @@ public class fullTest extends LinearOpMode{
     private CRServo hoodServo=null;
     private CRServo spindexer=null;
     private CRServo turret=null;
+    AnalogInput hoodAnalog=null;
     outtakeV2 outtake=null;
     //sensitivity(& other configs)
     double flywheelSensitivity=10;
     double hoodspeed=0.5;
+    VoltageSensor battery=null;
     //FTC dashboard telemetry
     FtcDashboard dashboard=null;
     Telemetry dashboardTelemetry=null;
     //vars
     int flywheelspeed=2000;
     int targetspeed=0;
+    int distance=0;
     boolean flywheelToggle=false;
     boolean transferToggle=false;
     double spindexerpos=0.75;
@@ -72,6 +77,8 @@ public class fullTest extends LinearOpMode{
         spindexer=hardwareMap.get(CRServo.class,"spindexerServo");
         transfer=hardwareMap.get(DcMotor.class,"par1");
         turret=hardwareMap.get(CRServo.class,"turretServo");
+        hoodAnalog=hardwareMap.get(AnalogInput.class,"hoodAnalog");
+        battery=hardwareMap.get(VoltageSensor.class,"Control Hub");
         outtake=new outtakeV2(hardwareMap,flywheel,flywheelR,"Red",leftFront,rightFront,leftBack,rightBack,hoodServo,transfer,false);
         dashboard = FtcDashboard.getInstance();
         dashboardTelemetry = dashboard.getTelemetry();
@@ -106,13 +113,19 @@ public class fullTest extends LinearOpMode{
                     flywheel.setVelocity(0);
                 }
             }
+            if (gamepad1.aWasPressed()) distance++;
+            if (gamepad1.bWasPressed()) distance--;
             telemetry.addLine("Flywheel Speed:"+flywheelspeed+" encoder ticks/s, "+flywheelspeed*60/28+" RPM");
             telemetry.addLine("Flywheel Target Speed:"+targetspeed+" encoder ticks/s, "+targetspeed*60/28+" RPM");
             telemetry.addLine("Flywheel Real Speed:"+flywheelR.getVelocity()+" encoder ticks/s, "+flywheelR.getVelocity()*60/28+" RPM");
+            telemetry.addData("Hood voltage",hoodAnalog.getVoltage());
             dashboardTelemetry.addData("Flywheel Target Speed ets",targetspeed);
             dashboardTelemetry.addData("Flywheel Target Speed rpm",targetspeed*60/28);
             dashboardTelemetry.addData("Flywheel Real Speed ets",flywheelR.getVelocity());
             dashboardTelemetry.addData("Flywheel Real Speed rpm",flywheelR.getVelocity()*60/28);
+            dashboardTelemetry.addData("Hood voltage",hoodAnalog.getVoltage());
+            dashboardTelemetry.addData("Battery Voltage",battery.getVoltage());
+            dashboardTelemetry.addData("Distance",distance);
             //spindexer
 //            if (spindexerpos-gamepad1.left_stick_x*spindexerDialation>=0 && spindexerpos-gamepad1.left_stick_x*spindexerDialation<=0.75){
 //                spindexerpos-=gamepad1.left_stick_x*spindexerDialation;
