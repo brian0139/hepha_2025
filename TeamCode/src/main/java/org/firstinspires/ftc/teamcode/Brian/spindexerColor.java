@@ -13,7 +13,9 @@ public class spindexerColor {
     public CRServo spindexerServo=null;
     ElapsedTime timer=new ElapsedTime();
     ElapsedTime nonetime=new ElapsedTime();
-    public double nonetimer=0;
+    public boolean activelySpinning = false;
+    public ElapsedTime spinTimer = new ElapsedTime();
+    public int targetMotif = 0;
     public int timeout=0;
     colorSensor outtakesensor;
     colorSensor intakesensor;
@@ -48,58 +50,37 @@ public class spindexerColor {
     }
 
     public boolean spinToMotif() {
-        int nextmotif = dummyMotif[motifIndex];
+        int nextmotif=dummyMotif[motifIndex];
+        timeout=0;
+        boolean detectedLastLoop=false;
 
-        // If not currently spinning, start the process
-        if (!isSpinningToMotif) {
-            timeoutMotif = 0;
-            detectedLastLoopMotif = false;
-            isBrakingMotif = false;
-            isSpinningToMotif = true;
+        while (outtakesensor.getDetected()!=nextmotif&&timeout<3) {
             spindexerServo.setPower(0.75);
-            return false;  // Not done yet
-        }
-
-        // Check if we're currently braking
-        if (isBrakingMotif) {
-            if (brakeTimerMotif.milliseconds() >= 400) {
-                spindexerServo.setPower(0);
-                isSpinningToMotif = false;
-
-                // Check if we succeeded or failed
-                if (outtakesensor.getDetected() == nextmotif && timeoutMotif < 3) {
-                    motifIndex++;
-                    motifIndex %= 3;
-                    return true;  // Success!
-                }
-                return false;  // Failed
+            if ((outtakesensor.getDetected()==1||outtakesensor.getDetected()==2) && !detectedLastLoop){
+                timeout++;
+                detectedLastLoop=true;
+            }else if (outtakesensor.getDetected()==0){
+                detectedLastLoop=false;
             }
-            return false;  // Still braking
         }
 
-        // Check if we found the target motif or timed out
-        if (outtakesensor.getDetected() == nextmotif || timeoutMotif >= 3) {
-            // Start braking
-            isBrakingMotif = true;
-            brakeTimerMotif.reset();
-            spindexerServo.setPower(-0.01);
-            timeout = timeoutMotif;  // Update global timeout
-            return false;  // Not done yet, braking
+        // Apply brake with proper waiting
+        spindexerServo.setPower(-0.01);
+        timer.reset();
+        while (timer.milliseconds() < 400) {
+            // Wait for brake to take effect
         }
+        spindexerServo.setPower(0);
 
-        // Continue spinning
-        spindexerServo.setPower(0.75);
-
-        // Count slots passed
-        if ((outtakesensor.getDetected() == 1 || outtakesensor.getDetected() == 2) && !detectedLastLoopMotif) {
-            timeoutMotif++;
-            detectedLastLoopMotif = true;
-        } else if (outtakesensor.getDetected() == 0) {
-            detectedLastLoopMotif = false;
+        if (outtakesensor.getDetected()==nextmotif&&timeout<3){
+            motifIndex++;
+            motifIndex%=3;
+            return true;
+        } else {
+            return false;
         }
-
-        return false;  // Still spinning
     }
+
     public boolean spinToIntake(){
         // If not currently spinning, start the process
         if (!isSpinningToIntake) {

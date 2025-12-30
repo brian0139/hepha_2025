@@ -15,17 +15,21 @@ public class spindexerColorTest extends LinearOpMode{
     CRServo spindexer;
     colorSensor colorsensoroperator;
     spindexerColor spindexercolor;
+    DcMotor intake;
 
     //main loop
     @Override
     public void runOpMode() {
         //initiate drivetrain motors
         spindexer=hardwareMap.get(CRServo.class,"spindexerServo");
-        colorsensoroperator=new colorSensor(hardwareMap,"intakeSensor");
+        colorsensoroperator=new colorSensor(hardwareMap,"outtakesensor");
+        intake=hardwareMap.get(DcMotor.class, "intake");
+
 
         spindexercolor=new spindexerColor(spindexer,hardwareMap);
         double spinpower=0.5;
         double stoppower=0.001;
+        boolean tmp=false;
 //        FtcDashboard dashboard=FtcDashboard.getInstance();
 //        telemetry= dashboard.getTelemetry();
         //telemetry message to signify robot waiting
@@ -36,13 +40,17 @@ public class spindexerColorTest extends LinearOpMode{
         waitForStart();
         //repeat until opmode ends
         while (opModeIsActive()){
+            if (gamepad1.yWasPressed()) {
+                spindexercolor.spinToMotif();
+            }
+            intake.setPower(0.75);
 //            if (gamepad1.yWasPressed()) spindexercolor.spinToMotif();
-            if (gamepad1.yWasPressed()) spindexercolor.spinToIntake();
-            telemetry.addData("spindexer slots", Arrays.toString(spindexercolor.spindexerSlots));
-            telemetry.addData("time elapsed", spindexercolor.nonetimer);
-            telemetry.addData("timeout",spindexercolor.timeout);
-//            telemetry.addData("current motif index", spindexercolor.motifIndex);
-//            telemetry.addData("current motif color", spindexercolor.dummyMotif[spindexercolor.motifIndex]);
+//            if (gamepad1.yWasPressed()) spindexercolor.spinToIntake();
+            telemetry.addData("spindexer slots", Arrays.toString(spindexercolor.dummyMotif));
+//            telemetry.addData("time elapsed", spindexercolor.nonetimer);
+//            telemetry.addData("timeout",spindexercolor.timeout);
+            telemetry.addData("current motif index", spindexercolor.motifIndex);
+            telemetry.addData("current motif color", spindexercolor.dummyMotif[spindexercolor.motifIndex]);
             int detected = colorsensoroperator.getDetected();
 
             String result;
@@ -63,6 +71,7 @@ public class spindexerColorTest extends LinearOpMode{
 
             telemetry.addData("spindexer power",0.75);
             telemetry.addData("stopping power",-0.01);
+            telemetry.addData("tmp boolean", tmp);
             telemetry.update();
         }
     }
