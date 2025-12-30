@@ -5,8 +5,6 @@ import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
-import com.qualcomm.robotcore.hardware.Servo;
-import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.teamcode.Aaron.aprilTagV3;
@@ -34,13 +32,10 @@ public class outtakeV2 {
     int rotations=0;
     //transfer positions(up, down)
     public static double[] transferpowers ={0.5,0};
-    //hood angle transitions
-    //timer
-    ElapsedTime timer=new ElapsedTime();
     //save hood angle for starting hood angle
     public double savehoodAngle=0;
     //if hood running
-    public boolean runninghood=false;
+    public boolean initializingHood =false;
     //hood angle(in degrees)
     public double hoodAngle=0;
     //transfer servo
@@ -375,10 +370,16 @@ public class outtakeV2 {
      * @return if hood is at position
      */
     public boolean setHood(double degrees){
-        //TODO:Finish function
+        //TODO:Tune PID
         double targetRotations=degrees/servoDegPerRot;
-
+        double power=hoodPID.update(targetRotations-hoodAngle);
+        hoodServo.setPower(power);
         return false;
+    }
+
+    public void initHoodAngle(){
+        savehoodAngle=hoodSensor.getVoltage();
+
     }
 
     /**

@@ -1,5 +1,4 @@
 package org.firstinspires.ftc.teamcode.Stanley.testingOpmodes;
-import org.firstinspires.ftc.teamcode.Stanley.finalizedClasses.outtake;
 import org.firstinspires.ftc.teamcode.Stanley.finalizedClasses.outtakeV2;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -56,9 +55,9 @@ public class outtakeTest extends LinearOpMode{
             if (gamepad1.yWasPressed()){
                 outtakeOperator.setHood(hoodAngle);
             }
-            telemetry.addData("Running hood",outtakeOperator.runninghood);
+            telemetry.addData("Running hood",outtakeOperator.initializingHood);
             telemetry.addData("targethoodangle",hoodAngle);
-            if (outtakeOperator.runninghood) {
+            if (outtakeOperator.initializingHood) {
                 outtakeOperator.updateHoodAngle(hoodAngle);
                 telemetry.addData("Expected hood angle", outtakeOperator.hoodAngle);
             }
