@@ -30,7 +30,8 @@ public class outtakeTest extends LinearOpMode{
         flywheelDriveR=hardwareMap.get(DcMotorEx.class,"flywheelR");
         transfer=hardwareMap.get(DcMotor.class,"par1");
         ElapsedTime timer=new ElapsedTime();
-        outtakeV2 outtakeOperator = new outtakeV2(hardwareMap, flywheelDrive, flywheelDriveR,"Red",null,null,null,null,hoodServo,transfer,false);
+        //TODO:add outtake Sensor
+        outtakeV2 outtakeOperator = new outtakeV2(hardwareMap, flywheelDrive, flywheelDriveR,"Red",null,null,null,null,hoodServo,null,transfer,false);
         outtakeOperator.hoodAngle=hoodAngle;
         outtakeOperator.savehoodAngle=hoodAngle;
 
