@@ -69,9 +69,9 @@ public class tuning extends LinearOpMode {
                 if (i==x){
                     line1+="{";
                 }
-                holdPositionOperator.Kx[i]=(double) Math.round(holdPositionOperator.Kx[i] * Math.pow(10, 5)) / Math.pow(10, 5);
-                line1+=holdPositionOperator.Kx[i];
-                if (i==x && y==0){
+                outtakeOperator.Kh[i]=(double) Math.round(outtakeOperator.Kh[i] * Math.pow(10, 5)) / Math.pow(10, 5);
+                line1+=outtakeOperator.Kh[i];
+                if (i==x){
                     line1+="}";
                 }
                 line1+=", ";
@@ -82,7 +82,7 @@ public class tuning extends LinearOpMode {
                 outtakeOperator.hoodPID=new PID(outtakeOperator.Kh[0],outtakeOperator.Kh[1],outtakeOperator.Kh[2]);
             }
             if (correctingtoggle){
-                holdPositionOperator.hold();
+                outtakeOperator.hold();
             }else{
                 holdPositionOperator.stop();
             }
