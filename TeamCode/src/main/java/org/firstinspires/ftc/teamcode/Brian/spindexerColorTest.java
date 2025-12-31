@@ -18,6 +18,7 @@ public class spindexerColorTest extends LinearOpMode{
     spindexerColor spindexercolor;
     AnalogInput spindexerAnalog;
     DcMotor intake;
+    int motifIndex=0;
 
     //main loop
     @Override
@@ -43,16 +44,19 @@ public class spindexerColorTest extends LinearOpMode{
         //repeat until opmode ends
         while (opModeIsActive()){
             if (gamepad1.yWasPressed()) {
-                spindexercolor.spinToMotif();
+                spindexercolor.spinToMotif(motifIndex);
+                motifIndex++;
+                motifIndex%=3;
             }
+
 //            intake.setPower(0.75);
 //            if (gamepad1.yWasPressed()) spindexercolor.spinToMotif();
 //            if (gamepad1.yWasPressed()) spindexercolor.spinToIntake();
             telemetry.addData("spindexer slots", Arrays.toString(spindexercolor.dummyMotif));
 //            telemetry.addData("time elapsed", spindexercolor.nonetimer);
 //            telemetry.addData("timeout",spindexercolor.timeout);
-            telemetry.addData("current motif index", spindexercolor.motifIndex);
-            telemetry.addData("current motif color", spindexercolor.dummyMotif[spindexercolor.motifIndex]);
+            telemetry.addData("current motif index", motifIndex);
+            telemetry.addData("current motif color", spindexercolor.dummyMotif[motifIndex]);
             int detected = colorsensoroperator.getDetected();
 
             String result;
