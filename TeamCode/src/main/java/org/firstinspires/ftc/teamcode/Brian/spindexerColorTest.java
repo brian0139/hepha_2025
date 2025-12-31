@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.Brian;
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.AnalogInput;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
@@ -15,6 +16,7 @@ public class spindexerColorTest extends LinearOpMode{
     CRServo spindexer;
     colorSensor colorsensoroperator;
     spindexerColor spindexercolor;
+    AnalogInput spindexerAnalog;
     DcMotor intake;
 
     //main loop
@@ -22,13 +24,13 @@ public class spindexerColorTest extends LinearOpMode{
     public void runOpMode() {
         //initiate drivetrain motors
         spindexer=hardwareMap.get(CRServo.class,"spindexerServo");
-        colorsensoroperator=new colorSensor(hardwareMap,"outtakesensor");
+        colorsensoroperator=new colorSensor(hardwareMap,"outtakeSensor");
+        spindexerAnalog=hardwareMap.get(AnalogInput.class,"spindexerAnalog");
         intake=hardwareMap.get(DcMotor.class, "intake");
 
 
         spindexercolor=new spindexerColor(spindexer,hardwareMap);
-        double spinpower=0.5;
-        double stoppower=0.001;
+
         boolean tmp=false;
 //        FtcDashboard dashboard=FtcDashboard.getInstance();
 //        telemetry= dashboard.getTelemetry();
@@ -43,7 +45,7 @@ public class spindexerColorTest extends LinearOpMode{
             if (gamepad1.yWasPressed()) {
                 spindexercolor.spinToMotif();
             }
-            intake.setPower(0.75);
+//            intake.setPower(0.75);
 //            if (gamepad1.yWasPressed()) spindexercolor.spinToMotif();
 //            if (gamepad1.yWasPressed()) spindexercolor.spinToIntake();
             telemetry.addData("spindexer slots", Arrays.toString(spindexercolor.dummyMotif));

@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.Brian;
 
 import android.text.method.Touch;
 
+import com.qualcomm.robotcore.hardware.AnalogInput;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.TouchSensor;
@@ -48,14 +49,14 @@ public class spindexerColor {
             motifIndex++;
             motifIndex%=3;
             timer.reset();
-            spindexerServo.setPower(-0.01);
+            spindexerServo.setPower(0.01);
             if (timer.milliseconds()>=400){
                 spindexerServo.setPower(0);
             }
             return true;
         } else {
             timer.reset();
-            spindexerServo.setPower(-0.01);
+            spindexerServo.setPower(0.01);
             if (timer.milliseconds()>=400){
                 spindexerServo.setPower(0);
             }
