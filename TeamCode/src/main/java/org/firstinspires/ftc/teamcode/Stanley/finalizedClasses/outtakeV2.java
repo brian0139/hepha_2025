@@ -54,7 +54,7 @@ public class outtakeV2 {
     //voltage jump to be considered a rotation
     double maxVJump=3.3*0.75;
     //PID instance for hood
-    double[] Kh={0,0,0};
+    public double[] Kh={0,0,0};
     public PID hoodPID=new PID(Kh[0],Kh[1],Kh[2]);
     //initial hood angle(max with gear off hood)
     //TODO:Get actual value
@@ -370,24 +370,26 @@ public class outtakeV2 {
      * @return if hood is at position
      */
     public boolean setHood(double degrees){
+        double epsilon=0.01;
         //TODO:Tune PID
         double targetRotations=degrees/servoDegPerRot;
         double power=hoodPID.update(targetRotations-hoodAngle);
         hoodServo.setPower(power);
+        updateHoodAngle();
+        if (hoodAngle>=degrees-epsilon && hoodAngle<=degrees+epsilon) return true;
         return false;
     }
 
     public void initHoodAngle(){
         savehoodAngle=hoodSensor.getVoltage();
-
+        hoodServo.setPower(1);
     }
 
     /**
      * Helper function to update current angle of hood
-     * @param volt current Axon voltage reading
      */
-    public void updateHoodAngle(double volt){
-        //TODO:Finish function
+    public void updateHoodAngle(){
+        double volt=hoodSensor.getVoltage();
         //If last loop there was no voltage(first loop)
         if (lastVolt==-1){
             //initialize lastvolt
