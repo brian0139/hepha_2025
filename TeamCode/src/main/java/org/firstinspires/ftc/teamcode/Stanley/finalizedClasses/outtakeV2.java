@@ -23,6 +23,7 @@ public class outtakeV2 {
     public DcMotorEx flywheelDrive;
     //Outtake Hood Servo
     CRServo hoodServo;
+    CRServo spindexerServo;
     public AnalogInput hoodSensor;
     //Degrees changed for every servo rotation
     public double servoDegPerRot =26.53;
@@ -65,6 +66,7 @@ public class outtakeV2 {
         this.leftBack=leftBack;
         this.rightBack=rightBack;
         this.hoodServo=hoodServo;
+        this.spindexerServo=hardwareMap.get(CRServo.class,"spindexerServo");
         this.hoodSensor=hoodSensor;
         this.transfer=transfer;
         //set target april tag number to aim at depending on team color.
@@ -89,45 +91,15 @@ public class outtakeV2 {
     public boolean autoturn(){
         this.apriltag.scanOnce();
         if (!apriltag.hasValidTarget()){
-            leftFront.setPower(0);
-            rightFront.setPower(0);
-            leftBack.setPower(0);
-            rightBack.setPower(0);
+            spindexerServo.setPower(0);
             return false;
         }
         // Determine heading, range and Yaw (tag image rotation) error so we can use them to control the robot automatically.
         double  headingError    = -apriltag.getYaw();
 
         // Use the speed and turn "gains" to calculate how we want the robot to move.
-        double drive=0;
-        double twist   = Range.clip(headingError * TURN_GAIN, -MAX_AUTO_TURN, MAX_AUTO_TURN) ;
-        double strafe=0;
-
-        double[] speeds = {
-                (drive - strafe - twist), //forward-left motor
-                (drive + strafe + twist), //forward-right motor
-                (drive + strafe - twist), //back-left motor
-                (drive - strafe + twist)  //back-right motor
-        };
-
-        // Loop through all values in the speeds[] array and find the greatest
-        // *magnitude*.  Not the greatest velocity.
-        double max = Math.abs(speeds[0]);
-        for(int i = 0; i < speeds.length; i++) {
-            if ( max < Math.abs(speeds[i]) ) max = Math.abs(speeds[i]);
-        }
-
-        // If and only if the maximum is outside of the range we want it to be,
-        // normalize all the other speeds based on the given speed value.
-        if (max > 1) {
-            for (int i = 0; i < speeds.length; i++) speeds[i] /= max;
-        }
-
-        // apply the calculated values to the motors.
-        leftFront.setPower(speeds[0]);
-        rightFront.setPower(speeds[1]);
-        leftBack.setPower(speeds[2]);
-        rightBack.setPower(speeds[3]);
+        double power   = Range.clip(headingError * TURN_GAIN, -MAX_AUTO_TURN, MAX_AUTO_TURN) ;
+        spindexerServo.setPower(power);
         return true;
     }
 
