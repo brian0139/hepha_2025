@@ -40,7 +40,7 @@ public class AutonRedPathV2 extends LinearOpMode {
             // autoturn returns false if no valid target or complete
             boolean hasTarget = outtake.autoturn();
 
-            packet.put("Turret: Has Target", hasTarget);
+            telemetry.addData("Turret: Has Target", hasTarget);
 
             // Keep running until aligned
             return true;
@@ -59,18 +59,18 @@ public class AutonRedPathV2 extends LinearOpMode {
         }
 
         @Override
-        public boolean run(TelemetryPacket packet) {
+        public boolean run(TelemetryPacket telemetryPacket) {
             if (isComplete) return false;
 
             boolean hasTarget = outtake.autoturn();
 
             if (!hasTarget) {
-                packet.put("Turret: Status", "No Target");
+                telemetry.addData("Turret: Status", "No Target");
                 return true; // Keep trying
             }
 
             // Check if aligned
-            packet.put("Turret: Status", "Aligning");
+            telemetry.addData("Turret: Status", "Aligning");
             return true;
         }
     }
@@ -91,14 +91,14 @@ public class AutonRedPathV2 extends LinearOpMode {
         public boolean run(TelemetryPacket packet) {
             if (!started) {
                 started = true;
-                packet.put("Hood: Target Angle", targetAngle);
+                telemetry.addData("Hood: Target Angle", targetAngle);
             }
 
             // Update hood position
             boolean atPosition = outtake.setHood(targetAngle);
 
-            packet.put("Hood: Current Angle", outtake.hoodAngle);
-            packet.put("Hood: At Position", atPosition);
+            telemetry.addData("Hood: Current Angle", outtake.hoodAngle);
+            telemetry.addData("Hood: At Position", atPosition);
 
             // Return false when at position (action complete)
             return !atPosition;
@@ -123,14 +123,14 @@ public class AutonRedPathV2 extends LinearOpMode {
         public boolean run(TelemetryPacket packet) {
             if (!started) {
                 started = true;
-                packet.put("Flywheel: Target Speed", targetSpeed);
+                telemetry.addData("Flywheel: Target Speed", targetSpeed);
             }
 
             // Spin and check if at speed
             boolean atSpeed = outtake.spin_flywheel(targetSpeed, tolerance);
 
-            packet.put("Flywheel: Current Speed", outtake.flywheelDriveR.getVelocity());
-            packet.put("Flywheel: At Speed", atSpeed);
+            telemetry.addData("Flywheel: Current Speed", outtake.flywheelDriveR.getVelocity());
+            telemetry.addData("Flywheel: At Speed", atSpeed);
 
             // Return false when at speed (action complete)
             return !atSpeed;
@@ -144,7 +144,7 @@ public class AutonRedPathV2 extends LinearOpMode {
         @Override
         public boolean run(TelemetryPacket packet) {
             outtake.spin_flywheel(0, 10);
-            packet.put("Flywheel: Status", "Stopped");
+            telemetry.addData("Flywheel: Status", "Stopped");
             return false; // Complete immediately
         }
     }
@@ -163,8 +163,8 @@ public class AutonRedPathV2 extends LinearOpMode {
         @Override
         public boolean run(TelemetryPacket packet) {
             boolean pixelDetected = intakeSystem.intakeUntilPixel();
-            packet.put("Intake: Pixel Detected", pixelDetected);
-            packet.put("Intake: Status", pixelDetected ? "Complete" : "Running");
+            telemetry.addData("Intake: Pixel Detected", pixelDetected);
+            telemetry.addData("Intake: Status", pixelDetected ? "Complete" : "Running");
 
             return !pixelDetected; // Return false when complete
         }
@@ -183,7 +183,7 @@ public class AutonRedPathV2 extends LinearOpMode {
         @Override
         public boolean run(TelemetryPacket packet) {
             boolean detected = intakeSystem.intakeUntilPixel();
-            packet.put("Intake: Pixel Detected", detected);
+            telemetry.addData("Intake: Pixel Detected", detected);
             return !detected; // Return false when complete
         }
     }
@@ -201,7 +201,7 @@ public class AutonRedPathV2 extends LinearOpMode {
         @Override
         public boolean run(TelemetryPacket packet) {
             intakeSystem.setPower(power);
-            packet.put("Intake: Power", power);
+            telemetry.addData("Intake: Power", power);
             return false; // Complete immediately
         }
     }
@@ -227,8 +227,8 @@ public class AutonRedPathV2 extends LinearOpMode {
 
             boolean complete = spindexer.spinToMotif(motifIndex);
 
-            packet.put("Spindexer: Motif Index", motifIndex);
-            packet.put("Spindexer: Status", complete ? "Complete" : "Spinning");
+            telemetry.addData("Spindexer: Motif Index", motifIndex);
+            telemetry.addData("Spindexer: Status", complete ? "Complete" : "Spinning");
 
             return !complete; // Return false when complete
         }
@@ -254,8 +254,8 @@ public class AutonRedPathV2 extends LinearOpMode {
 
             boolean complete = spindexer.spinToIntake(motifIndex);
 
-            packet.put("Spindexer: Motif Index", motifIndex);
-            packet.put("Spindexer: Status", complete ? "Complete" : "Spinning");
+            telemetry.addData("Spindexer: Motif Index", motifIndex);
+            telemetry.addData("Spindexer: Status", complete ? "Complete" : "Spinning");
 
             return !complete; // Return false when complete
         }
@@ -294,7 +294,7 @@ public class AutonRedPathV2 extends LinearOpMode {
                 case PHASE_TRANSFER: phaseName = "TRANSFER"; break;
                 case PHASE_COMPLETE: phaseName = "COMPLETE"; break;
             }
-            packet.put("Shoot Sequence: Phase", phaseName);
+            telemetry.addData("Shoot Sequence: Phase", phaseName);
 
             switch (currentPhase) {
                 case PHASE_AIM:
