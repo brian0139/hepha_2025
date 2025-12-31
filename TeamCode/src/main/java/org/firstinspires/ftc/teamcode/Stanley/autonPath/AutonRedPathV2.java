@@ -163,7 +163,7 @@ public class AutonRedPathV2 extends LinearOpMode {
         public boolean run(TelemetryPacket packet) {
             // Phase 1: Run intake until pixel detected
             if (!intakeComplete) {
-                boolean pixelDetected = intakeSystem.intakeUntilPixel(timeoutMs);
+                boolean pixelDetected = intakeSystem.intakeUntilPixel();
                 packet.put("Intake: Pixel Detected", pixelDetected);
 
                 if (pixelDetected) {
@@ -203,7 +203,7 @@ public class AutonRedPathV2 extends LinearOpMode {
 
         @Override
         public boolean run(TelemetryPacket packet) {
-            boolean detected = intakeSystem.intakeUntilPixel(timeoutMs);
+            boolean detected = intakeSystem.intakeUntilPixel();
             packet.put("Intake: Pixel Detected", detected);
             return !detected; // Return false when complete
         }
