@@ -5,7 +5,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
-@Autonomous
+@TeleOp
 public class intakeTest extends LinearOpMode {
 
     // Declare motor and sensor variables
@@ -18,7 +18,7 @@ public class intakeTest extends LinearOpMode {
     private double stopPower = 0.0;      // Stop power
 
     // For managing the intake until a pixel is detected
-    private boolean runningPixelIntake = false;
+    private boolean runningToggle = false;
 
     @Override
     public void runOpMode() {
@@ -27,7 +27,8 @@ public class intakeTest extends LinearOpMode {
 //        intake = hardwareMap.get(DcMotor.class, "intake");  // Assuming the motor name is "intake"
 //        intakeSensor = new colorSensor(hardwareMap, "intakeSensor");  // Assuming the sensor name is "intakeSensor"
 //        intakeSensor.enableLight(true);  // Enable the color light on the sensor
-        intake intakeOperator=new intake(hardwareMap,"intake","intakeSensor");
+        intake intakeOperator=new intake(hardwareMap,"intake","outtakeSensor");
+        intake=hardwareMap.get(DcMotor.class,"intake");
 
 
         // Provide telemetry to indicate the OpMode is ready
@@ -36,10 +37,12 @@ public class intakeTest extends LinearOpMode {
         telemetry.update();
 
         waitForStart();  // Wait for the start button to be pressed
-
         // Main loop
         while (opModeIsActive()) {
-            boolean tmp=intakeOperator.intakeUntilPixel();
+
+            if (gamepad1.a) intake.setPower(0.5);
+            if (gamepad1.yWasPressed()) intakeOperator.intakeMotor.setPower(0.5);
+            boolean tmp = intakeOperator.intakeUntilPixel();
             telemetry.addData("Detected",intakeOperator.colorDetector.getDetected());
             telemetry.addData("tmp",tmp);
             telemetry.update();

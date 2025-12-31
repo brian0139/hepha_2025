@@ -50,11 +50,6 @@ public class intake {
      * @return true once a pixel is detected.
      */
     public boolean intakeUntilPixel() {
-        // Start intake motor if not already running
-        if (!runningPixelIntake) {
-            intake();
-            runningPixelIntake = true;
-        }
 
         // Check for pixel detection
         if (isPixelDetected()) {
