@@ -9,6 +9,7 @@ import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.NormalizedColorSensor;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.teamcode.Alvin.colorSensor;
@@ -24,27 +25,28 @@ public class AutonRedPathV2 extends LinearOpMode {
     outtakeV2 outtake;
     intake intakeSystem;
     spindexerColor spindexer;
-    Servo spindexerServo=null;
+    CRServo spindexerServo=null;
     DcMotor intakeMotor=null;
     Servo transfer=null;
     DcMotorEx flywheel=null;
     CRServo hood=null;
     AnalogInput hoodSensor=null;
-    colorSensor intakeSensor;
+    NormalizedColorSensor intakeSensor;
 
     @Override
     public void runOpMode() throws InterruptedException {
         // Initialize subsystems
-        spindexerServo=hardwareMap.servo.get("spindexerServo");
+        spindexerServo=hardwareMap.crservo.get("spindexerServo");
         intakeMotor=hardwareMap.dcMotor.get("intake");
         hoodSensor=hardwareMap.get(AnalogInput.class,"hoodAnalog");
         flywheel=(DcMotorEx) hardwareMap.dcMotor.get("flywheel");
         flywheel.setDirection(DcMotorSimple.Direction.REVERSE);
         transfer=hardwareMap.servo.get("transferServo");
         hood=hardwareMap.crservo.get("hoodServo");
-//        outtake = new outtakeV2(hardwareMap,flywheel,);
-//        intakeSystem = new intake(hardwareMap,"intake",intakeSensor);
-//        spindexer=new spindexerColor(spindexerServo,intakeMotor,hardwareMap);
+        intakeSensor=hardwareMap.get(NormalizedColorSensor.class,"intakeSensor");
+        outtake = new outtakeV2(hardwareMap,flywheel,null,null,null,null,null,null,null,null,null,false);
+        intakeSystem = new intake(hardwareMap,"intake","intakeSensor");
+        spindexer=new spindexerColor(spindexerServo,intakeMotor,hardwareMap);
 
         telemetry.addData("Status", "Initialized");
         telemetry.update();
