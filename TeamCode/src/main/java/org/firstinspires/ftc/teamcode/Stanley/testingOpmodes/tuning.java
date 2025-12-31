@@ -36,7 +36,7 @@ public class tuning extends LinearOpMode {
         hoodSensor=hardwareMap.get(AnalogInput.class,"hoodAnalog");
         outtakeOperator=new outtakeV2(hardwareMap,null,null,"Red",null,null,null,null,hood,hoodSensor,null,false);
         dashboard = FtcDashboard.getInstance();
-        telemetry = dashboard.getTelemetry();
+        dashboardTelemetry = dashboard.getTelemetry();
         waitForStart();
         while (opModeIsActive()){
             if (gamepad1.yWasPressed()) correctingtoggle=!correctingtoggle;
@@ -103,6 +103,14 @@ public class tuning extends LinearOpMode {
             telemetry.addData("Offset(rotations)",angle/outtakeOperator.servoDegPerRot-outtakeOperator.hoodAngle);
             telemetry.addData("AtTarget",atTarget);
             telemetry.update();
+            dashboardTelemetry.addLine(line1);
+            dashboardTelemetry.addData("Holding",correctingtoggle);
+            dashboardTelemetry.addData("Target",angle);
+            dashboardTelemetry.addData("Current",outtakeOperator.hoodAngle);
+            dashboardTelemetry.addData("Power",outtakeOperator.hoodPID.power);
+            dashboardTelemetry.addData("Offset(rotations)",angle/outtakeOperator.servoDegPerRot-outtakeOperator.hoodAngle);
+            dashboardTelemetry.addData("AtTarget",atTarget);
+            dashboardTelemetry.update();
         }
     }
 }
