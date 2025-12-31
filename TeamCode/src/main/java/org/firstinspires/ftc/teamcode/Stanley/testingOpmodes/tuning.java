@@ -23,6 +23,8 @@ public class tuning extends LinearOpMode {
     outtakeV2 outtakeOperator=null;
     double change=0.1;
     int x=0;
+    //TODO:Get real value+sync with outtakeV2 value
+    double angle=60;
     boolean correctingtoggle=false;
     //FTC dashboard telemetry
     FtcDashboard dashboard=null;
@@ -64,6 +66,12 @@ public class tuning extends LinearOpMode {
             if (gamepad1.dpadDownWasPressed()){
                 outtakeOperator.Kh[x]-=change;
             }
+            if (gamepad1.leftStickButtonWasPressed()){
+                angle+=change;
+            }
+            if (gamepad1.rightStickButtonWasPressed()){
+                angle-=change;
+            }
             String line1="Kx: ";
             for (int i=0;i<=2;i++){
                 if (i==x){
@@ -81,23 +89,18 @@ public class tuning extends LinearOpMode {
             if (gamepad1.xWasPressed()){
                 outtakeOperator.hoodPID=new PID(outtakeOperator.Kh[0],outtakeOperator.Kh[1],outtakeOperator.Kh[2]);
             }
+            boolean atTarget=false;
             if (correctingtoggle){
-                outtakeOperator.hold();
+                atTarget=outtakeOperator.setHood(angle);
             }else{
-                holdPositionOperator.stop();
+                outtakeOperator.stopHood();
             }
-            holdPositionOperator.updateCurrentPosition();
+            outtakeOperator.updateHoodAngle();
 
             telemetry.addLine(line1);
-            telemetry.addLine(line2);
-            telemetry.addLine(line3);
-            telemetry.addData("powerX",-holdPositionOperator.powerX);
-            telemetry.addData("powerY",holdPositionOperator.powerY);
-            telemetry.addData("powerT",holdPositionOperator.powerT);
+            telemetry.addData("Power",outtakeOperator.hoodPID.power);
             telemetry.addData("Holding",correctingtoggle);
             telemetry.addData("XOffset",holdPositionOperator.initialPosition.position.x-holdPositionOperator.currentPosition.position.x);
-            telemetry.addData("YOffset",holdPositionOperator.initialPosition.position.y-holdPositionOperator.currentPosition.position.y);
-            telemetry.addData("TOffset",holdPositionOperator.initialPosition.heading.imag * holdPositionOperator.currentPosition.heading.real - holdPositionOperator.initialPosition.heading.real * holdPositionOperator.currentPosition.heading.imag);
             telemetry.update();
         }
     }

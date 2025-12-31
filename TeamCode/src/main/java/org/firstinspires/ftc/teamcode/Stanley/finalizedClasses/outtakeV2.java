@@ -32,8 +32,6 @@ public class outtakeV2 {
     int rotations=0;
     //transfer positions(up, down)
     public static double[] transferpowers ={0.5,0};
-    //save hood angle for starting hood angle
-    public double savehoodAngle=0;
     //if hood running
     public boolean initializingHood =false;
     //hood angle(in degrees)
@@ -52,7 +50,7 @@ public class outtakeV2 {
     //vars
     int targetTagID=-1;
     //voltage jump to be considered a rotation
-    double maxVJump=3.3*0.75;
+    double maxVJump=3.3*0.5;
     //PID instance for hood
     public double[] Kh={0,0,0};
     public PID hoodPID=new PID(Kh[0],Kh[1],Kh[2]);
@@ -376,19 +374,42 @@ public class outtakeV2 {
         double power=hoodPID.update(targetRotations-hoodAngle);
         hoodServo.setPower(power);
         updateHoodAngle();
-        if (hoodAngle>=degrees-epsilon && hoodAngle<=degrees+epsilon) return true;
-        return false;
+        return hoodAngle >= degrees - epsilon && hoodAngle <= degrees + epsilon;
     }
 
-    public void initHoodAngle(){
-        savehoodAngle=hoodSensor.getVoltage();
-        hoodServo.setPower(1);
+    /**
+     * Auto-initializes hood(spin off highest, then reset angle counter)
+     * WARNING:Blocking
+     */
+    public void initHoodAngleBlocking(){
+        for (int i=0;i<=3;i++) {
+            while (hoodSensor.getVoltage() >= 0.01) hoodServo.setPower(1);
+            while (hoodSensor.getVoltage() < 0.01) hoodServo.setPower(1);
+        }
+        //TODO:get real value
+        hoodAngle=60;
+    }
+
+    /**
+     * Resets hood angle counter to highest(gear off)
+     * FOR USE IN EMERGENCIES ONLY
+     */
+    public void resetHoodAngle(){
+        //TODO:Get real value
+        hoodAngle=60;
+    }
+
+    public void stopHood(){
+        hoodServo.setPower(0);
+        updateHoodAngle();
     }
 
     /**
      * Helper function to update current angle of hood
+     * @return Delta change in hood angle(in servo rotations)
      */
-    public void updateHoodAngle(){
+    public double updateHoodAngle(){
+        double saveHoodAngle=hoodAngle;
         double volt=hoodSensor.getVoltage();
         //If last loop there was no voltage(first loop)
         if (lastVolt==-1){
@@ -408,6 +429,7 @@ public class outtakeV2 {
                 lastVolt=volt;
             }
         }
+        return hoodAngle-saveHoodAngle;
     }
 
     /**

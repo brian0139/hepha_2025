@@ -12,6 +12,7 @@ public class PID {
     public double derivative;
     public double maxOutput=1;
     public double minOutput=0;
+    public double power;
     ElapsedTime timer=new ElapsedTime();
 
     /**
@@ -55,6 +56,7 @@ public class PID {
         lastError=error;
         //Reset timer for dt
         timer.reset();
+        power=P+I+D;
         return P+I+D;
     }
 
@@ -78,6 +80,7 @@ public class PID {
         lastError=error;
         //Reset timer for dt
         timer.reset();
+        power=P+I+D;
         return P+I+D;
     }
 }
