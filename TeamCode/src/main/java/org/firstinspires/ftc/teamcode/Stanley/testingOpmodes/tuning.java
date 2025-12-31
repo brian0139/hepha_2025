@@ -84,8 +84,6 @@ public class tuning extends LinearOpMode {
                 }
                 line1+=", ";
             }
-//            telemetry.addData("X",x);
-//            telemetry.addData("Y",y);
             if (gamepad1.xWasPressed()){
                 outtakeOperator.hoodPID=new PID(outtakeOperator.Kh[0],outtakeOperator.Kh[1],outtakeOperator.Kh[2]);
             }
@@ -98,9 +96,12 @@ public class tuning extends LinearOpMode {
             outtakeOperator.updateHoodAngle();
 
             telemetry.addLine(line1);
-            telemetry.addData("Power",outtakeOperator.hoodPID.power);
             telemetry.addData("Holding",correctingtoggle);
-            telemetry.addData("XOffset",holdPositionOperator.initialPosition.position.x-holdPositionOperator.currentPosition.position.x);
+            telemetry.addData("Target",angle);
+            telemetry.addData("Current",outtakeOperator.hoodAngle);
+            telemetry.addData("Power",outtakeOperator.hoodPID.power);
+            telemetry.addData("Offset(rotations)",angle/outtakeOperator.servoDegPerRot-outtakeOperator.hoodAngle);
+            telemetry.addData("AtTarget",atTarget);
             telemetry.update();
         }
     }

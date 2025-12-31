@@ -25,7 +25,8 @@ public class outtakeV2 {
     CRServo hoodServo;
     AnalogInput hoodSensor;
     //Degrees changed for every servo rotation
-    double servoDegPerRot =20;
+    //TODO:Get real value
+    public double servoDegPerRot =20;
     //hood Axon voltage last loop
     double lastVolt=-1;
     //# of rotations hood servo has
