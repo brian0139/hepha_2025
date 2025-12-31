@@ -398,7 +398,7 @@ public class outtakeNewTransfer {
         if (timer.milliseconds()>=time){
             //Update hood position
             this.updateHoodAngle(degrees);
-            //set runninghood to false(no longer running hood)
+            //set initializingHood to false(no longer running hood)
             this.runninghood=false;
             //stop hood servo
             this.hoodServo.setPower(0);

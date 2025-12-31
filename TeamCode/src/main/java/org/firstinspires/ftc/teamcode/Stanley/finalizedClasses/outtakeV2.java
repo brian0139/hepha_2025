@@ -5,8 +5,6 @@ import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
-import com.qualcomm.robotcore.hardware.Servo;
-import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.teamcode.Aaron.aprilTagV3;
@@ -27,20 +25,16 @@ public class outtakeV2 {
     CRServo hoodServo;
     AnalogInput hoodSensor;
     //Degrees changed for every servo rotation
-    double servoDegPerRot =20;
+    //TODO:Get real value
+    public double servoDegPerRot =20;
     //hood Axon voltage last loop
     double lastVolt=-1;
     //# of rotations hood servo has
     int rotations=0;
     //transfer positions(up, down)
     public static double[] transferpowers ={0.5,0};
-    //hood angle transitions
-    //timer
-    ElapsedTime timer=new ElapsedTime();
-    //save hood angle for starting hood angle
-    public double savehoodAngle=0;
     //if hood running
-    public boolean runninghood=false;
+    public boolean initializingHood =false;
     //hood angle(in degrees)
     public double hoodAngle=0;
     //transfer servo
@@ -57,9 +51,9 @@ public class outtakeV2 {
     //vars
     int targetTagID=-1;
     //voltage jump to be considered a rotation
-    double maxVJump=3.3*0.75;
+    double maxVJump=3.3*0.5;
     //PID instance for hood
-    double[] Kh={0,0,0};
+    public double[] Kh={0,0,0};
     public PID hoodPID=new PID(Kh[0],Kh[1],Kh[2]);
     //initial hood angle(max with gear off hood)
     //TODO:Get actual values
@@ -375,18 +369,49 @@ public class outtakeV2 {
      * @return if hood is at position
      */
     public boolean setHood(double degrees){
-        //TODO:Finish function
+        double epsilon=0.01;
+        //TODO:Tune PID
         double targetRotations=degrees/servoDegPerRot;
+        double power=hoodPID.update(targetRotations-hoodAngle);
+        hoodServo.setPower(power);
+        updateHoodAngle();
+        return hoodAngle >= degrees - epsilon && hoodAngle <= degrees + epsilon;
+    }
 
-        return false;
+    /**
+     * Auto-initializes hood(spin off highest, then reset angle counter)
+     * WARNING:Blocking
+     */
+    public void initHoodAngleBlocking(){
+        for (int i=0;i<=3;i++) {
+            while (hoodSensor.getVoltage() >= 0.01) hoodServo.setPower(1);
+            while (hoodSensor.getVoltage() < 0.01) hoodServo.setPower(1);
+        }
+        //TODO:get real value
+        hoodAngle=60;
+    }
+
+    /**
+     * Resets hood angle counter to highest(gear off)
+     * FOR USE IN EMERGENCIES ONLY
+     */
+    public void resetHoodAngle(){
+        //TODO:Get real value
+        hoodAngle=60;
+    }
+
+    public void stopHood(){
+        hoodServo.setPower(0);
+        updateHoodAngle();
     }
 
     /**
      * Helper function to update current angle of hood
-     * @param volt current Axon voltage reading
+     * @return Delta change in hood angle(in servo rotations)
      */
-    public void updateHoodAngle(double volt){
-        //TODO:Finish function
+    public double updateHoodAngle(){
+        double saveHoodAngle=hoodAngle;
+        double volt=hoodSensor.getVoltage();
         //If last loop there was no voltage(first loop)
         if (lastVolt==-1){
             //initialize lastvolt
@@ -405,6 +430,7 @@ public class outtakeV2 {
                 lastVolt=volt;
             }
         }
+        return hoodAngle-saveHoodAngle;
     }
 
     /**
