@@ -1,6 +1,8 @@
 package org.firstinspires.ftc.teamcode.Stanley.testingOpmodes;
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.Stanley.finalizedClasses.outtakeV2;
 
+import com.acmerobotics.dashboard.FtcDashboard;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.AnalogInput;
@@ -27,6 +29,8 @@ public class outtakeTest extends LinearOpMode{
         flywheelDrive=hardwareMap.get(DcMotorEx.class,"flywheel");
         flywheelDriveR=hardwareMap.get(DcMotorEx.class,"flywheelR");
         transfer=hardwareMap.get(DcMotor.class,"par1");
+        FtcDashboard dashboard=FtcDashboard.getInstance();
+        Telemetry dashboardtelemetry=dashboard.getTelemetry();
         ElapsedTime timer=new ElapsedTime();
         //TODO:add hood Sensor
         outtakeV2 outtakeOperator = new outtakeV2(hardwareMap, flywheelDrive, flywheelDriveR,"Red",null,null,null,null,hoodServo,hoodSensor,transfer,false);
@@ -37,12 +41,29 @@ public class outtakeTest extends LinearOpMode{
         //wait for driver to press play
         waitForStart();
         while (opModeIsActive()){
+            hoodServo.setPower(-gamepad1.left_stick_y*0.002);
             if (gamepad1.rightBumperWasPressed()) {
-                while(hoodSensor.getVoltage()<=3.28) hoodServo.setPower(0.2);
+                while(hoodSensor.getVoltage()<=3.2) {
+                    hoodServo.setPower(0.1);
+                    telemetry.addData("Voltage",hoodSensor.getVoltage());
+                    dashboardtelemetry.addData("Voltage",hoodSensor.getVoltage());
+                    dashboardtelemetry.update();
+                    telemetry.update();
+                }
             }
             if (gamepad1.leftBumperWasPressed()) {
-                while(hoodSensor.getVoltage()>=0.2) hoodServo.setPower(-0.2);
+                while(hoodSensor.getVoltage()>=0.1) {
+                    hoodServo.setPower(-0.1);
+                    telemetry.addData("Voltage",hoodSensor.getVoltage());
+                    dashboardtelemetry.addData("Voltage",hoodSensor.getVoltage());
+                    dashboardtelemetry.update();
+                    telemetry.update();
+                }
             }
+            if (gamepad1.yWasPressed()) hoodServo.setPower(0);
+            telemetry.addData("Voltage",hoodSensor.getVoltage());
+            dashboardtelemetry.addData("Voltage",hoodSensor.getVoltage());
+            dashboardtelemetry.update();
             telemetry.update();
         }
     }
