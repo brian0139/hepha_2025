@@ -2,7 +2,6 @@ package org.firstinspires.ftc.teamcode.Alvin;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
-import com.qualcomm.robotcore.hardware.Servo;
 
 public class intake {
     public DcMotor intakeMotor;
@@ -12,16 +11,14 @@ public class intake {
     private double reversePower = -1.0;  // Reverse power
     private double stopPower = 0.0;      // Stop power
 
-    //non-blocking "intake until pixel
+    //non-blocking "intake until pixel"
     private boolean runningPixelIntake = false;
-    private long pixelIntakeStartTime = 0;
-    private long pixelIntakeTimeoutMs = 0;
 
     public intake(HardwareMap hardwareMap, String servoDeviceName, String colorDeviceName) {
         intakeMotor = hardwareMap.get(DcMotor.class, servoDeviceName);
         colorDetector = new colorSensor(hardwareMap, colorDeviceName);
         colorDetector.enableLight(true);
-        stop();
+        stop();  // Ensure motor is stopped initially
     }
 
     public void setPower(double power) {
@@ -42,28 +39,32 @@ public class intake {
         setPower(stopPower);
     }
 
+    // Check if a pixel is detected (green or purple)
     public boolean isPixelDetected() {
         if (colorDetector == null) return false;
         return colorDetector.getDetected() != 0;
     }
 
     /**
-     * First call: starts the intake and records start time.
-     * Later calls: checks for pixel or timeout, then stops.
-     * @return true once a pixel is detected OR timeout reached.
+     * Runs intake motor until a pixel is detected, then stops the motor.
+     * @return true once a pixel is detected.
      */
     public boolean intakeUntilPixel() {
-        // If we rnt currently running this routine, start it
-        intake();
-        if (isPixelDetected()) {
-            stop();
-            runningPixelIntake = false;
-            // If timed out and no pixel, still return false for "detected"
-            return isPixelDetected();
+        // Start intake motor if not already running
+        if (!runningPixelIntake) {
+            intake();
+            runningPixelIntake = true;
         }
 
-        // Still running, nothing finished yet
-        return false;
+        // Check for pixel detection
+        if (isPixelDetected()) {
+            stop();  // Stop the intake motor as soon as a pixel is detected
+            runningPixelIntake = false;  // Stop the routine
+            return true;  // Pixel detected
+        }
+
+        // Continue running intake motor if no pixel is detected yet
+        return false;  // No pixel yet, still running
     }
 
     public void setPowerLevels(double forwardPower, double reversePower) {
@@ -85,5 +86,3 @@ public class intake {
         }
     }
 }
-
-
