@@ -23,7 +23,7 @@ public class tuning extends LinearOpMode {
     outtakeV2 outtakeOperator=null;
     double change=0.1;
     int x=0;
-    //TODO:Get real value+sync with outtakeV2 value
+    //TODO:Get real value+sync with outtakeV2 values
     double angle=60;
     boolean correctingtoggle=false;
     //FTC dashboard telemetry
