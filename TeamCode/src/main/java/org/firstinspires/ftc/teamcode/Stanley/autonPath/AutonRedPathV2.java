@@ -4,8 +4,16 @@ import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.AnalogInput;
+import com.qualcomm.robotcore.hardware.CRServo;
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.Servo;
 
+import org.firstinspires.ftc.teamcode.Alvin.colorSensor;
 import org.firstinspires.ftc.teamcode.Alvin.intake;
+import org.firstinspires.ftc.teamcode.Brian.spindexer;
 import org.firstinspires.ftc.teamcode.Brian.spindexerColor;
 import org.firstinspires.ftc.teamcode.Stanley.finalizedClasses.outtakeV2;
 
@@ -13,13 +21,113 @@ import org.firstinspires.ftc.teamcode.Stanley.finalizedClasses.outtakeV2;
 public class AutonRedPathV2 extends LinearOpMode {
 
     // TODO:Subsystem instances - initialize these in runOpMode
-    private outtakeV2 outtake;
-    private intake intakeSystem;
-    private spindexerColor spindexer;
+    outtakeV2 outtake;
+    intake intakeSystem;
+    spindexerColor spindexer;
+    Servo spindexerServo=null;
+    DcMotor intakeMotor=null;
+    Servo transfer=null;
+    DcMotorEx flywheel=null;
+    CRServo hood=null;
+    AnalogInput hoodSensor=null;
+    colorSensor intakeSensor;
 
     @Override
     public void runOpMode() throws InterruptedException {
+        // Initialize subsystems
+        spindexerServo=hardwareMap.servo.get("spindexerServo");
+        intakeMotor=hardwareMap.dcMotor.get("intake");
+        hoodSensor=hardwareMap.get(AnalogInput.class,"hoodAnalog");
+        flywheel=(DcMotorEx) hardwareMap.dcMotor.get("flywheel");
+        flywheel.setDirection(DcMotorSimple.Direction.REVERSE);
+        transfer=hardwareMap.servo.get("transferServo");
+        hood=hardwareMap.crservo.get("hoodServo");
+//        outtake = new outtakeV2(hardwareMap,flywheel,);
+//        intakeSystem = new intake(hardwareMap,"intake",intakeSensor);
+//        spindexer=new spindexerColor(spindexerServo,intakeMotor,hardwareMap);
 
+        telemetry.addData("Status", "Initialized");
+        telemetry.update();
+
+        waitForStart();
+
+        if (isStopRequested()) return;
+
+        // ===== TEST 1: Turret Auto-Aim =====
+        telemetry.addData("Test", "1. Turret Auto-Aim");
+        telemetry.update();
+        Action turretAim = new TurretAutoAimUntilAligned(5.0);
+        runAction(turretAim, 3000); // 3 second timeout
+        sleep(500);
+
+        // ===== TEST 2: Hood Angle =====
+        telemetry.addData("Test", "2. Hood Angle");
+        telemetry.update();
+        Action setHood = new SetHoodAngle(45.0);
+        runAction(setHood, 2000);
+        sleep(500);
+
+        // ===== TEST 3: Flywheel Spin =====
+        telemetry.addData("Test", "3. Flywheel");
+        telemetry.update();
+        Action spinFlywheel = new SpinFlywheel(2000, 50);
+        runAction(spinFlywheel, 3000);
+        sleep(1000);
+
+        // ===== TEST 4: Stop Flywheel =====
+        telemetry.addData("Test", "4. Stop Flywheel");
+        telemetry.update();
+        Action stopFlywheel = new StopFlywheel();
+        runAction(stopFlywheel, 500);
+        sleep(500);
+
+        // ===== TEST 5: Intake =====
+        telemetry.addData("Test", "5. Intake Pixel");
+        telemetry.update();
+        Action intake = new IntakePixel(3000);
+        runAction(intake, 3000);
+        sleep(500);
+
+        // ===== TEST 6: Spindexer =====
+        telemetry.addData("Test", "6. Spindexer to Motif");
+        telemetry.update();
+        Action spinMotif = new SpinToMotif(0);
+        runAction(spinMotif, 3000);
+        sleep(500);
+
+        // ===== TEST 7: Full Shoot Sequence =====
+        telemetry.addData("Test", "7. Complete Shoot Sequence");
+        telemetry.update();
+        Action shootSequence = new ShootSequence(45.0, 2000, 50);
+        runAction(shootSequence, 10000);
+
+        telemetry.addData("Status", "All Tests Complete");
+        telemetry.update();
+    }
+
+    /**
+     * Helper method to run an action with timeout
+     */
+    private void runAction(Action action, long timeoutMs) {
+        long startTime = System.currentTimeMillis();
+        TelemetryPacket packet = new TelemetryPacket();
+
+        while (opModeIsActive() && !isStopRequested()) {
+            boolean running = action.run(packet);
+            telemetry.update();
+
+            if (!running) {
+                telemetry.addData("Action", "Complete");
+                break;
+            }
+
+            if (System.currentTimeMillis() - startTime > timeoutMs) {
+                telemetry.addData("Action", "Timeout");
+                break;
+            }
+
+            sleep(20); // Small delay between iterations
+        }
     }
 
     // ==================== TURRET ACTION ====================
