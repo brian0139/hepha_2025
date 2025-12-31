@@ -1,76 +1,74 @@
 package org.firstinspires.ftc.teamcode.Alvin;
 
-import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
-public class intakeTest {
-    public DcMotor intake;
-    public colorSensor intakeSensor;
+@TeleOp(name="Simple IntakeTest", group="Test")
+public class intakeTest extends LinearOpMode {
 
-    private double intakePower = 1.0;    // Forward power
-    private double reversePower = -1.0;  // Reverse power
-    private double stopPower = 0.0;      // Stop power
+    // Constants for hardware configuration
+    private static final String INTAKE_MOTOR_NAME = "intakeMotor";
+    private static final String COLOR_SENSOR_NAME = "colorSensor";
 
-    public intakeTest(HardwareMap hardwareMap) {
-        intake = hardwareMap.get(DcMotor.class, "intake");
-        intakeSensor = new colorSensor(hardwareMap, "intakeSensor");
-        stop();
-    }
+    @Override
+    public void runOpMode() {
+        intake in = new intake(hardwareMap, INTAKE_MOTOR_NAME, COLOR_SENSOR_NAME);
 
-    public void setPower(double power) {
-        if (intake != null) {
-            intake.setPower(power);
-        }
-    }
+        boolean runningUntilPixel = false;
+        boolean pixelDetected = false;
 
-    public void intake() {
-        setPower(intakePower);
-    }
+        telemetry.addLine("IntakeTest ready.");
+        telemetry.addLine("A: intake (forward)   B: reverse   X: stop");
+        telemetry.addLine("Y: start/stop intakeUntilPixel()");
+        telemetry.addLine("Controls: A=forward, B=reverse, X=stop, Y=start/stop Pixel Test");
+        telemetry.update();
 
-    public void reverse() {
-        setPower(reversePower);
-    }
+        waitForStart();
 
-    public void stop() {
-        setPower(stopPower);
-    }
+        while (opModeIsActive()) {
+            boolean a = gamepad1.a;
+            boolean b = gamepad1.b;
+            boolean x = gamepad1.x;
+            boolean y = gamepad1.y;
 
-    public boolean isPixelDetected() {
-        if (intakeSensor == null) return false;
-        // Check if either green (1) or purple (2) is detected
-        return intakeSensor.getDetected() != 0;
-    }
+            // Handle button presses
+            if (a) {
+                in.intake();  // Start intake forward
+                runningUntilPixel = false;
+            }
+            if (b) {
+                in.reverse();  // Reverse intake
+                runningUntilPixel = false;
+            }
+            if (x) {
+                in.stop();  // Stop intake
+                runningUntilPixel = false;
+            }
 
-    /**
-     * Call this repeatedly in your loop.
-     * Runs intake motor until a pixel is detected, then stops.
-     * @return true if pixel detected (and motor stopped), false if still intaking
-     */
-    public boolean intakeUntilPixel() {
-        if (isPixelDetected()) {
-            stop();
-            return true;  // Pixel found, intake stopped
-        } else {
-            intake();
-            return false; // No pixel yet, keep running
-        }
-    }
+            // Start/stop intakeUntilPixel process when Y is pressed
+            if (y) {
+                runningUntilPixel = !runningUntilPixel; // Toggle
+                pixelDetected = false; // Reset detection flag
+                if (runningUntilPixel) {
+                    telemetry.addLine("Running intakeUntilPixel...");
+                } else {
+                    telemetry.addLine("Stopped intakeUntilPixel.");
+                }
+            }
 
-    public void setPowerLevels(double forwardPower, double reversePower) {
-        this.intakePower = forwardPower;
-        this.reversePower = reversePower;
-    }
+            // Run the intake until pixel (or color 1/2) is detected
+            if (runningUntilPixel) {
+                pixelDetected = in.intakeUntilPixel();
+            }
 
-    public void setColorThresholds(float greenMin, float greenMax,
-                                   float purpleMin, float purpleMax) {
-        if (intakeSensor != null) {
-            intakeSensor.setThresholds(greenMin, greenMax, purpleMin, purpleMax);
-        }
-    }
+            // Show the results
+            telemetry.addData("PixelDetected", pixelDetected ? "Yes" : "No");
+            telemetry.addData("Detected",in.colorDetector.getDetected());
+            telemetry.addLine("Controls:");
+            telemetry.addLine("A: forward | B: reverse | X: stop | Y: toggle Pixel Test");
+            telemetry.update();
 
-    public void enableColorLight(boolean on) {
-        if (intakeSensor != null) {
-            intakeSensor.enableLight(on);
+            idle();
         }
     }
 }
