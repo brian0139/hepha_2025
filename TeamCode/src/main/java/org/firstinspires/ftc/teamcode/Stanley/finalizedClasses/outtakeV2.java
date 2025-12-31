@@ -57,7 +57,7 @@ public class outtakeV2 {
     public double[] Kh={0,0,0};
     public PID hoodPID=new PID(Kh[0],Kh[1],Kh[2]);
     //initial hood angle(max with gear off hood)
-    //TODO:Get actual value
+    //TODO:Get actual values
     double initialHoodAngle=60;
     public outtakeV2(HardwareMap hardwareMap, DcMotorEx flywheelDrive, DcMotorEx flywheelDriveR, String teamColor, DcMotor leftFront, DcMotor rightFront, DcMotor leftBack, DcMotor rightBack, CRServo hoodServo, AnalogInput hoodSensor, DcMotor transfer, boolean useTag){
         this.flywheelDriveR = flywheelDriveR;
