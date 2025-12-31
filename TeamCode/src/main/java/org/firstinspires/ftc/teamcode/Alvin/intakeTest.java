@@ -1,50 +1,76 @@
 package org.firstinspires.ftc.teamcode.Alvin;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
-@TeleOp(name="intakeTest (Alvin)", group="Test")
-public class intakeTest extends LinearOpMode {
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.HardwareMap;
 
-    // TODO: change these to match your Robot Configuration names
-    private static final String INTAKE_MOTOR_NAME = "intake";
-    private static final String COLOR_SENSOR_NAME = "intakeSensor";
+public class intakeTest {
+    public DcMotor intake;
+    public colorSensor intakeSensor;
 
-    // Intake-until-pixel test settings
-    private static final long UNTIL_PIXEL_TIMEOUT_MS = 2500;
+    private double intakePower = 1.0;    // Forward power
+    private double reversePower = -1.0;  // Reverse power
+    private double stopPower = 0.0;      // Stop power
 
-    // Edge detection so holding a button doesn't retrigger repeatedly
-    private boolean prevA = false;
-    private boolean prevB = false;
-    private boolean prevX = false;
-    private boolean prevY = false;
-    private boolean prevLB = false;
-    private boolean prevRB = false;
+    public intakeTest(HardwareMap hardwareMap) {
+        intake = hardwareMap.get(DcMotor.class, "intake");
+        intakeSensor = new colorSensor(hardwareMap, "intakeSensor");
+        stop();
+    }
 
-    @Override
-    public void runOpMode() {
-        intake in = new intake(hardwareMap, INTAKE_MOTOR_NAME, COLOR_SENSOR_NAME);
+    public void setPower(double power) {
+        if (intake != null) {
+            intake.setPower(power);
+        }
+    }
 
-        boolean runningUntilPixel = false;
-        boolean lastDetected = false;
-        long lastStartMs = 0;
+    public void intake() {
+        setPower(intakePower);
+    }
 
-        telemetry.addLine("IntakeTest ready.");
-        telemetry.addLine("A: intake (forward)   B: reverse   X: stop");
-        telemetry.addLine("Y: start/stop intakeUntilPixel()");
-        telemetry.addLine("LB: color light OFF   RB: color light ON");
-        telemetry.update();
+    public void reverse() {
+        setPower(reversePower);
+    }
 
-        waitForStart();
+    public void stop() {
+        setPower(stopPower);
+    }
 
-        while (opModeIsActive()) {
-            if (gamepad1.y){
-                in.intakeUntilPixel();
-            }else{
-                in.intakeMotor.setPower(0);
-            }
+    public boolean isPixelDetected() {
+        if (intakeSensor == null) return false;
+        // Check if either green (1) or purple (2) is detected
+        return intakeSensor.getDetected() != 0;
+    }
 
-            telemetry.addData("Detected",in.isPixelDetected());
-            telemetry.update();
+    /**
+     * Call this repeatedly in your loop.
+     * Runs intake motor until a pixel is detected, then stops.
+     * @return true if pixel detected (and motor stopped), false if still intaking
+     */
+    public boolean intakeUntilPixel() {
+        if (isPixelDetected()) {
+            stop();
+            return true;  // Pixel found, intake stopped
+        } else {
+            intake();
+            return false; // No pixel yet, keep running
+        }
+    }
+
+    public void setPowerLevels(double forwardPower, double reversePower) {
+        this.intakePower = forwardPower;
+        this.reversePower = reversePower;
+    }
+
+    public void setColorThresholds(float greenMin, float greenMax,
+                                   float purpleMin, float purpleMax) {
+        if (intakeSensor != null) {
+            intakeSensor.setThresholds(greenMin, greenMax, purpleMin, purpleMax);
+        }
+    }
+
+    public void enableColorLight(boolean on) {
+        if (intakeSensor != null) {
+            intakeSensor.enableLight(on);
         }
     }
 }
