@@ -25,8 +25,7 @@ public class outtakeV2 {
     CRServo hoodServo;
     AnalogInput hoodSensor;
     //Degrees changed for every servo rotation
-    //TODO:Get real value
-    public double servoDegPerRot =20;
+    public double servoDegPerRot =26.53;
     //hood Axon voltage last loop
     double lastVolt=-1;
     //# of rotations hood servo has
@@ -56,8 +55,7 @@ public class outtakeV2 {
     public double[] Kh={0,0,0};
     public PID hoodPID=new PID(Kh[0],Kh[1],Kh[2]);
     //initial hood angle(max with gear off hood)
-    //TODO:Get actual values
-    double initialHoodAngle=60;
+    double initialHoodAngle=66.81;
     public outtakeV2(HardwareMap hardwareMap, DcMotorEx flywheelDrive, DcMotorEx flywheelDriveR, String teamColor, DcMotor leftFront, DcMotor rightFront, DcMotor leftBack, DcMotor rightBack, CRServo hoodServo, AnalogInput hoodSensor, DcMotor transfer, boolean useTag){
         this.flywheelDriveR = flywheelDriveR;
         this.flywheelDrive=flywheelDrive;
@@ -387,8 +385,7 @@ public class outtakeV2 {
             while (hoodSensor.getVoltage() >= 0.01) hoodServo.setPower(1);
             while (hoodSensor.getVoltage() < 0.01) hoodServo.setPower(1);
         }
-        //TODO:get real value
-        hoodAngle=60;
+        hoodAngle=66.81;
     }
 
     /**
@@ -396,8 +393,7 @@ public class outtakeV2 {
      * FOR USE IN EMERGENCIES ONLY
      */
     public void resetHoodAngle(){
-        //TODO:Get real value
-        hoodAngle=60;
+        hoodAngle=66.81;
     }
 
     public void stopHood(){
