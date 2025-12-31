@@ -30,7 +30,7 @@ public class spindexerColorTest extends LinearOpMode{
         intake=hardwareMap.get(DcMotor.class, "intake");
 
 
-        spindexercolor=new spindexerColor(spindexer,hardwareMap);
+        spindexercolor=new spindexerColor(spindexer,intake,hardwareMap);
 
         boolean tmp=false;
 //        FtcDashboard dashboard=FtcDashboard.getInstance();
