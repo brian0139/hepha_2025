@@ -2,7 +2,6 @@ package org.firstinspires.ftc.teamcode.Stanley.autonPath;
 
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
-import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
@@ -328,7 +327,6 @@ public class AutonRedPathV2 extends LinearOpMode {
                 case PHASE_COMPLETE:
                     return false;
             }
-
             return false;
         }
     }
