@@ -26,7 +26,7 @@ public class intakeTest extends LinearOpMode {
         // Initialize hardware
 //        intake = hardwareMap.get(DcMotor.class, "intake");  // Assuming the motor name is "intake"
 //        intakeSensor = new colorSensor(hardwareMap, "intakeSensor");  // Assuming the sensor name is "intakeSensor"
-        intakeSensor.enableLight(true);  // Enable the color light on the sensor
+//        intakeSensor.enableLight(true);  // Enable the color light on the sensor
         intake intakeOperator=new intake(hardwareMap,"intake","intakeSensor");
 
 
