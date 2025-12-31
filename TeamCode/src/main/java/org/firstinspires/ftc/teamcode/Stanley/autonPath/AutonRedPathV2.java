@@ -20,10 +20,7 @@ public class AutonRedPathV2 extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
-        // Initialize your subsystems here
-        // outtake = new outtakeV2(...);
-        // intakeSystem = new intake(...);
-        // spindexer = new spindexerColor(...);
+
     }
 
     // ==================== TURRET ACTION ====================
