@@ -260,7 +260,7 @@ public class AutonRedPath extends LinearOpMode {
                 this.outtakeOperator.transferDown();
             }
             return false;
+
         }
     }
-
 }

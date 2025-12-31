@@ -60,7 +60,7 @@ public class spindexer{
     // calling intake if intakeuntilpixel until returns true
     // if returns true then read color of ball and decide if want to spit it out or intake
     public int detectIncomingBall(intake intakeSystem, colorSensor colorSensor) {
-        if (intakeSystem.intakeUntilPixel(1000)) {
+        if (intakeSystem.intakeUntilPixel()) {
             int detectedColor = colorSensor.getDetected();
             for (int i = 0; i < 3; i++) {
                 if (spindexerSlots[i] == 1) numGreen++;
