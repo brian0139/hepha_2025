@@ -41,6 +41,7 @@ public class tuning extends LinearOpMode {
         waitForStart();
         while (opModeIsActive()){
             if (gamepad1.yWasPressed()) correctingtoggle=!correctingtoggle;
+            if (gamepad1.aWasPressed()) outtakeOperator.initHoodAngleBlocking();
             //shift speed
             if (gamepad1.rightBumperWasPressed()){
                 change*=10;
@@ -94,7 +95,7 @@ public class tuning extends LinearOpMode {
             }else{
                 outtakeOperator.stopHood();
             }
-            //outtakeOperator.updateHoodAngle();
+            outtakeOperator.updateHoodAngle();
 
             telemetry.addLine(line1);
             telemetry.addData("Holding",correctingtoggle);
