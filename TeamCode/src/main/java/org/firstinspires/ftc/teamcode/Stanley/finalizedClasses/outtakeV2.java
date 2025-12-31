@@ -23,7 +23,7 @@ public class outtakeV2 {
     public DcMotorEx flywheelDrive;
     //Outtake Hood Servo
     CRServo hoodServo;
-    AnalogInput hoodSensor;
+    public AnalogInput hoodSensor;
     //Degrees changed for every servo rotation
     public double servoDegPerRot =26.53;
     //hood Axon voltage last loop

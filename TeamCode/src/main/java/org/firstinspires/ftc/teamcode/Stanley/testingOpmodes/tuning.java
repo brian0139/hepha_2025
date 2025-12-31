@@ -99,6 +99,7 @@ public class tuning extends LinearOpMode {
             telemetry.addData("Holding",correctingtoggle);
             telemetry.addData("Target",angle);
             telemetry.addData("Current",outtakeOperator.hoodAngle);
+            telemetry.addData("CurrentV",outtakeOperator.hoodSensor.getVoltage());
             telemetry.addData("Power",outtakeOperator.hoodPID.power);
             telemetry.addData("Offset(rotations)",angle/outtakeOperator.servoDegPerRot-outtakeOperator.hoodAngle);
             telemetry.addData("AtTarget",atTarget);
@@ -107,6 +108,7 @@ public class tuning extends LinearOpMode {
             dashboardTelemetry.addData("Holding",correctingtoggle);
             dashboardTelemetry.addData("Target",angle);
             dashboardTelemetry.addData("Current",outtakeOperator.hoodAngle);
+            dashboardTelemetry.addData("CurrentV",outtakeOperator.hoodSensor.getVoltage());
             dashboardTelemetry.addData("Power",outtakeOperator.hoodPID.power);
             dashboardTelemetry.addData("Offset(rotations)",angle/outtakeOperator.servoDegPerRot-outtakeOperator.hoodAngle);
             dashboardTelemetry.addData("AtTarget",atTarget);
