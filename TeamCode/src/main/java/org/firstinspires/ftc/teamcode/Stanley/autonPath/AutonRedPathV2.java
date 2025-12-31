@@ -13,7 +13,7 @@ import org.firstinspires.ftc.teamcode.Stanley.finalizedClasses.outtakeV2;
 @Autonomous
 public class AutonRedPathV2 extends LinearOpMode {
 
-    // Subsystem instances - initialize these in runOpMode
+    // TODO:Subsystem instances - initialize these in runOpMode
     private outtakeV2 outtake;
     private intake intakeSystem;
     private spindexerColor spindexer;
