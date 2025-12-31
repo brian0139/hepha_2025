@@ -9,13 +9,19 @@ import com.qualcomm.robotcore.hardware.TouchSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.Alvin.colorSensor;
+import org.firstinspires.ftc.teamcode.Stanley.finalizedClasses.PID;
 
 public class spindexerColor {
     public CRServo spindexerServo=null;
     ElapsedTime timer=new ElapsedTime();
     colorSensor outtakesensor;
     colorSensor intakesensor;
-
+    AnalogInput spindexerSensor;
+    public double kp=0.00;
+    public double ki=0.00;
+    public double kd=0.00;
+    PID spindexerPID=new PID(kp,ki,kd);
+    double detectedLocation=0;
     boolean detectedLastLoop=false;
     public int[] spindexerSlots={0,0,0}; //0 none, 1 green, 2 purple
     public int[][] motifPatterns = {
@@ -23,7 +29,7 @@ public class spindexerColor {
             {2, 1, 2},
             {2, 2, 1}
     };
-    public int motifIndex=0;
+//    public int motifIndex=0;
     public int[] dummyMotif={1,2,2};
     public int[] currentMotifPattern=null;
     public spindexerColor(CRServo spindexerServo, HardwareMap hardwareMap){
@@ -32,39 +38,28 @@ public class spindexerColor {
         intakesensor=new colorSensor(hardwareMap, "intakeSensor");
     }
 
-    public boolean spinToMotif() {
-        int nextmotif=dummyMotif[motifIndex];
-        int timeout=0;
 
-        while (outtakesensor.getDetected()!=nextmotif&&timeout<3) {
+    public boolean spinToMotif(int motifIndex) {
+        double epsilon=0.01;
+        int nextmotif=dummyMotif[motifIndex];
+        if (outtakesensor.getDetected()!=nextmotif){
             spindexerServo.setPower(0.75);
-            if ((outtakesensor.getDetected()==1||outtakesensor.getDetected()==2) && !detectedLastLoop){
-                timeout++;
-                detectedLastLoop=true;
-            }else{
-                detectedLastLoop=false;
-            }
-        }
-        if (outtakesensor.getDetected()==nextmotif&&timeout<3){
-            motifIndex++;
-            motifIndex%=3;
-            timer.reset();
-            spindexerServo.setPower(0.01);
-            if (timer.milliseconds()>=400){
-                spindexerServo.setPower(0);
-            }
-            return true;
         } else {
-            timer.reset();
-            spindexerServo.setPower(0.01);
-            if (timer.milliseconds()>=400){
-                spindexerServo.setPower(0);
-            }
-            return false;
+            detectedLocation=spindexerSensor.getVoltage();
+            spindexerPID.init();
         }
+        if (detectedLocation!=-1){
+            spindexerServo.setPower(spindexerPID.update(detectedLocation-spindexerSensor.getVoltage()));
+            return (spindexerSensor.getVoltage()>=detectedLocation-epsilon && spindexerSensor.getVoltage()<=detectedLocation+epsilon);
+        }
+        return false;
+    }
+
+    public void initSpin(){
+        detectedLocation=-1;
     }
     public boolean spinToIntake(){
-        int nextMotif=dummyMotif[motifIndex];
+//        int nextMotif=dummyMotif[motifIndex];
         int timeout=0;
         boolean detectedLastLoop=false;
         if ((intakesensor.getDetected()!=0)&&timeout<3){
