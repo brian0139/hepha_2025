@@ -36,7 +36,7 @@ public class intake {
     }
 
     public void stop() {
-        setPower(stopPower);
+        intakeMotor.setPower(0);
     }
 
     // Check if a pixel is detected (green or purple)
