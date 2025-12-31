@@ -93,7 +93,7 @@ public class tuning extends LinearOpMode {
             }else{
                 outtakeOperator.stopHood();
             }
-            outtakeOperator.updateHoodAngle();
+            //outtakeOperator.updateHoodAngle();
 
             telemetry.addLine(line1);
             telemetry.addData("Holding",correctingtoggle);

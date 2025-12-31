@@ -413,11 +413,11 @@ public class outtakeV2 {
             //initialize lastvolt
             lastVolt=volt;
         }else{//Otherwise calculate position
-            if (volt-lastVolt>=maxVJump){
+            if (volt-lastVolt<=-maxVJump){
                 rotations++;
                 hoodAngle=rotations+3.3/volt;
                 lastVolt=volt;
-            }else if(volt-lastVolt<=maxVJump){
+            }else if(volt-lastVolt>=maxVJump){
                 rotations--;
                 hoodAngle=rotations+3.3/volt;
                 lastVolt=volt;
