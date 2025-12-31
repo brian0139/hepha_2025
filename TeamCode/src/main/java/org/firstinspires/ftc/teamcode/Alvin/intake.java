@@ -5,8 +5,8 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
 public class intake {
-    private DcMotor intakeMotor;
-    private colorSensor colorDetector;
+    public DcMotor intakeMotor;
+    public colorSensor colorDetector;
 
     private double intakePower = 1.0;    // Forward power
     private double reversePower = -1.0;  // Reverse power
@@ -50,23 +50,12 @@ public class intake {
     /**
      * First call: starts the intake and records start time.
      * Later calls: checks for pixel or timeout, then stops.
-     * @param timeoutMs how long to try, in milliseconds
      * @return true once a pixel is detected OR timeout reached.
      */
-    public boolean intakeUntilPixel(long timeoutMs) {
+    public boolean intakeUntilPixel() {
         // If we rnt currently running this routine, start it
-        if (!runningPixelIntake) {
-            runningPixelIntake = true;
-            pixelIntakeStartTime = System.currentTimeMillis();
-            pixelIntakeTimeoutMs = timeoutMs;
-            intake();
-        }
-
-        // Alr running: check conditions once per call
-        boolean timedOut =
-                System.currentTimeMillis() - pixelIntakeStartTime >= pixelIntakeTimeoutMs;
-
-        if (isPixelDetected() || timedOut) {
+        intake();
+        if (isPixelDetected()) {
             stop();
             runningPixelIntake = false;
             // If timed out and no pixel, still return false for "detected"
@@ -96,4 +85,5 @@ public class intake {
         }
     }
 }
+
 
