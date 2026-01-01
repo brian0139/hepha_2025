@@ -46,7 +46,7 @@ public class outtakeV2 {
     DcMotor rightBack;
     //auto aim vars
     //  Drive = Error * Gain
-    public double TURN_GAIN   =  0.025  ;   //  Turn Control "Gain".  e.g. Ramp up to 25% power at a 25 degree error. (0.25 / 25.0)
+    public double TURN_GAIN   =  0.1;   //  Turn Control "Gain".  e.g. Ramp up to 25% power at a 25 degree error. (0.25 / 25.0)
     final double MAX_AUTO_TURN  = 0.3;   //  Clip the turn speed to this max value (adjust for your robot)
     //vars
     int targetTagID=-1;

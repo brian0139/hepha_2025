@@ -61,13 +61,20 @@ public class AutonRedPathV2 extends LinearOpMode {
 
         waitForStart();
 
-        if (isStopRequested()) return;
+        while (opModeIsActive()) {
+            if (isStopRequested()) return;
+            Actions.runBlocking(
+                    drive.actionBuilder(beginPose)
+                            .stopAndAdd(new TurretAutoAimUntilAligned())
+                            .build()
+            );
+        }
 
         // ===== TEST 1: Turret Auto-Aim =====
-        telemetry.addData("Test", "1. Turret Auto-Aim");
-        telemetry.update();
-        Action turretAim = new TurretAutoAimUntilAligned(5.0);
-        runAction(turretAim, 3000); // 3 second timeout
+//        telemetry.addData("Test", "1. Turret Auto-Aim");
+//        telemetry.update();
+//        Action turretAim = new TurretAutoAimUntilAligned(5.0);
+//        runAction(turretAim, 3000); // 3 second timeout
 
 //        // ===== TEST 2: Hood Angle =====
 //        telemetry.addData("Test", "2. Hood Angle");
@@ -99,12 +106,12 @@ public class AutonRedPathV2 extends LinearOpMode {
 //        Action spinMotif = new SpinToMotif(0);
 //        runAction(spinMotif, 3000);
 //        sleep(500);
-
-        // ===== TEST 7: Full Shoot Sequence =====
-        telemetry.addData("Test", "7. Complete Shoot Sequence");
-        telemetry.update();
-        Action shootSequence = new ShootSequence(45.0, 2000, 50);
-        runAction(shootSequence, 10000);
+//
+//        // ===== TEST 7: Full Shoot Sequence =====
+//        telemetry.addData("Test", "7. Complete Shoot Sequence");
+//        telemetry.update();
+//        Action shootSequence = new ShootSequence(45.0, 2000, 50);
+//        runAction(shootSequence, 10000);
 
         telemetry.addData("Status", "All Tests Complete");
         telemetry.update();
@@ -146,11 +153,9 @@ public class AutonRedPathV2 extends LinearOpMode {
      * Auto-aims turret until within threshold, then completes
      */
     public class TurretAutoAimUntilAligned implements Action {
-        private final double angleThreshold;
         private boolean isComplete = false;
 
-        public TurretAutoAimUntilAligned(double angleThresholdDegrees) {
-            this.angleThreshold = angleThresholdDegrees;
+        public TurretAutoAimUntilAligned() {
         }
 
         @Override
