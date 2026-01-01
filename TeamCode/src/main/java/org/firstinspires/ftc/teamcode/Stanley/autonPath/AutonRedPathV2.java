@@ -37,7 +37,7 @@ public class AutonRedPathV2 extends LinearOpMode {
     CRServo hood=null;
     AnalogInput hoodSensor=null;
     Pose2d beginPose=new Pose2d(-57.5, 43.5, Math.toRadians(360-54));
-    MecanumDrive drive=new MecanumDrive(hardwareMap,beginPose);
+    MecanumDrive drive=null;
     NormalizedColorSensor intakeSensor;
 
     @Override
@@ -48,6 +48,7 @@ public class AutonRedPathV2 extends LinearOpMode {
         hoodSensor=hardwareMap.get(AnalogInput.class,"hoodAnalog");
         flywheel=(DcMotorEx) hardwareMap.dcMotor.get("flywheel");
         flywheel.setDirection(DcMotorSimple.Direction.REVERSE);
+        drive=new MecanumDrive(hardwareMap,beginPose);
 //        transfer=hardwareMap.servo.get("transferServo");
         hood=hardwareMap.crservo.get("hoodServo");
         intakeSensor=hardwareMap.get(NormalizedColorSensor.class,"intakeSensor");
@@ -113,29 +114,11 @@ public class AutonRedPathV2 extends LinearOpMode {
      * Helper method to run an action with timeout
      */
     private void runAction(Action action, long timeoutMs) {
-        double startTime = timer.milliseconds();
-        TelemetryPacket packet = new TelemetryPacket();
-
-        while (opModeIsActive() && !isStopRequested()) {
-            Actions.runBlocking(
-                    drive.actionBuilder(beginPose)
-                            .stopAndAdd(action)
-                            .build()
-            );
-            telemetry.update();
-
-//            if (!running) {
-//                telemetry.addData("Action", "Complete");
-//                break;
-//            }
-//
-//            if (timer.milliseconds() - startTime > timeoutMs) {
-//                telemetry.addData("Action", "Timeout");
-//                break;
-//            }
-
-            sleep(20); // Small delay between iterations
-        }
+        Actions.runBlocking(
+                drive.actionBuilder(beginPose)
+                        .stopAndAdd(action)
+                        .build()
+        );
     }
 
     // ==================== TURRET ACTION ====================

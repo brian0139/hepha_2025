@@ -23,7 +23,7 @@ public class outtakeV2 {
     public DcMotorEx flywheelDrive;
     //Outtake Hood Servo
     CRServo hoodServo;
-    CRServo spindexerServo;
+    CRServo turretServo;
     public AnalogInput hoodSensor;
     //Degrees changed for every servo rotation
     public double servoDegPerRot =26.53;
@@ -66,7 +66,7 @@ public class outtakeV2 {
         this.leftBack=leftBack;
         this.rightBack=rightBack;
         this.hoodServo=hoodServo;
-        this.spindexerServo=hardwareMap.get(CRServo.class,"spindexerServo");
+        this.turretServo =hardwareMap.get(CRServo.class,"turretServo");
         this.hoodSensor=hoodSensor;
         this.transfer=transfer;
         //set target april tag number to aim at depending on team color.
@@ -91,7 +91,7 @@ public class outtakeV2 {
     public boolean autoturn(){
         this.apriltag.scanOnce();
         if (!apriltag.hasValidTarget()){
-            spindexerServo.setPower(0);
+            turretServo.setPower(0);
             return false;
         }
         // Determine heading, range and Yaw (tag image rotation) error so we can use them to control the robot automatically.
@@ -99,7 +99,7 @@ public class outtakeV2 {
 
         // Use the speed and turn "gains" to calculate how we want the robot to move.
         double power   = Range.clip(headingError * TURN_GAIN, -MAX_AUTO_TURN, MAX_AUTO_TURN) ;
-        spindexerServo.setPower(power);
+        turretServo.setPower(power);
         return true;
     }
 
