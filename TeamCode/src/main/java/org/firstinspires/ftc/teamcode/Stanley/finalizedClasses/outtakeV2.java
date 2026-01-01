@@ -95,7 +95,7 @@ public class outtakeV2 {
             return false;
         }
         // Determine heading, range and Yaw (tag image rotation) error so we can use them to control the robot automatically.
-        double  headingError    = -apriltag.getYaw();
+        double  headingError    = apriltag.getYaw();
 
         // Use the speed and turn "gains" to calculate how we want the robot to move.
         double power   = Range.clip(headingError * TURN_GAIN, -MAX_AUTO_TURN, MAX_AUTO_TURN) ;
