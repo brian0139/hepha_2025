@@ -11,6 +11,7 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.NormalizedColorSensor;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.Alvin.colorSensor;
 import org.firstinspires.ftc.teamcode.Alvin.intake;
@@ -26,6 +27,7 @@ public class AutonRedPathV2 extends LinearOpMode {
     intake intakeSystem;
     spindexerColor spindexer;
     CRServo spindexerServo=null;
+    ElapsedTime timer=new ElapsedTime();
     DcMotor intakeMotor=null;
     Servo transfer=null;
     DcMotorEx flywheel=null;
@@ -41,10 +43,10 @@ public class AutonRedPathV2 extends LinearOpMode {
         hoodSensor=hardwareMap.get(AnalogInput.class,"hoodAnalog");
         flywheel=(DcMotorEx) hardwareMap.dcMotor.get("flywheel");
         flywheel.setDirection(DcMotorSimple.Direction.REVERSE);
-        transfer=hardwareMap.servo.get("transferServo");
+//        transfer=hardwareMap.servo.get("transferServo");
         hood=hardwareMap.crservo.get("hoodServo");
         intakeSensor=hardwareMap.get(NormalizedColorSensor.class,"intakeSensor");
-        outtake = new outtakeV2(hardwareMap,flywheel,null,null,null,null,null,null,null,null,null,false);
+        outtake = new outtakeV2(hardwareMap,flywheel,null,null,null,null,null,null,null,null,null,true);
         intakeSystem = new intake(hardwareMap,"intake","intakeSensor");
         spindexer=new spindexerColor(spindexerServo,intakeMotor,hardwareMap);
 
@@ -60,42 +62,37 @@ public class AutonRedPathV2 extends LinearOpMode {
         telemetry.update();
         Action turretAim = new TurretAutoAimUntilAligned(5.0);
         runAction(turretAim, 3000); // 3 second timeout
-        sleep(500);
 
-        // ===== TEST 2: Hood Angle =====
-        telemetry.addData("Test", "2. Hood Angle");
-        telemetry.update();
-        Action setHood = new SetHoodAngle(45.0);
-        runAction(setHood, 2000);
-        sleep(500);
-
-        // ===== TEST 3: Flywheel Spin =====
-        telemetry.addData("Test", "3. Flywheel");
-        telemetry.update();
-        Action spinFlywheel = new SpinFlywheel(2000, 50);
-        runAction(spinFlywheel, 3000);
-        sleep(1000);
-
-        // ===== TEST 4: Stop Flywheel =====
-        telemetry.addData("Test", "4. Stop Flywheel");
-        telemetry.update();
-        Action stopFlywheel = new StopFlywheel();
-        runAction(stopFlywheel, 500);
-        sleep(500);
-
-        // ===== TEST 5: Intake =====
-        telemetry.addData("Test", "5. Intake Pixel");
-        telemetry.update();
-        Action intake = new IntakePixel(3000);
-        runAction(intake, 3000);
-        sleep(500);
+//        // ===== TEST 2: Hood Angle =====
+//        telemetry.addData("Test", "2. Hood Angle");
+//        telemetry.update();
+//        Action setHood = new SetHoodAngle(45.0);
+//        runAction(setHood, 2000);
+//
+//        // ===== TEST 3: Flywheel Spin =====
+//        telemetry.addData("Test", "3. Flywheel");
+//        telemetry.update();
+//        Action spinFlywheel = new SpinFlywheel(2000, 50);
+//        runAction(spinFlywheel, 3000);
+//
+//        // ===== TEST 4: Stop Flywheel =====
+//        telemetry.addData("Test", "4. Stop Flywheel");
+//        telemetry.update();
+//        Action stopFlywheel = new StopFlywheel();
+//        runAction(stopFlywheel, 500);
+//
+//        // ===== TEST 5: Intake =====
+//        telemetry.addData("Test", "5. Intake Pixel");
+//        telemetry.update();
+//        Action intake = new IntakePixel(3000);
+//        runAction(intake, 3000);
 
         // ===== TEST 6: Spindexer =====
-        telemetry.addData("Test", "6. Spindexer to Motif");
-        telemetry.update();
-        Action spinMotif = new SpinToMotif(0);
-        runAction(spinMotif, 3000);
-        sleep(500);
+//        telemetry.addData("Test", "6. Spindexer to Motif");
+//        telemetry.update();
+//        Action spinMotif = new SpinToMotif(0);
+//        runAction(spinMotif, 3000);
+//        sleep(500);
 
         // ===== TEST 7: Full Shoot Sequence =====
         telemetry.addData("Test", "7. Complete Shoot Sequence");
@@ -111,7 +108,7 @@ public class AutonRedPathV2 extends LinearOpMode {
      * Helper method to run an action with timeout
      */
     private void runAction(Action action, long timeoutMs) {
-        long startTime = System.currentTimeMillis();
+        double startTime = timer.milliseconds();
         TelemetryPacket packet = new TelemetryPacket();
 
         while (opModeIsActive() && !isStopRequested()) {
@@ -122,11 +119,11 @@ public class AutonRedPathV2 extends LinearOpMode {
                 telemetry.addData("Action", "Complete");
                 break;
             }
-
-            if (System.currentTimeMillis() - startTime > timeoutMs) {
-                telemetry.addData("Action", "Timeout");
-                break;
-            }
+//
+//            if (timer.milliseconds() - startTime > timeoutMs) {
+//                telemetry.addData("Action", "Timeout");
+//                break;
+//            }
 
             sleep(20); // Small delay between iterations
         }
