@@ -107,6 +107,10 @@ public class outtakeV2 {
     }
     /**
      * Find optimal launch angle and velocity to hit a target with specific impact angle constraints.
+     * Theoretical launch velocity calculation:
+     * PI*Diameter*RPM/60/2,
+     * /2 only for single flywheel.
+     * Note this value is assuming perfect conditions with 0 friction & slippage, actual values may be lower.
      *
      * @param targetX horizontal distance to target (inches)
      * @param targetY vertical height of target above launch point (inches)
