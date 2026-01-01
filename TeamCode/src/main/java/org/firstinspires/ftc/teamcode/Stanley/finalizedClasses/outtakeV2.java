@@ -277,7 +277,11 @@ public class outtakeV2 {
                     }
                 } else {
                     // Impact angle outside acceptable range
-                    if (impactAngle > maxImpactAngle) {
+                    if (impactAngle<=Math.PI/2){
+                        //On ascending part of parabola, launch angle too low
+                        lowAngle=midAngle;
+                    }
+                    else if (impactAngle > maxImpactAngle) {
                         // Impact too steep, launch angle too high
                         highAngle = midAngle;
                     } else {
