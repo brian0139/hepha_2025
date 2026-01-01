@@ -36,7 +36,7 @@ public class outtakeV2 {
     //if hood running
     public boolean initializingHood =false;
     //hood angle(in degrees)
-    public double hoodAngle=0;
+    public double hoodAngle=-1;
     //transfer servo
     public DcMotor transfer;
     //drivetrain motors
@@ -56,8 +56,6 @@ public class outtakeV2 {
     //PID instance for hood
     public double[] Kh={3.0,0,0.06};
     public PID hoodPID=new PID(Kh[0],Kh[1],Kh[2]);
-    //initial hood angle(max with gear off hood)
-    double initialHoodAngle=66.81/servoDegPerRot;
     public outtakeV2(HardwareMap hardwareMap, DcMotorEx flywheelDrive, DcMotorEx flywheelDriveR, String teamColor, DcMotor leftFront, DcMotor rightFront, DcMotor leftBack, DcMotor rightBack, CRServo hoodServo, AnalogInput hoodSensor, DcMotor transfer, boolean useTag){
         this.flywheelDriveR = flywheelDriveR;
         this.flywheelDrive=flywheelDrive;
@@ -361,6 +359,7 @@ public class outtakeV2 {
             while (hoodSensor.getVoltage() < 0.2) hoodServo.setPower(1);
         }
         hoodAngle=66.81/servoDegPerRot;
+        rotations=(int) (66.81/servoDegPerRot);
     }
 
     /**
@@ -369,6 +368,7 @@ public class outtakeV2 {
      */
     public void resetHoodAngle(){
         hoodAngle=66.81/servoDegPerRot;
+        rotations=(int) (66.81/servoDegPerRot);
     }
 
     public void stopHood(){
