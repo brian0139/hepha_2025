@@ -46,8 +46,9 @@ public class outtakeV2 {
     DcMotor rightBack;
     //auto aim vars
     //  Drive = Error * Gain
-    public double TURN_GAIN   =  0.1;   //  Turn Control "Gain".  e.g. Ramp up to 25% power at a 25 degree error. (0.25 / 25.0)
-    final double MAX_AUTO_TURN  = 0.3;   //  Clip the turn speed to this max value (adjust for your robot)
+    // Turn Control "Gain".  e.g. Ramp up to 25% power at a 25 degree error. (0.25 / 25.0)
+    public double[] Kturn={0.1,0,0};
+    public PID turnPID=new PID(Kturn[0],Kturn[1],Kturn[2]);
     //vars
     int targetTagID=-1;
     //voltage jump to be considered a rotation
@@ -98,7 +99,7 @@ public class outtakeV2 {
         double  headingError    = apriltag.getYaw();
 
         // Use the speed and turn "gains" to calculate how we want the robot to move.
-        double power   = Range.clip(headingError * TURN_GAIN, -MAX_AUTO_TURN, MAX_AUTO_TURN) ;
+        double power   = turnPID.update(headingError) ;
         turretServo.setPower(power);
         return true;
     }
