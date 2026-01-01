@@ -74,7 +74,7 @@ public class tuning extends LinearOpMode {
             if (gamepad1.rightStickButtonWasPressed()){
                 angle-=change;
             }
-            String line1="Kx: ";
+            String line1="Kh: ";
             for (int i=0;i<=2;i++){
                 if (i==x){
                     line1+="{";
