@@ -53,7 +53,7 @@ public class outtakeV2 {
     //voltage jump to be considered a rotation
     double maxVJump=3.3*0.5;
     //PID instance for hood
-    public double[] Kh={0,0,0};
+    public double[] Kh={3.0,0,0};
     public PID hoodPID=new PID(Kh[0],Kh[1],Kh[2]);
     //initial hood angle(max with gear off hood)
     double initialHoodAngle=66.81/servoDegPerRot;
