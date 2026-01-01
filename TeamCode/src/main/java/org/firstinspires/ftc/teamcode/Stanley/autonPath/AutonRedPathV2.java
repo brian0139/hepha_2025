@@ -52,7 +52,7 @@ public class AutonRedPathV2 extends LinearOpMode {
 //        transfer=hardwareMap.servo.get("transferServo");
         hood=hardwareMap.crservo.get("hoodServo");
         intakeSensor=hardwareMap.get(NormalizedColorSensor.class,"intakeSensor");
-        outtake = new outtakeV2(hardwareMap,flywheel,null,null,null,null,null,null,null,null,null,true);
+        outtake = new outtakeV2(hardwareMap,flywheel,null,null,null,null,null,null,hood,hoodSensor,null,true);
         intakeSystem = new intake(hardwareMap,"intake","intakeSensor");
         spindexer=new spindexerColor(spindexerServo,intakeMotor,hardwareMap);
 
@@ -65,9 +65,10 @@ public class AutonRedPathV2 extends LinearOpMode {
             if (isStopRequested()) return;
             Actions.runBlocking(
                     drive.actionBuilder(beginPose)
-                            .stopAndAdd(new TurretAutoAimUntilAligned())
+                            .stopAndAdd(new SetHoodAngle(45))
                             .build()
             );
+            break;
         }
 
         // ===== TEST 1: Turret Auto-Aim =====
@@ -192,6 +193,9 @@ public class AutonRedPathV2 extends LinearOpMode {
             if (!started) {
                 started = true;
                 telemetry.addData("Hood: Target Angle", targetAngle);
+                outtake.initHoodAngleBlocking();
+                outtake.hoodPID.init();
+                outtake.updateHoodAngle();
             }
 
             // Update hood position
@@ -199,9 +203,10 @@ public class AutonRedPathV2 extends LinearOpMode {
 
             telemetry.addData("Hood: Current Angle", outtake.hoodAngle);
             telemetry.addData("Hood: At Position", atPosition);
+            telemetry.update();
 
             // Return false when at position (action complete)
-            return !atPosition;
+            return true;
         }
     }
 
