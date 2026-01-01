@@ -345,7 +345,7 @@ public class outtakeV2 {
     public boolean setHood(double degrees){
         double epsilon=0.001;
         double targetRotations=degrees/servoDegPerRot;
-        double power=hoodPID.update(targetRotations-hoodAngle);
+        double power=hoodPID.update(hoodAngle-targetRotations);
         hoodServo.setPower(power);
         updateHoodAngle();
         return hoodAngle >= targetRotations - epsilon && hoodAngle <= targetRotations + epsilon;
