@@ -354,8 +354,8 @@ public class outtakeV2 {
      */
     public void initHoodAngleBlocking(){
         for (int i=0;i<=3;i++) {
-            while (hoodSensor.getVoltage() >= 0.01) hoodServo.setPower(1);
-            while (hoodSensor.getVoltage() < 0.01) hoodServo.setPower(1);
+            while (hoodSensor.getVoltage() >= 0.2) hoodServo.setPower(1);
+            while (hoodSensor.getVoltage() < 0.2) hoodServo.setPower(1);
         }
         hoodAngle=66.81;
     }
