@@ -2,6 +2,8 @@ package org.firstinspires.ftc.teamcode.Stanley.autonPath;
 
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
+import com.acmerobotics.roadrunner.Pose2d;
+import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.AnalogInput;
@@ -17,6 +19,7 @@ import org.firstinspires.ftc.teamcode.Alvin.colorSensor;
 import org.firstinspires.ftc.teamcode.Alvin.intake;
 import org.firstinspires.ftc.teamcode.Brian.spindexer;
 import org.firstinspires.ftc.teamcode.Brian.spindexerColor;
+import org.firstinspires.ftc.teamcode.MecanumDrive;
 import org.firstinspires.ftc.teamcode.Stanley.finalizedClasses.outtakeV2;
 
 @Autonomous
@@ -33,6 +36,8 @@ public class AutonRedPathV2 extends LinearOpMode {
     DcMotorEx flywheel=null;
     CRServo hood=null;
     AnalogInput hoodSensor=null;
+    Pose2d beginPose=new Pose2d(-57.5, 43.5, Math.toRadians(360-54));
+    MecanumDrive drive=new MecanumDrive(hardwareMap,beginPose);
     NormalizedColorSensor intakeSensor;
 
     @Override
@@ -112,13 +117,17 @@ public class AutonRedPathV2 extends LinearOpMode {
         TelemetryPacket packet = new TelemetryPacket();
 
         while (opModeIsActive() && !isStopRequested()) {
-            boolean running = action.run(packet);
+            Actions.runBlocking(
+                    drive.actionBuilder(beginPose)
+                            .stopAndAdd(action)
+                            .build()
+            );
             telemetry.update();
 
-            if (!running) {
-                telemetry.addData("Action", "Complete");
-                break;
-            }
+//            if (!running) {
+//                telemetry.addData("Action", "Complete");
+//                break;
+//            }
 //
 //            if (timer.milliseconds() - startTime > timeoutMs) {
 //                telemetry.addData("Action", "Timeout");

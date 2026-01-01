@@ -79,7 +79,7 @@ public class outtakeV2 {
         //Init apriltag instance
         if (useTag) {
             this.apriltag = new aprilTagV3(hardwareMap);
-            this.apriltag.setPipeline(4);
+            this.apriltag.setPipeline(5);
             this.apriltag.init();
         }
     }
@@ -103,6 +103,9 @@ public class outtakeV2 {
         return true;
     }
 
+    public void setPipeLine(int pipeline){
+        apriltag.setPipeline(pipeline);
+    }
     /**
      * Find optimal launch angle and velocity to hit a target with specific impact angle constraints.
      *
