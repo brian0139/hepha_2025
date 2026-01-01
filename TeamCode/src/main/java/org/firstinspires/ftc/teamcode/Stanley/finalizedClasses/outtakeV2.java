@@ -56,7 +56,7 @@ public class outtakeV2 {
     public double[] Kh={0,0,0};
     public PID hoodPID=new PID(Kh[0],Kh[1],Kh[2]);
     //initial hood angle(max with gear off hood)
-    double initialHoodAngle=66.81;
+    double initialHoodAngle=66.81/servoDegPerRot;
     public outtakeV2(HardwareMap hardwareMap, DcMotorEx flywheelDrive, DcMotorEx flywheelDriveR, String teamColor, DcMotor leftFront, DcMotor rightFront, DcMotor leftBack, DcMotor rightBack, CRServo hoodServo, AnalogInput hoodSensor, DcMotor transfer, boolean useTag){
         this.flywheelDriveR = flywheelDriveR;
         this.flywheelDrive=flywheelDrive;
@@ -357,7 +357,7 @@ public class outtakeV2 {
             while (hoodSensor.getVoltage() >= 0.2) hoodServo.setPower(1);
             while (hoodSensor.getVoltage() < 0.2) hoodServo.setPower(1);
         }
-        hoodAngle=66.81;
+        hoodAngle=66.81/servoDegPerRot;
     }
 
     /**
@@ -365,7 +365,7 @@ public class outtakeV2 {
      * FOR USE IN EMERGENCIES ONLY
      */
     public void resetHoodAngle(){
-        hoodAngle=66.81;
+        hoodAngle=66.81/servoDegPerRot;
     }
 
     public void stopHood(){
@@ -387,14 +387,14 @@ public class outtakeV2 {
         }else{//Otherwise calculate position
             if (volt-lastVolt<=-maxVJump){
                 rotations++;
-                hoodAngle=rotations+3.3/volt;
+                hoodAngle=rotations+volt/3.3;
                 lastVolt=volt;
             }else if(volt-lastVolt>=maxVJump){
                 rotations--;
-                hoodAngle=rotations+3.3/volt;
+                hoodAngle=rotations+volt/3.3;
                 lastVolt=volt;
             }else{
-                hoodAngle=rotations+3.3/volt;
+                hoodAngle=rotations+volt/3.3;
                 lastVolt=volt;
             }
         }
