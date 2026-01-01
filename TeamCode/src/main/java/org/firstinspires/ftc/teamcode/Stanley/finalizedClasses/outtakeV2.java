@@ -343,13 +343,12 @@ public class outtakeV2 {
      * @return if hood is at position
      */
     public boolean setHood(double degrees){
-        double epsilon=0.01;
-        //TODO:Tune PID
+        double epsilon=0.001;
         double targetRotations=degrees/servoDegPerRot;
         double power=hoodPID.update(targetRotations-hoodAngle);
         hoodServo.setPower(power);
         updateHoodAngle();
-        return hoodAngle >= degrees - epsilon && hoodAngle <= degrees + epsilon;
+        return hoodAngle >= targetRotations - epsilon && hoodAngle <= targetRotations + epsilon;
     }
 
     /**

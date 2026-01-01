@@ -34,6 +34,7 @@ public class AutonRedPathV2 extends LinearOpMode {
     DcMotor intakeMotor=null;
     Servo transfer=null;
     DcMotorEx flywheel=null;
+    DcMotorEx flywheelR=null;
     CRServo hood=null;
     AnalogInput hoodSensor=null;
     Pose2d beginPose=new Pose2d(-57.5, 43.5, Math.toRadians(360-54));
@@ -47,12 +48,13 @@ public class AutonRedPathV2 extends LinearOpMode {
         intakeMotor=hardwareMap.dcMotor.get("intake");
         hoodSensor=hardwareMap.get(AnalogInput.class,"hoodAnalog");
         flywheel=(DcMotorEx) hardwareMap.dcMotor.get("flywheel");
+        flywheelR=(DcMotorEx) hardwareMap.dcMotor.get("flywheelR");
         flywheel.setDirection(DcMotorSimple.Direction.REVERSE);
         drive=new MecanumDrive(hardwareMap,beginPose);
 //        transfer=hardwareMap.servo.get("transferServo");
         hood=hardwareMap.crservo.get("hoodServo");
         intakeSensor=hardwareMap.get(NormalizedColorSensor.class,"intakeSensor");
-        outtake = new outtakeV2(hardwareMap,flywheel,null,null,null,null,null,null,null,null,null,true);
+        outtake = new outtakeV2(hardwareMap,flywheel,flywheelR,null,null,null,null,null,hood,hoodSensor,null,true);
         intakeSystem = new intake(hardwareMap,"intake","intakeSensor");
         spindexer=new spindexerColor(spindexerServo,intakeMotor,hardwareMap);
 
@@ -65,12 +67,14 @@ public class AutonRedPathV2 extends LinearOpMode {
             if (isStopRequested()) return;
             Actions.runBlocking(
                     drive.actionBuilder(beginPose)
-                            .stopAndAdd(new TurretAutoAimUntilAligned())
+                            .stopAndAdd(new IntakePixel(3000))
+                            .waitSeconds(1)
                             .build()
             );
+            break;
         }
 
-        // ===== TEST 1: Turret Auto-Aim =====
+        // ===== TEST 1: Turret Auto-Aim ===== DDDDOOOOOOOOOOOOOOOONNNNNNNNNNNNEEEEEEEEEEE
 //        telemetry.addData("Test", "1. Turret Auto-Aim");
 //        telemetry.update();
 //        Action turretAim = new TurretAutoAimUntilAligned(5.0);
@@ -82,13 +86,13 @@ public class AutonRedPathV2 extends LinearOpMode {
 //        Action setHood = new SetHoodAngle(45.0);
 //        runAction(setHood, 2000);
 //
-//        // ===== TEST 3: Flywheel Spin =====
+//        // ===== TEST 3: Flywheel Spin ===== DDDDOOOOOOOOOOOOOOOONNNNNNNNNNNNEEEEEEEEEEE
 //        telemetry.addData("Test", "3. Flywheel");
 //        telemetry.update();
 //        Action spinFlywheel = new SpinFlywheel(2000, 50);
 //        runAction(spinFlywheel, 3000);
 //
-//        // ===== TEST 4: Stop Flywheel =====
+//        // ===== TEST 4: Stop Flywheel ===== DDDDOOOOOOOOOOOOOOOONNNNNNNNNNNNEEEEEEEEEEE
 //        telemetry.addData("Test", "4. Stop Flywheel");
 //        telemetry.update();
 //        Action stopFlywheel = new StopFlywheel();
@@ -192,6 +196,9 @@ public class AutonRedPathV2 extends LinearOpMode {
             if (!started) {
                 started = true;
                 telemetry.addData("Hood: Target Angle", targetAngle);
+                outtake.initHoodAngleBlocking();
+                outtake.hoodPID.init();
+                outtake.updateHoodAngle();
             }
 
             // Update hood position
@@ -199,9 +206,10 @@ public class AutonRedPathV2 extends LinearOpMode {
 
             telemetry.addData("Hood: Current Angle", outtake.hoodAngle);
             telemetry.addData("Hood: At Position", atPosition);
+            telemetry.update();
 
             // Return false when at position (action complete)
-            return !atPosition;
+            return true;
         }
     }
 
@@ -233,7 +241,7 @@ public class AutonRedPathV2 extends LinearOpMode {
             telemetry.addData("Flywheel: At Speed", atSpeed);
 
             // Return false when at speed (action complete)
-            return !atSpeed;
+            return false;
         }
     }
 
