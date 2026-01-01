@@ -67,11 +67,11 @@ public class AutonRedPathV2 extends LinearOpMode {
             if (isStopRequested()) return;
             Actions.runBlocking(
                     drive.actionBuilder(beginPose)
-                            .stopAndAdd(new SpinFlywheel(500, 50))
-                            .waitSeconds(2)
-                            .stopAndAdd(new StopFlywheel())
+                            .stopAndAdd(new IntakePixel(3000))
+                            .waitSeconds(1)
                             .build()
             );
+            break;
         }
 
         // ===== TEST 1: Turret Auto-Aim ===== DDDDOOOOOOOOOOOOOOOONNNNNNNNNNNNEEEEEEEEEEE
@@ -92,7 +92,7 @@ public class AutonRedPathV2 extends LinearOpMode {
 //        Action spinFlywheel = new SpinFlywheel(2000, 50);
 //        runAction(spinFlywheel, 3000);
 //
-//        // ===== TEST 4: Stop Flywheel =====
+//        // ===== TEST 4: Stop Flywheel ===== DDDDOOOOOOOOOOOOOOOONNNNNNNNNNNNEEEEEEEEEEE
 //        telemetry.addData("Test", "4. Stop Flywheel");
 //        telemetry.update();
 //        Action stopFlywheel = new StopFlywheel();
