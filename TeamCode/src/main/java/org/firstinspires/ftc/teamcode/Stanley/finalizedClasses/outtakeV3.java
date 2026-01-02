@@ -372,12 +372,12 @@ public class outtakeV3 {
     /**
      * Transfer artifact to flywheel(move transfer up)
      */
-    public void transferUp(){this.transfer.setPower(this.transferpowers[0]);}
+    public void transferUp(){this.transfer.setPower(transferpowers[0]);}
     /**
      * Lower Transfer
      */
     public void transferDown(){
-        this.transfer.setPower(this.transferpowers[1]);
+        this.transfer.setPower(transferpowers[1]);
     }
 
     /**
@@ -390,11 +390,6 @@ public class outtakeV3 {
         DcMotorEx flywheelDriveEx=this.flywheelDriveR;
         flywheelDriveEx.setVelocity(targetSpeed);
         flywheelDrive.setVelocity(targetSpeed);
-        if (targetSpeed-tolerance<=flywheelDriveEx.getVelocity() && flywheelDriveEx.getVelocity()<=targetSpeed+tolerance){
-            return true;
-        }
-        else{
-            return false;
-        }
+        return targetSpeed - tolerance <= flywheelDriveEx.getVelocity() && flywheelDriveEx.getVelocity() <= targetSpeed + tolerance;
     }
 }
