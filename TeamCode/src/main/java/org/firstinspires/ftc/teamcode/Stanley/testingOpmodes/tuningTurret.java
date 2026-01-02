@@ -27,7 +27,7 @@ public class tuningTurret extends LinearOpMode {
     @Override
     public void runOpMode(){
         turret =hardwareMap.get(CRServo.class,"turretServo");
-        outtakeOperator=new outtakeV2(hardwareMap,null,null,"Red",null,null,null,null, null,null,null,false);
+        outtakeOperator=new outtakeV2(hardwareMap,null,null,"Red",null,null,null,null, null,null,null,true);
         dashboard = FtcDashboard.getInstance();
         dashboardTelemetry = dashboard.getTelemetry();
         waitForStart();
