@@ -47,7 +47,7 @@ public class outtakeV2 {
     //auto aim vars
     //  Drive = Error * Gain
     // Turn Control "Gain".  e.g. Ramp up to 25% power at a 25 degree error. (0.25 / 25.0)
-    public double[] Kturn={0.1,0,0};
+    public double[] Kturn={0.01,0.1,0.007};
     public PID turnPID=new PID(Kturn[0],Kturn[1],Kturn[2]);
     //vars
     int targetTagID=-1;
@@ -368,8 +368,7 @@ public class outtakeV2 {
             while (hoodSensor.getVoltage() >= 0.2) hoodServo.setPower(1);
             while (hoodSensor.getVoltage() < 0.2) hoodServo.setPower(1);
         }
-        updateHoodAngle();
-        referenceRotation=hoodAngle;
+        hoodAngle=66.81;
     }
 
     /**
@@ -377,8 +376,7 @@ public class outtakeV2 {
      * FOR USE IN EMERGENCIES ONLY
      */
     public void resetHoodAngle(){
-        hoodAngle=66.81/servoDegPerRot;
-        rotations=(int) (66.81/servoDegPerRot);
+        hoodAngle=66.81;
     }
 
     public void stopHood(){
@@ -400,14 +398,14 @@ public class outtakeV2 {
         }else{//Otherwise calculate position
             if (volt-lastVolt<=-maxVJump){
                 rotations++;
-                hoodAngle=rotations+volt/3.3;
+                hoodAngle=(rotations+volt/3.3)*servoDegPerRot;
                 lastVolt=volt;
             }else if(volt-lastVolt>=maxVJump){
                 rotations--;
-                hoodAngle=rotations+volt/3.3;
+                hoodAngle=(rotations+volt/3.3)*servoDegPerRot;
                 lastVolt=volt;
             }else{
-                hoodAngle=rotations+volt/3.3;
+                hoodAngle=(rotations+volt/3.3)*servoDegPerRot;
                 lastVolt=volt;
             }
         }

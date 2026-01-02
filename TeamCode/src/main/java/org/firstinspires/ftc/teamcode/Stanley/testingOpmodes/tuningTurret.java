@@ -20,6 +20,7 @@ public class tuningTurret extends LinearOpMode {
     //test
     double angle=60;
     boolean correctingtoggle=false;
+    boolean firsttime=true;
     //FTC dashboard telemetry
     FtcDashboard dashboard=null;
     Telemetry dashboardTelemetry=null;
@@ -83,9 +84,14 @@ public class tuningTurret extends LinearOpMode {
             }
             boolean atTarget=false;
             if (correctingtoggle){
+                if (firsttime){
+                    outtakeOperator.turnPID.init();
+                    firsttime=false;
+                }
                 atTarget=outtakeOperator.autoturn();
             }else{
                 turret.setPower(0);
+                firsttime=true;
             }
 //            outtakeOperator.updateHoodAngle();
 
