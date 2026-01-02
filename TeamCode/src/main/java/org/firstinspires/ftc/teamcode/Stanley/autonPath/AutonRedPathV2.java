@@ -65,6 +65,8 @@ public class AutonRedPathV2 extends LinearOpMode {
         dashboard=FtcDashboard.getInstance();
         dashboardTelemetry=dashboard.getTelemetry();
         dashboardTelemetry.addData("Hood: Current Angle",0);
+        dashboardTelemetry.addData("Power",0);
+        dashboardTelemetry.addData("Voltage",0);
         dashboardTelemetry.update();
         telemetry.addData("Status", "Initialized");
         telemetry.update();
@@ -213,6 +215,8 @@ public class AutonRedPathV2 extends LinearOpMode {
 
             telemetry.addData("Hood: Current Angle", outtake.hoodAngle* outtake.servoDegPerRot);
             dashboardTelemetry.addData("Hood: Current Angle", outtake.hoodAngle* outtake.servoDegPerRot);
+            dashboardTelemetry.addData("Power",outtake.hoodPID.power);
+            dashboardTelemetry.addData("Voltage",outtake.hoodSensor.getVoltage());
             dashboardTelemetry.update();
             telemetry.addData("Hood: At Position", atPosition);
             telemetry.update();

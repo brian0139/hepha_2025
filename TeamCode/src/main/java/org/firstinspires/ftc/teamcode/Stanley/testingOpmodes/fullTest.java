@@ -161,7 +161,7 @@ public class fullTest extends LinearOpMode{
                 telemetry.addLine("Transfer Position: Stopped");
             }
 //            telemetry.addData("transfer Target Speed:",transfer.getPosition());
-            //hood
+            //turret
             if (gamepad1.dpad_right){
                 hoodServo.setPower(hoodspeed);
             }

@@ -17,7 +17,7 @@ public class outtakeV2 {
     //Team color
     String teamColor;
     //April tag processor
-    aprilTagV3 apriltag;
+    public aprilTagV3 apriltag;
     //Outtake flywheel
     public DcMotorEx flywheelDriveR;
     public DcMotorEx flywheelDrive;
@@ -33,8 +33,8 @@ public class outtakeV2 {
     int rotations=0;
     //transfer positions(up, down)
     public static double[] transferpowers ={0.5,0};
-    //if hood running
-    public boolean initializingHood =false;
+    //reference rotations
+    public double referenceRotation=-1;
     //hood angle(in degrees)
     public double hoodAngle=-1;
     //transfer servo
@@ -368,8 +368,8 @@ public class outtakeV2 {
             while (hoodSensor.getVoltage() >= 0.2) hoodServo.setPower(1);
             while (hoodSensor.getVoltage() < 0.2) hoodServo.setPower(1);
         }
-        hoodAngle=66.81/servoDegPerRot;
-        rotations=(int) (66.81/servoDegPerRot);
+        updateHoodAngle();
+        referenceRotation=hoodAngle;
     }
 
     /**
