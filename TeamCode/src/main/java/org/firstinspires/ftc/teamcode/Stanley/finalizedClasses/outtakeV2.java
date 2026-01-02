@@ -68,6 +68,8 @@ public class outtakeV2 {
         this.turretServo =hardwareMap.get(CRServo.class,"turretServo");
         this.hoodSensor=hoodSensor;
         this.transfer=transfer;
+        hoodPID.maxOutput=1;
+        hoodPID.minOutput=-1;
         //set target april tag number to aim at depending on team color.
         if (Objects.equals(this.teamColor, "Red") && this.targetTagID!=-1){
             this.targetTagID=24;
@@ -351,7 +353,7 @@ public class outtakeV2 {
     public boolean setHood(double degrees){
         double epsilon=0.001;
         double targetRotations=degrees/servoDegPerRot;
-        double power=hoodPID.update(hoodAngle-targetRotations);
+        double power=hoodPID.update(targetRotations-hoodAngle);
         hoodServo.setPower(power);
         updateHoodAngle();
         return hoodAngle >= targetRotations - epsilon && hoodAngle <= targetRotations + epsilon;

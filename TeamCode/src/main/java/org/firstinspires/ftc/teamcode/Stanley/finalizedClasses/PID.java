@@ -11,7 +11,7 @@ public class PID {
     public double integral;
     public double derivative;
     public double maxOutput=1;
-    public double minOutput=0;
+    public double minOutput=-1;
     public double power;
     ElapsedTime timer=new ElapsedTime();
 
