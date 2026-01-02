@@ -1,26 +1,20 @@
 package org.firstinspires.ftc.teamcode.Stanley.testingOpmodes;
 
 import com.acmerobotics.dashboard.FtcDashboard;
-import com.acmerobotics.roadrunner.Pose2d;
-import com.acmerobotics.roadrunner.Vector2d;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.AnalogInput;
 import com.qualcomm.robotcore.hardware.CRServo;
-import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
-import org.firstinspires.ftc.teamcode.MecanumDrive;
 import org.firstinspires.ftc.teamcode.Stanley.finalizedClasses.PID;
-import org.firstinspires.ftc.teamcode.Stanley.finalizedClasses.holdPosition;
-import org.firstinspires.ftc.teamcode.Stanley.finalizedClasses.outtakeV2;
+import org.firstinspires.ftc.teamcode.Stanley.finalizedClasses.outtakeV3;
 
 @TeleOp
 public class tuning extends LinearOpMode {
     CRServo hood=null;
     AnalogInput hoodSensor=null;
-    outtakeV2 outtakeOperator=null;
+    outtakeV3 outtakeOperator=null;
     double change=0.1;
     int x=0;
     //TODO:Get real value+sync with outtakeV2 value
@@ -35,7 +29,7 @@ public class tuning extends LinearOpMode {
     public void runOpMode(){
         hood=hardwareMap.get(CRServo.class,"hoodServo");
         hoodSensor=hardwareMap.get(AnalogInput.class,"hoodAnalog");
-        outtakeOperator=new outtakeV2(hardwareMap,null,null,"Red",null,null,null,null,hood,hoodSensor,null,false);
+        outtakeOperator=new outtakeV3(hardwareMap,"Red",false);
         dashboard = FtcDashboard.getInstance();
         dashboardTelemetry = dashboard.getTelemetry();
         waitForStart();
@@ -95,24 +89,21 @@ public class tuning extends LinearOpMode {
             }else{
                 outtakeOperator.stopHood();
             }
-            outtakeOperator.updateHoodAngle();
 
             telemetry.addLine(line1);
             telemetry.addData("Holding",correctingtoggle);
             telemetry.addData("Target",angle);
-            telemetry.addData("Current",outtakeOperator.hoodAngle*outtakeOperator.servoDegPerRot);
-            telemetry.addData("CurrentV",outtakeOperator.hoodSensor.getVoltage());
+            telemetry.addData("Current",outtakeOperator.hoodEncoder.getCurrentPosition()/outtakeOperator.ticksPerRevHood*outtakeOperator.servoDegPerRot);
             telemetry.addData("Power",outtakeOperator.hoodPID.power);
-            telemetry.addData("Offset(rotations)",angle/outtakeOperator.servoDegPerRot-outtakeOperator.hoodAngle);
+            telemetry.addData("Offset(ticks)",outtakeOperator.hoodEncoder.getCurrentPosition()-(66.81-angle)/outtakeOperator.servoDegPerRot*outtakeOperator.ticksPerRevHood);
             telemetry.addData("AtTarget",atTarget);
             telemetry.update();
             dashboardTelemetry.addLine(line1);
             dashboardTelemetry.addData("Holding",correctingtoggle);
             dashboardTelemetry.addData("Target",angle);
-            dashboardTelemetry.addData("Current",outtakeOperator.hoodAngle);
-            dashboardTelemetry.addData("CurrentV",outtakeOperator.hoodSensor.getVoltage());
+            dashboardTelemetry.addData("Current",outtakeOperator.hoodEncoder.getCurrentPosition()/outtakeOperator.ticksPerRevHood*outtakeOperator.servoDegPerRot);
             dashboardTelemetry.addData("Power",outtakeOperator.hoodPID.power);
-            dashboardTelemetry.addData("Offset(rotations)",angle/outtakeOperator.servoDegPerRot-outtakeOperator.hoodAngle);
+            dashboardTelemetry.addData("Offset(ticks)",outtakeOperator.hoodEncoder.getCurrentPosition()-(66.81-angle)/outtakeOperator.servoDegPerRot*outtakeOperator.ticksPerRevHood);
             dashboardTelemetry.addData("AtTarget",atTarget);
             dashboardTelemetry.update();
         }

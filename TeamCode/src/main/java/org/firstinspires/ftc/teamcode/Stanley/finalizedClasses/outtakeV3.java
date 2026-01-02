@@ -27,7 +27,7 @@ public class outtakeV3 {
     //Ticks/revolution for encoder
     public int ticksPerRevHood=8192;
     //Motor for hood encoder
-    DcMotorEx hoodEncoder=null;
+    public DcMotorEx hoodEncoder=null;
     //transfer positions(up, down)
     public static double[] transferpowers ={0.5,0};
     //transfer servo
