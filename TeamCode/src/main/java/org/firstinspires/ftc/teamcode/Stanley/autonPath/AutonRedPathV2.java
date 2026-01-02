@@ -273,6 +273,7 @@ public class AutonRedPathV2 extends LinearOpMode {
             boolean pixelDetected = intakeSystem.intakeUntilPixel();
             telemetry.addData("Intake: Pixel Detected", pixelDetected);
             telemetry.addData("Intake: Status", pixelDetected ? "Complete" : "Running");
+            telemetry.update();
 
             return !pixelDetected; // Return false when complete
         }
