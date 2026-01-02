@@ -1,6 +1,5 @@
 package org.firstinspires.ftc.teamcode.Stanley.finalizedClasses;
 
-import com.qualcomm.robotcore.hardware.AnalogInput;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
@@ -23,28 +22,16 @@ public class outtakeV3 {
     //Outtake Hood Servo
     CRServo hoodServo;
     CRServo turretServo;
-    public DcMotorEx hoodSensor;
     //Degrees changed for every servo rotation
     public double servoDegPerRot =26.53;
     //Ticks/revolution for encoder
     public int ticksPerRevHood=8192;
-    //hood Axon voltage last loop
-    double lastVolt=-1;
-    //# of rotations hood servo has
-    int rotations=0;
+    //Motor for hood encoder
+    DcMotorEx hoodEncoder=null;
     //transfer positions(up, down)
     public static double[] transferpowers ={0.5,0};
-    //reference rotations
-    public double referenceRotation=-1;
-    //hood angle(in degrees)
-    public double hoodAngle=-1;
     //transfer servo
     public DcMotor transfer;
-    //drivetrain motors
-    DcMotor leftFront;
-    DcMotor leftBack;
-    DcMotor rightFront;
-    DcMotor rightBack;
     //auto aim vars
     //  Drive = Error * Gain
     // Turn Control "Gain".  e.g. Ramp up to 25% power at a 25 degree error. (0.25 / 25.0)
@@ -57,18 +44,14 @@ public class outtakeV3 {
     //PID instance for hood
     public double[] Kh={3.0,0,0.06};
     public PID hoodPID=new PID(Kh[0],Kh[1],Kh[2]);
-    public outtakeV3(HardwareMap hardwareMap, DcMotorEx flywheelDrive, DcMotorEx flywheelDriveR, String teamColor, DcMotor leftFront, DcMotor rightFront, DcMotor leftBack, DcMotor rightBack, CRServo hoodServo, DcMotorEx hoodSensor, DcMotor transfer, boolean useTag){
-        this.flywheelDriveR = flywheelDriveR;
-        this.flywheelDrive=flywheelDrive;
+    public outtakeV3(HardwareMap hardwareMap, String teamColor, boolean useTag){
+        this.flywheelDriveR = hardwareMap.get(DcMotorEx.class,"flywheelR");
+        this.flywheelDrive=hardwareMap.get(DcMotorEx.class,"flywheel");
         this.teamColor=teamColor;
-        this.leftFront=leftFront;
-        this.rightFront=rightFront;
-        this.leftBack=leftBack;
-        this.rightBack=rightBack;
-        this.hoodServo=hoodServo;
+        this.hoodServo=hardwareMap.get(CRServo.class,"hoodServo");
         this.turretServo =hardwareMap.get(CRServo.class,"turretServo");
-        this.hoodSensor=hoodSensor;
-        this.transfer=transfer;
+        this.hoodEncoder=hardwareMap.get(DcMotorEx.class,"leftBack");
+        this.transfer=hardwareMap.get(DcMotor.class,"par1");
         hoodPID.maxOutput=1;
         hoodPID.minOutput=-1;
         //set target april tag number to aim at depending on team color.
@@ -373,44 +356,18 @@ public class outtakeV3 {
     }
 
     /**
-     * Resets hood angle counter to highest(gear off)
+     * Resets hood angle counter to highest(gear off)(AKA 0)
      * FOR USE IN EMERGENCIES ONLY
      */
     public void resetHoodAngle(){
-        hoodAngle=66.81;
-    }
-
-    public void stopHood(){
-        hoodServo.setPower(0);
-        updateHoodAngle();
+        hoodEncoder.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
     }
 
     /**
-     * Helper function to update current angle of hood
-     * @return Delta change in hood angle(in servo rotations)
+     * Stops hood servo
      */
-    public double updateHoodAngle(){
-        double saveHoodAngle=hoodAngle;
-        double volt=hoodSensor.getVoltage();
-        //If last loop there was no voltage(first loop)
-        if (lastVolt==-1){
-            //initialize lastvolt
-            lastVolt=volt;
-        }else{//Otherwise calculate position
-            if (volt-lastVolt<=-maxVJump){
-                rotations++;
-                hoodAngle=(rotations+volt/3.3)*servoDegPerRot;
-                lastVolt=volt;
-            }else if(volt-lastVolt>=maxVJump){
-                rotations--;
-                hoodAngle=(rotations+volt/3.3)*servoDegPerRot;
-                lastVolt=volt;
-            }else{
-                hoodAngle=(rotations+volt/3.3)*servoDegPerRot;
-                lastVolt=volt;
-            }
-        }
-        return hoodAngle-saveHoodAngle;
+    public void stopHood(){
+        hoodServo.setPower(0);
     }
 
     /**
