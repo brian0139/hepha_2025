@@ -78,16 +78,11 @@ public class AutonRedPathV2 extends LinearOpMode {
                     drive.actionBuilder(beginPose)
                             .stopAndAdd(new startspindexer())
                             .stopAndAdd(new IntakePixel(3000))
-                            .stopAndAdd(new startspindexer())
                             .waitSeconds(2)
+                            .stopAndAdd(new RunIntake(16000))
                             .stopAndAdd(new transferUp())
                             .stopAndAdd(new SpinFlywheel(1000,50))
-                            .waitSeconds(1)
-                            .stopAndAdd(new startspindexer())
                             .waitSeconds(5)
-                            .stopAndAdd(new startspindexer())
-                            .stopAndAdd(new transferOff())
-                            .stopAndAdd(new StopFlywheel())
                             .build()
             );
             break;
@@ -344,9 +339,8 @@ public class AutonRedPathV2 extends LinearOpMode {
 
         @Override
         public boolean run(TelemetryPacket packet) {
-            boolean detected = intakeSystem.intakeUntilPixel();
-            telemetry.addData("Intake: Pixel Detected", detected);
-            return !detected; // Return false when complete
+            intakeSystem.intakeMotor.setPower(0.5);
+            return false;
         }
     }
 
