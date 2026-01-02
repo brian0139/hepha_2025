@@ -76,9 +76,18 @@ public class AutonRedPathV2 extends LinearOpMode {
             if (isStopRequested()) return;
             Actions.runBlocking(
                     drive.actionBuilder(beginPose)
+                            .stopAndAdd(new startspindexer())
+                            .stopAndAdd(new IntakePixel(3000))
+                            .stopAndAdd(new startspindexer())
+                            .waitSeconds(2)
                             .stopAndAdd(new transferUp())
+                            .stopAndAdd(new SpinFlywheel(1000,50))
                             .waitSeconds(1)
+                            .stopAndAdd(new startspindexer())
+                            .waitSeconds(5)
+                            .stopAndAdd(new startspindexer())
                             .stopAndAdd(new transferOff())
+                            .stopAndAdd(new StopFlywheel())
                             .build()
             );
             break;
@@ -384,6 +393,22 @@ public class AutonRedPathV2 extends LinearOpMode {
             telemetry.addData("Spindexer: Status", complete ? "Complete" : "Spinning");
 
             return !complete; // Return false when complete
+        }
+    }
+
+    public class startspindexer implements Action {
+        @Override
+        public boolean run(TelemetryPacket packet) {
+            spindexerServo.setPower(1);
+            return false;
+        }
+    }
+
+    public class stopspindexer implements Action {
+        @Override
+        public boolean run(TelemetryPacket packet) {
+            spindexerServo.setPower(0);
+            return false;
         }
     }
 
