@@ -34,7 +34,7 @@ public class AutonRedPathV2 extends LinearOpMode {
     CRServo spindexerServo=null;
     ElapsedTime timer=new ElapsedTime();
     DcMotor intakeMotor=null;
-    Servo transfer=null;
+    DcMotorEx transfer=null;
     DcMotorEx flywheel=null;
     DcMotorEx flywheelR=null;
     CRServo hood=null;
@@ -54,11 +54,12 @@ public class AutonRedPathV2 extends LinearOpMode {
         flywheel=(DcMotorEx) hardwareMap.dcMotor.get("flywheel");
         flywheelR=(DcMotorEx) hardwareMap.dcMotor.get("flywheelR");
         flywheel.setDirection(DcMotorSimple.Direction.REVERSE);
+        transfer=(DcMotorEx) hardwareMap.dcMotor.get("par1");
         drive=new MecanumDrive(hardwareMap,beginPose);
 //        transfer=hardwareMap.servo.get("transferServo");
         hood=hardwareMap.crservo.get("hoodServo");
         intakeSensor=hardwareMap.get(NormalizedColorSensor.class,"intakeSensor");
-        outtake = new outtakeV2(hardwareMap,flywheel,flywheelR,null,null,null,null,null,hood,hoodSensor,null,true);
+        outtake = new outtakeV2(hardwareMap,flywheel,flywheelR,null,null,null,null,null,hood,hoodSensor,transfer,true);
         intakeSystem = new intake(hardwareMap,"intake","intakeSensor");
         spindexer=new spindexerColor(spindexerServo,intakeMotor,hardwareMap);
 
@@ -77,7 +78,13 @@ public class AutonRedPathV2 extends LinearOpMode {
             if (isStopRequested()) return;
             Actions.runBlocking(
                     drive.actionBuilder(beginPose)
-                            .stopAndAdd(new SetHoodAngle(45.0))
+                            .stopAndAdd(new startspindexer())
+                            .stopAndAdd(new IntakePixel(3000))
+                            .waitSeconds(2)
+                            .stopAndAdd(new RunIntake(16000))
+                            .stopAndAdd(new transferUp())
+                            .stopAndAdd(new SpinFlywheel(1000,50))
+                            .waitSeconds(5)
                             .build()
             );
             break;
@@ -113,14 +120,27 @@ public class AutonRedPathV2 extends LinearOpMode {
 //        Action intake = new IntakePixel(3000);
 //        runAction(intake, 3000);
 
-        // ===== TEST 6: Spindexer =====
+          // ===== TEST 6: Spindexer =====
 //        telemetry.addData("Test", "6. Spindexer to Motif");
 //        telemetry.update();
 //        Action spinMotif = new SpinToMotif(0);
 //        runAction(spinMotif, 3000);
 //        sleep(500);
-//
-//        // ===== TEST 7: Full Shoot Sequence =====
+
+          // ===== TEST 7: Spin Transfer =====
+//        telemetry.addData("Test", "7. Transfer");
+//        telemetry.update();
+//        Action spinTransfer = new transferUp();
+//        runAction(spinTransfer);
+
+          // ===== TEST 8: Stop Transfer =====
+//        telemetry.addData("Test", "8. Transfer");
+//        telemetry.update();
+//        Action stopTransfer = new transferOff();
+//        runAction(stopTransfer);
+
+
+//        // ===== TEST 9: Full Shoot Sequence =====
 //        telemetry.addData("Test", "7. Complete Shoot Sequence");
 //        telemetry.update();
 //        Action shootSequence = new ShootSequence(45.0, 2000, 50);
@@ -270,11 +290,21 @@ public class AutonRedPathV2 extends LinearOpMode {
         }
     }
 
-    public class TransferUp implements Action {
+    // ==================== TRANSFER ACTION ====================
+    public class transferUp implements Action {
         @Override
         public boolean run(TelemetryPacket packet) {
             outtake.transferUp();
             telemetry.addData("Transfer: Status", "Up");
+            return false; // Complete immediately
+        }
+    }
+
+    public class transferOff implements Action {
+        @Override
+        public boolean run(TelemetryPacket packet) {
+            outtake.transferDown();
+            telemetry.addData("Transfer: Status", "Off");
             return false; // Complete immediately
         }
     }
@@ -313,9 +343,8 @@ public class AutonRedPathV2 extends LinearOpMode {
 
         @Override
         public boolean run(TelemetryPacket packet) {
-            boolean detected = intakeSystem.intakeUntilPixel();
-            telemetry.addData("Intake: Pixel Detected", detected);
-            return !detected; // Return false when complete
+            intakeSystem.intakeMotor.setPower(0.5);
+            return false;
         }
     }
 
@@ -362,6 +391,22 @@ public class AutonRedPathV2 extends LinearOpMode {
             telemetry.addData("Spindexer: Status", complete ? "Complete" : "Spinning");
 
             return !complete; // Return false when complete
+        }
+    }
+
+    public class startspindexer implements Action {
+        @Override
+        public boolean run(TelemetryPacket packet) {
+            spindexerServo.setPower(1);
+            return false;
+        }
+    }
+
+    public class stopspindexer implements Action {
+        @Override
+        public boolean run(TelemetryPacket packet) {
+            spindexerServo.setPower(0);
+            return false;
         }
     }
 
