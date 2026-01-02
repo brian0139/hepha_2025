@@ -68,7 +68,6 @@ public class AutonRedPathV2 extends LinearOpMode {
             Actions.runBlocking(
                     drive.actionBuilder(beginPose)
                             .stopAndAdd(new IntakePixel(3000))
-                            .waitSeconds(1)
                             .build()
             );
             break;
