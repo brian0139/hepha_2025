@@ -348,19 +348,19 @@ public class outtakeV3 {
      * WARNING:Blocking
      */
     public void initHoodAngleBlocking(){
-        for (int i=0;i<=3;i++) {
-            while (hoodSensor.getVoltage() >= 0.2) hoodServo.setPower(1);
-            while (hoodSensor.getVoltage() < 0.2) hoodServo.setPower(1);
-        }
-        hoodAngle=66.81;
+        hoodEncoder.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
+        while(hoodEncoder.getCurrentPosition()>=-3*ticksPerRevHood) hoodServo.setPower(-1);
+        hoodServo.setPower(0);
+        hoodEncoder.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
     }
 
     /**
      * Resets hood angle counter to highest(gear off)(AKA 0)
+     * Will cause left-back drivetrain motor to temporarily lose power,
      * FOR USE IN EMERGENCIES ONLY
      */
     public void resetHoodAngle(){
-        hoodEncoder.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        hoodEncoder.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
     }
 
     /**
