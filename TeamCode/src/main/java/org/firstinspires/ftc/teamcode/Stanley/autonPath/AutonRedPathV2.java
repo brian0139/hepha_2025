@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.Stanley.autonPath;
 
+import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.Pose2d;
@@ -15,6 +16,7 @@ import com.qualcomm.robotcore.hardware.NormalizedColorSensor;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.Alvin.colorSensor;
 import org.firstinspires.ftc.teamcode.Alvin.intake;
 import org.firstinspires.ftc.teamcode.Brian.spindexer;
@@ -40,6 +42,8 @@ public class AutonRedPathV2 extends LinearOpMode {
     Pose2d beginPose=new Pose2d(-57.5, 43.5, Math.toRadians(360-54));
     MecanumDrive drive=null;
     NormalizedColorSensor intakeSensor;
+    FtcDashboard dashboard;
+    Telemetry dashboardTelemetry;
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -58,6 +62,10 @@ public class AutonRedPathV2 extends LinearOpMode {
         intakeSystem = new intake(hardwareMap,"intake","intakeSensor");
         spindexer=new spindexerColor(spindexerServo,intakeMotor,hardwareMap);
 
+        dashboard=FtcDashboard.getInstance();
+        dashboardTelemetry=dashboard.getTelemetry();
+        dashboardTelemetry.addData("Hood: Current Angle",0);
+        dashboardTelemetry.update();
         telemetry.addData("Status", "Initialized");
         telemetry.update();
 
@@ -67,7 +75,7 @@ public class AutonRedPathV2 extends LinearOpMode {
             if (isStopRequested()) return;
             Actions.runBlocking(
                     drive.actionBuilder(beginPose)
-                            .stopAndAdd(new IntakePixel(3000))
+                            .stopAndAdd(new SetHoodAngle(45.0))
                             .build()
             );
             break;
@@ -97,7 +105,7 @@ public class AutonRedPathV2 extends LinearOpMode {
 //        Action stopFlywheel = new StopFlywheel();
 //        runAction(stopFlywheel, 500);
 //
-//        // ===== TEST 5: Intake =====
+//        // ===== TEST 5: Intake ===== DDDDOOOOOOOOOOOOOOOONNNNNNNNNNNNEEEEEEEEEEE
 //        telemetry.addData("Test", "5. Intake Pixel");
 //        telemetry.update();
 //        Action intake = new IntakePixel(3000);
@@ -197,13 +205,15 @@ public class AutonRedPathV2 extends LinearOpMode {
                 telemetry.addData("Hood: Target Angle", targetAngle);
                 outtake.initHoodAngleBlocking();
                 outtake.hoodPID.init();
-                outtake.updateHoodAngle();
+//                outtake.updateHoodAngle();
             }
 
             // Update hood position
             boolean atPosition = outtake.setHood(targetAngle);
 
-            telemetry.addData("Hood: Current Angle", outtake.hoodAngle);
+            telemetry.addData("Hood: Current Angle", outtake.hoodAngle* outtake.servoDegPerRot);
+            dashboardTelemetry.addData("Hood: Current Angle", outtake.hoodAngle* outtake.servoDegPerRot);
+            dashboardTelemetry.update();
             telemetry.addData("Hood: At Position", atPosition);
             telemetry.update();
 
@@ -252,6 +262,15 @@ public class AutonRedPathV2 extends LinearOpMode {
         public boolean run(TelemetryPacket packet) {
             outtake.spin_flywheel(0, 10);
             telemetry.addData("Flywheel: Status", "Stopped");
+            return false; // Complete immediately
+        }
+    }
+
+    public class TransferUp implements Action {
+        @Override
+        public boolean run(TelemetryPacket packet) {
+            outtake.transferUp();
+            telemetry.addData("Transfer: Status", "Up");
             return false; // Complete immediately
         }
     }
