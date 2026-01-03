@@ -4,6 +4,7 @@ import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.Pose2d;
+import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -62,6 +63,10 @@ public class AutonRedPathV2 extends LinearOpMode {
         outtake = new outtakeV2(hardwareMap,flywheel,flywheelR,null,null,null,null,null,hood,hoodSensor,transfer,true);
         intakeSystem = new intake(hardwareMap,"intake","intakeSensor");
         spindexer=new spindexerColor(spindexerServo,intakeMotor,hardwareMap);
+        final Vector2d shootingPos=new Vector2d(-34,23);
+        final double shootingAngle=Math.toRadians(225);
+        final double intakeFinishy =36;
+        final double intakeStarty=13;
 
         dashboard=FtcDashboard.getInstance();
         dashboardTelemetry=dashboard.getTelemetry();
@@ -76,15 +81,90 @@ public class AutonRedPathV2 extends LinearOpMode {
             if (isStopRequested()) return;
             Actions.runBlocking(
                     drive.actionBuilder(beginPose)
-                            .stopAndAdd(new startspindexer())
-                            .stopAndAdd(new IntakePixel(3000))
-                            .waitSeconds(2)
-                            .stopAndAdd(new RunIntake(16000))
-                            .stopAndAdd(new transferUp())
-                            .stopAndAdd(new SpinFlywheel(1000,50))
-                            .waitSeconds(5)
-                            .build()
-            );
+
+
+                            .strafeToLinearHeading(shootingPos, shootingAngle)
+//                            //TODO: Add Start Flywheel DOOOOOOOOOOOOOONNNNNNNNNNNNNNNEEEEEEEEEEEEE
+//                            .stopAndAdd(new SpinFlywheel(670,50))
+//                            .waitSeconds(3)
+//                            //TODO: Add Shooting Sequence DOOOOOOOOOOOOOONNNNNNNNNNNNNNNEEEEEEEEEEEEE
+//                            .stopAndAdd(new transferUp())
+//                            .waitSeconds(.5)
+//                            .stopAndAdd(new RunIntake())
+//                            .stopAndAdd(new startspindexer())
+//                            .waitSeconds(.5)
+//                            //TODO: Add Stop Sequence DOOOOOOOOOOOOOONNNNNNNNNNNNNNNEEEEEEEEEEEEE
+//                            .stopAndAdd(new StopFlywheel())
+//                            .stopAndAdd(new transferOff())
+//                            .stopAndAdd(new stopspindexer())
+//                            .stopAndAdd(new StopIntake())
+//                            .waitSeconds(1)
+                            .strafeToLinearHeading(new Vector2d(-15, intakeStarty), Math.toRadians(360-270))
+                            //TODO: Add Intake Code DOOOOOOOOOOOOOONNNNNNNNNNNNNNNEEEEEEEEEEEEE
+//                            .stopAndAdd(new RunIntake())
+//                            .stopAndAdd(new startspindexer())
+                            .strafeTo(new Vector2d(-15, intakeFinishy))
+                            .strafeTo(new Vector2d(-15,intakeFinishy+10))
+
+                            //TODO: Add Stop Intake DOOOOOOOOOOOOOONNNNNNNNNNNNNNNEEEEEEEEEEEEE
+//                            .stopAndAdd(new StopIntake())
+//                            .waitSeconds(3)
+                            .strafeToLinearHeading(shootingPos, shootingAngle)
+                            //TODO: Add Start Flywheel DOOOOOOOOOOOOOONNNNNNNNNNNNNNNEEEEEEEEEEEEE
+//                            .stopAndAdd(new SpinFlywheel(670,50))
+                            .waitSeconds(3)
+                            //TODO: Add Shoot Sequence 1 DOOOOOOOOOOOOOONNNNNNNNNNNNNNNEEEEEEEEEEEEE
+//                            .stopAndAdd(new transferUp())
+//                            .waitSeconds(.5)
+//                            .stopAndAdd(new RunIntake())
+//                            .stopAndAdd(new startspindexer())
+//                            .waitSeconds(.5)
+                            //TODO: Add Stop Sequence DOOOOOOOOOOOOOONNNNNNNNNNNNNNNEEEEEEEEEEEEE
+//                            .stopAndAdd(new StopFlywheel())
+//                            .stopAndAdd(new transferOff())
+//                            .stopAndAdd(new stopspindexer())
+//                            .stopAndAdd(new StopIntake())
+                            .strafeToLinearHeading(new Vector2d(10, intakeStarty-7), Math.toRadians(360-270))
+                            //TODO: Add Start Intake DOOOOOOOOOOOOOONNNNNNNNNNNNNNNEEEEEEEEEEEEE
+//                            .stopAndAdd(new RunIntake())
+                            .strafeTo(new Vector2d(10, intakeFinishy+3))
+//                            .waitSeconds(3)
+                            //TODO: Add Stop Intake DOOOOOOOOOOOOOONNNNNNNNNNNNNNNEEEEEEEEEEEEE
+//                            .stopAndAdd(new StopIntake())
+//                            .waitSeconds(3)
+                            .strafeToLinearHeading(shootingPos, shootingAngle)
+                            //TODO: Add Start Flywheel DOOOOOOOOOOOOOONNNNNNNNNNNNNNNEEEEEEEEEEEEE
+//                            .stopAndAdd(new SpinFlywheel(670,50))
+//                            .waitSeconds(3)
+                            //TODO: Add Shoot Sequence DOOOOOOOOOOOOOONNNNNNNNNNNNNNNEEEEEEEEEEEEE
+//                            .stopAndAdd(new transferUp())
+//                            .waitSeconds(.5)
+//                            .stopAndAdd(new RunIntake())
+//                            .waitSeconds(.5)
+                            //TODO: Add Stop Sequence DOOOOOOOOOOOOOONNNNNNNNNNNNNNNEEEEEEEEEEEEE
+//                            .stopAndAdd(new StopFlywheel())
+//                            .stopAndAdd(new transferOff())
+//                            .stopAndAdd(new stopspindexer())
+//                            .stopAndAdd(new StopIntake())
+                            //TODO: Add Start Intake DOOOOOOOOOOOOOONNNNNNNNNNNNNNNEEEEEEEEEEEEE
+                            .strafeToLinearHeading(new Vector2d(35, intakeStarty-10), Math.toRadians(360-270))
+//                            .stopAndAdd(new RunIntake())
+                            .strafeTo(new Vector2d(35, intakeFinishy+3))
+//                            .waitSeconds(3)
+                            //TODO: Add Stop Intake DOOOOOOOOOOOOOONNNNNNNNNNNNNNNEEEEEEEEEEEEE
+//                            .stopAndAdd(new StopIntake())
+//                            .waitSeconds(3)
+                            .strafeToLinearHeading(shootingPos, shootingAngle)
+                            //TODO: Add Start Flywheel DOOOOOOOOOOOOOONNNNNNNNNNNNNNNEEEEEEEEEEEEE
+//                            .stopAndAdd(new SpinFlywheel(670,50))
+//                            .waitSeconds(3)
+                            //TODO: Add Shoot Sequence
+//                            .stopAndAdd(new transferUp())
+//                            .waitSeconds(.5)
+//                            .stopAndAdd(new RunIntake())
+//                            .stopAndAdd(new startspindexer())
+//                            .waitSeconds(.5)
+                            .build());
             break;
         }
 
@@ -331,15 +411,19 @@ public class AutonRedPathV2 extends LinearOpMode {
      * Just runs intake without spindexer
      */
     public class RunIntake implements Action {
-        private final long timeoutMs;
-
-        public RunIntake(long timeoutMilliseconds) {
-            this.timeoutMs = timeoutMilliseconds;
-        }
 
         @Override
         public boolean run(TelemetryPacket packet) {
-            intakeSystem.intakeMotor.setPower(0.5);
+            intakeSystem.start();
+            return false;
+        }
+    }
+
+    public class StopIntake implements Action {
+
+        @Override
+        public boolean run(TelemetryPacket packet) {
+            intakeSystem.stop();
             return false;
         }
     }
@@ -405,6 +489,7 @@ public class AutonRedPathV2 extends LinearOpMode {
             return false;
         }
     }
+
 
     /**
      * Spins spindexer to next empty slot for intake
