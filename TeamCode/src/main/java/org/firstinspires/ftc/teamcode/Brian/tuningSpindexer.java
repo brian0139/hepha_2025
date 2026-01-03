@@ -20,7 +20,7 @@ import org.firstinspires.ftc.teamcode.Stanley.finalizedClasses.outtakeV2;
 @TeleOp
 public class tuningSpindexer extends LinearOpMode {
     CRServo spindexer=null;
-    AnalogInput hoodSensor=null;
+    AnalogInput spindexerSensor=null;
     spindexerColor spindexerOperator=null;
     double change=0.1;
     int x=0;
@@ -35,7 +35,7 @@ public class tuningSpindexer extends LinearOpMode {
     @Override
     public void runOpMode(){
         spindexer=hardwareMap.get(CRServo.class,"spindexerServo");
-        hoodSensor=hardwareMap.get(AnalogInput.class,"hoodAnalog");
+        spindexerSensor=hardwareMap.get(AnalogInput.class,"hoodAnalog");
         spindexerOperator=new spindexerColor(spindexer,null,null);
         dashboard = FtcDashboard.getInstance();
         dashboardTelemetry = dashboard.getTelemetry();
