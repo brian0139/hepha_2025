@@ -27,8 +27,8 @@ public class intake {
         }
     }
 
-    public void intake() {
-        setPower(intakePower);
+    public void start() {
+        intakeMotor.setPower(intakePower);
     }
 
     public void reverse() {
@@ -52,7 +52,7 @@ public class intake {
     public boolean intakeUntilPixel() {
         //Start intaking
         if (!runningPixelIntake){
-            intake();
+            start();
             runningPixelIntake=true;
         }
         // Check for pixel detection

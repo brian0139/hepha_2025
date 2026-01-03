@@ -19,10 +19,9 @@ public class spindexerColor {
     colorSensor outtakesensor;
     colorSensor intakesensor;
     AnalogInput spindexerSensor;
-    public double kp = 0.00;
-    public double ki = 0.00;
-    public double kd = 0.00;
-    PID spindexerPID = new PID(kp, ki, kd);
+    public double[] kS={0.0,0.0,0.0};
+
+    public PID spindexerPID = new PID(kS[0], kS[1], kS[2]);
     double detectedLocation = 0;
     boolean lastDetected=false;
     boolean detectedLastLoop = false;
@@ -49,10 +48,19 @@ public class spindexerColor {
             spindexerPID.init();
         }
         if (detectedLocation != -1) {
-            spindexerServo.setPower(spindexerPID.update(detectedLocation - spindexerSensor.getVoltage()));
+            spindexerServo.setPower(spindexerPID.update(calculateError(detectedLocation,spindexerSensor.getVoltage())));
             return (spindexerSensor.getVoltage() >= detectedLocation - epsilon && spindexerSensor.getVoltage() <= detectedLocation + epsilon);
         }
         return false;
+    }
+    public double calculateError(double setpoint, double currentpoint){
+        double range=3.3;
+        double error=setpoint-currentpoint;
+
+        while (error>range/2) error-=range;
+        while (error<-range/2) error+=range;
+
+        return error;
     }
 
     public void initSpin() {
