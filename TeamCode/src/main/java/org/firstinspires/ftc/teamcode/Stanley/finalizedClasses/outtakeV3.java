@@ -1,6 +1,5 @@
 package org.firstinspires.ftc.teamcode.Stanley.finalizedClasses;
 
-import com.qualcomm.robotcore.hardware.AnalogInput;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
@@ -23,28 +22,16 @@ public class outtakeV3 {
     //Outtake Hood Servo
     CRServo hoodServo;
     CRServo turretServo;
-    public DcMotorEx hoodSensor;
     //Degrees changed for every servo rotation
-    public double servoDegPerRot =26.53;
+    public double servoDegPerRot =24.18;
     //Ticks/revolution for encoder
     public int ticksPerRevHood=8192;
-    //hood Axon voltage last loop
-    double lastVolt=-1;
-    //# of rotations hood servo has
-    int rotations=0;
+    //Motor for hood encoder
+    public DcMotor hoodEncoder=null;
     //transfer positions(up, down)
     public static double[] transferpowers ={0.5,0};
-    //reference rotations
-    public double referenceRotation=-1;
-    //hood angle(in degrees)
-    public double hoodAngle=-1;
     //transfer servo
     public DcMotor transfer;
-    //drivetrain motors
-    DcMotor leftFront;
-    DcMotor leftBack;
-    DcMotor rightFront;
-    DcMotor rightBack;
     //auto aim vars
     //  Drive = Error * Gain
     // Turn Control "Gain".  e.g. Ramp up to 25% power at a 25 degree error. (0.25 / 25.0)
@@ -55,20 +42,16 @@ public class outtakeV3 {
     //voltage jump to be considered a rotation
     double maxVJump=3.3*0.5;
     //PID instance for hood
-    public double[] Kh={3.0,0,0.06};
+    public double[] Kh={0.0005,0.0005,0.00003};
     public PID hoodPID=new PID(Kh[0],Kh[1],Kh[2]);
-    public outtakeV3(HardwareMap hardwareMap, DcMotorEx flywheelDrive, DcMotorEx flywheelDriveR, String teamColor, DcMotor leftFront, DcMotor rightFront, DcMotor leftBack, DcMotor rightBack, CRServo hoodServo, DcMotorEx hoodSensor, DcMotor transfer, boolean useTag){
-        this.flywheelDriveR = flywheelDriveR;
-        this.flywheelDrive=flywheelDrive;
+    public outtakeV3(HardwareMap hardwareMap, String teamColor, boolean useTag){
+        this.flywheelDriveR = hardwareMap.get(DcMotorEx.class,"flywheelR");
+        this.flywheelDrive=hardwareMap.get(DcMotorEx.class,"flywheel");
         this.teamColor=teamColor;
-        this.leftFront=leftFront;
-        this.rightFront=rightFront;
-        this.leftBack=leftBack;
-        this.rightBack=rightBack;
-        this.hoodServo=hoodServo;
+        this.hoodServo=hardwareMap.get(CRServo.class,"hoodServo");
         this.turretServo =hardwareMap.get(CRServo.class,"turretServo");
-        this.hoodSensor=hoodSensor;
-        this.transfer=transfer;
+        this.hoodEncoder=hardwareMap.get(DcMotorEx.class,"leftBack");
+        this.transfer=hardwareMap.get(DcMotor.class,"par1");
         hoodPID.maxOutput=1;
         hoodPID.minOutput=-1;
         //set target april tag number to aim at depending on team color.
@@ -352,12 +335,11 @@ public class outtakeV3 {
      * @return if hood is at position
      */
     public boolean setHood(double degrees){
-        double epsilon=0.001;
-        double targetRotations=degrees/servoDegPerRot;
-        double power=hoodPID.update(targetRotations-hoodAngle);
+        double epsilon=35;
+        double targetTicks=(66.81-degrees)/servoDegPerRot*ticksPerRevHood;
+        double power=hoodPID.update(targetTicks-hoodEncoder.getCurrentPosition());
         hoodServo.setPower(power);
-        updateHoodAngle();
-        return hoodAngle >= targetRotations - epsilon && hoodAngle <= targetRotations + epsilon;
+        return hoodEncoder.getCurrentPosition() >= targetTicks - epsilon && hoodEncoder.getCurrentPosition() <= targetTicks + epsilon;
     }
 
     /**
@@ -365,63 +347,37 @@ public class outtakeV3 {
      * WARNING:Blocking
      */
     public void initHoodAngleBlocking(){
-        for (int i=0;i<=3;i++) {
-            while (hoodSensor.getVoltage() >= 0.2) hoodServo.setPower(1);
-            while (hoodSensor.getVoltage() < 0.2) hoodServo.setPower(1);
-        }
-        hoodAngle=66.81;
+        hoodEncoder.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
+        while(hoodEncoder.getCurrentPosition()>=-3*ticksPerRevHood) hoodServo.setPower(1);
+        hoodServo.setPower(0);
+        hoodEncoder.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
     }
 
     /**
-     * Resets hood angle counter to highest(gear off)
+     * Resets hood angle counter to highest(gear off)(AKA 0)
+     * Will cause left-back drivetrain motor to temporarily lose power,
      * FOR USE IN EMERGENCIES ONLY
      */
     public void resetHoodAngle(){
-        hoodAngle=66.81;
-    }
-
-    public void stopHood(){
-        hoodServo.setPower(0);
-        updateHoodAngle();
+        hoodEncoder.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
     }
 
     /**
-     * Helper function to update current angle of hood
-     * @return Delta change in hood angle(in servo rotations)
+     * Stops hood servo
      */
-    public double updateHoodAngle(){
-        double saveHoodAngle=hoodAngle;
-        double volt=hoodSensor.getVoltage();
-        //If last loop there was no voltage(first loop)
-        if (lastVolt==-1){
-            //initialize lastvolt
-            lastVolt=volt;
-        }else{//Otherwise calculate position
-            if (volt-lastVolt<=-maxVJump){
-                rotations++;
-                hoodAngle=(rotations+volt/3.3)*servoDegPerRot;
-                lastVolt=volt;
-            }else if(volt-lastVolt>=maxVJump){
-                rotations--;
-                hoodAngle=(rotations+volt/3.3)*servoDegPerRot;
-                lastVolt=volt;
-            }else{
-                hoodAngle=(rotations+volt/3.3)*servoDegPerRot;
-                lastVolt=volt;
-            }
-        }
-        return hoodAngle-saveHoodAngle;
+    public void stopHood(){
+        hoodServo.setPower(0);
     }
 
     /**
      * Transfer artifact to flywheel(move transfer up)
      */
-    public void transferUp(){this.transfer.setPower(this.transferpowers[0]);}
+    public void transferUp(){this.transfer.setPower(transferpowers[0]);}
     /**
      * Lower Transfer
      */
     public void transferDown(){
-        this.transfer.setPower(this.transferpowers[1]);
+        this.transfer.setPower(transferpowers[1]);
     }
 
     /**
@@ -434,11 +390,6 @@ public class outtakeV3 {
         DcMotorEx flywheelDriveEx=this.flywheelDriveR;
         flywheelDriveEx.setVelocity(targetSpeed);
         flywheelDrive.setVelocity(targetSpeed);
-        if (targetSpeed-tolerance<=flywheelDriveEx.getVelocity() && flywheelDriveEx.getVelocity()<=targetSpeed+tolerance){
-            return true;
-        }
-        else{
-            return false;
-        }
+        return targetSpeed - tolerance <= flywheelDriveEx.getVelocity() && flywheelDriveEx.getVelocity() <= targetSpeed + tolerance;
     }
 }

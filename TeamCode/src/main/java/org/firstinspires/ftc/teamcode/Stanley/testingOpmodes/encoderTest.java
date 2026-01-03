@@ -11,7 +11,7 @@ public class encoderTest extends LinearOpMode {
     DcMotorEx encoder=null;
     @Override
     public void runOpMode() throws InterruptedException{
-        encoder=hardwareMap.get(DcMotorEx.class,"encoder");
+        encoder=hardwareMap.get(DcMotorEx.class,"leftBack");
         encoder.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         waitForStart();
         while (opModeIsActive()){
