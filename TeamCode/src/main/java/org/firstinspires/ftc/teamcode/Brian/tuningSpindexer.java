@@ -27,7 +27,7 @@ public class tuningSpindexer extends LinearOpMode {
     @Override
     public void runOpMode(){
         spindexer=hardwareMap.get(CRServo.class,"spindexerServo");
-        hoodSensor=hardwareMap.get(AnalogInput.class,"spindexerSensor");
+        hoodSensor=hardwareMap.get(AnalogInput.class,"spindexerAnalog");
         spindexerOperator=new spindexerColor(spindexer,null,hardwareMap);
         dashboard = FtcDashboard.getInstance();
         dashboardTelemetry = dashboard.getTelemetry();
@@ -66,6 +66,8 @@ public class tuningSpindexer extends LinearOpMode {
             if (gamepad1.rightStickButtonWasPressed()){
                 angle-=change;
             }
+            if (angle>3.3) angle-=3.3;
+            if (angle<0) angle+=3.3;
             String line1="Kh: ";
             for (int i=0;i<=2;i++){
                 if (i==x){
