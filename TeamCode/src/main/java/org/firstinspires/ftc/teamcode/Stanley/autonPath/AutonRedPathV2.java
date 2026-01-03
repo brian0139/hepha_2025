@@ -27,8 +27,6 @@ import org.firstinspires.ftc.teamcode.Stanley.finalizedClasses.outtakeV2;
 
 @Autonomous
 public class AutonRedPathV2 extends LinearOpMode {
-
-    // TODO:Subsystem instances - initialize these in runOpMode
     outtakeV2 outtake;
     intake intakeSystem;
     spindexerColor spindexer;
@@ -49,20 +47,21 @@ public class AutonRedPathV2 extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
         // Initialize subsystems
-        spindexerServo=hardwareMap.crservo.get("spindexerServo");
-        intakeMotor=hardwareMap.dcMotor.get("intake");
-        hoodSensor=hardwareMap.get(AnalogInput.class,"hoodAnalog");
-        flywheel=(DcMotorEx) hardwareMap.dcMotor.get("flywheel");
-        flywheelR=(DcMotorEx) hardwareMap.dcMotor.get("flywheelR");
-        flywheel.setDirection(DcMotorSimple.Direction.REVERSE);
-        transfer=(DcMotorEx) hardwareMap.dcMotor.get("par1");
-        drive=new MecanumDrive(hardwareMap,beginPose);
-//        transfer=hardwareMap.servo.get("transferServo");
-        hood=hardwareMap.crservo.get("hoodServo");
-        intakeSensor=hardwareMap.get(NormalizedColorSensor.class,"intakeSensor");
         outtake = new outtakeV2(hardwareMap,flywheel,flywheelR,null,null,null,null,null,hood,hoodSensor,transfer,true);
         intakeSystem = new intake(hardwareMap,"intake","intakeSensor");
         spindexer=new spindexerColor(spindexerServo,intakeMotor,hardwareMap);
+        spindexerServo=hardwareMap.crservo.get("spindexerServo");
+        intakeMotor=hardwareMap.dcMotor.get("intake");
+        transfer=(DcMotorEx) hardwareMap.dcMotor.get("par1");
+        flywheel=(DcMotorEx) hardwareMap.dcMotor.get("flywheel");
+        flywheelR=(DcMotorEx) hardwareMap.dcMotor.get("flywheelR");
+        hood=hardwareMap.crservo.get("hoodServo");
+        hoodSensor=hardwareMap.get(AnalogInput.class,"hoodAnalog");
+        drive=new MecanumDrive(hardwareMap,beginPose);
+        intakeSensor=hardwareMap.get(NormalizedColorSensor.class,"intakeSensor");
+
+        flywheel.setDirection(DcMotorSimple.Direction.REVERSE);
+
         final Vector2d shootingPos=new Vector2d(-34,23);
         final double shootingAngle=Math.toRadians(120);
         final double intakeFinishy =36;
@@ -78,87 +77,88 @@ public class AutonRedPathV2 extends LinearOpMode {
         telemetry.update();
 
         waitForStart();
+
         while (opModeIsActive()) {
             if (isStopRequested()) return;
             Actions.runBlocking(
                     drive.actionBuilder(beginPose)
 
-//                            .strafeToLinearHeading(shootingPos, shootingAngle+Math.toRadians(4))
-////                            //TODO: Add Start Flywheel DOOOOOOOOOOOOOONNNNNNNNNNNNNNNEEEEEEEEEEEEE
-//                            .stopAndAdd(new SpinFlywheel(670,50))
-////                            //TODO: Add Shooting Sequence DOOOOOOOOOOOOOONNNNNNNNNNNNNNNEEEEEEEEEEEEE
-//                            .stopAndAdd(new transferUp())
-//                            .stopAndAdd(new RunIntake())
-//                            .waitSeconds(3)
-//                            .stopAndAdd(new startspindexer())
-//                            .waitSeconds(3)
-////                            //TODO: Add Stop Sequence DOOOOOOOOOOOOOONNNNNNNNNNNNNNNEEEEEEEEEEEEE
-//                            .stopAndAdd(new StopFlywheel())
-//                            .stopAndAdd(new transferOff())
-//                            .stopAndAdd(new stopspindexer())
-//                            .stopAndAdd(new StopIntake())
+                            .strafeToLinearHeading(shootingPos, shootingAngle+Math.toRadians(4))
+                            //Start Flywheel DOOOOOOOOOOOOOONNNNNNNNNNNNNNNEEEEEEEEEEEEE
+                            .stopAndAdd(new SpinFlywheel(670,50))
+                            //Shooting Sequence DOOOOOOOOOOOOOONNNNNNNNNNNNNNNEEEEEEEEEEEEE
+                            .stopAndAdd(new transferUp())
+                            .stopAndAdd(new RunIntake())
+                            .waitSeconds(3)
+                            .stopAndAdd(new startspindexer())
+                            .waitSeconds(3)
+                            //Stop Sequence DOOOOOOOOOOOOOONNNNNNNNNNNNNNNEEEEEEEEEEEEE
+                            .stopAndAdd(new StopFlywheel())
+                            .stopAndAdd(new transferOff())
+                            .stopAndAdd(new stopspindexer())
+                            .stopAndAdd(new StopIntake())
                             .strafeToLinearHeading(new Vector2d(-14, intakeStarty), Math.toRadians(360-270))
-                            //TODO: Add Intake Code DOOOOOOOOOOOOOONNNNNNNNNNNNNNNEEEEEEEEEEEEE
+                            //Start Intake Code DOOOOOOOOOOOOOONNNNNNNNNNNNNNNEEEEEEEEEEEEE
                             .stopAndAdd(new RunIntake())
                             .stopAndAdd(new startspindexer())
 
                             .strafeTo(new Vector2d(-14, intakeFinishy))
                             .strafeTo(new Vector2d(-14,intakeFinishy+10))
 
-                            //TODO: Add Stop Intake DOOOOOOOOOOOOOONNNNNNNNNNNNNNNEEEEEEEEEEEEE
+                            //Stop Intake DOOOOOOOOOOOOOONNNNNNNNNNNNNNNEEEEEEEEEEEEE
                             .waitSeconds(3)
                             .stopAndAdd(new StopIntake())
                             .stopAndAdd(new stopspindexer())
                             .strafeToLinearHeading(new Vector2d(-37,23), shootingAngle)
-                            //TODO: Add Start Flywheel DOOOOOOOOOOOOOONNNNNNNNNNNNNNNEEEEEEEEEEEEE
+                            //Start Flywheel DOOOOOOOOOOOOOONNNNNNNNNNNNNNNEEEEEEEEEEEEE
                             .stopAndAdd(new SpinFlywheel(500,50))
-                            //TODO: Add Shoot Sequence DOOOOOOOOOOOOOONNNNNNNNNNNNNNNEEEEEEEEEEEEE
+                            //Shoot Sequence DOOOOOOOOOOOOOONNNNNNNNNNNNNNNEEEEEEEEEEEEE
                             .stopAndAdd(new transferUp())
                             .stopAndAdd(new RunIntake())
                             .waitSeconds(3)
                             .stopAndAdd(new startspindexer())
                             .waitSeconds(3)
-                            //TODO: Add Stop Sequence DOOOOOOOOOOOOOONNNNNNNNNNNNNNNEEEEEEEEEEEEE
+                            //Stop Sequence DOOOOOOOOOOOOOONNNNNNNNNNNNNNNEEEEEEEEEEEEE
                             .stopAndAdd(new StopFlywheel())
                             .stopAndAdd(new transferOff())
                             .stopAndAdd(new stopspindexer())
                             .stopAndAdd(new StopIntake())
                             .strafeToLinearHeading(new Vector2d(14, intakeStarty-7), Math.toRadians(360-270))
-                            //TODO: Add Start Intake DOOOOOOOOOOOOOONNNNNNNNNNNNNNNEEEEEEEEEEEEE
+                            //Start Intake DOOOOOOOOOOOOOONNNNNNNNNNNNNNNEEEEEEEEEEEEE
                             .stopAndAdd(new RunIntake())
                             .stopAndAdd(new startspindexer())
                             .strafeTo(new Vector2d(14, intakeFinishy+3))
-                            //TODO: Add Stop Intake DOOOOOOOOOOOOOONNNNNNNNNNNNNNNEEEEEEEEEEEEE
+                            //Stop Intake DOOOOOOOOOOOOOONNNNNNNNNNNNNNNEEEEEEEEEEEEE
                             .waitSeconds(3)
                             .stopAndAdd(new StopIntake())
                             .stopAndAdd(new stopspindexer())
                             .strafeToLinearHeading(new Vector2d(-35,23), shootingAngle)
-                            //TODO: Add Start Flywheel DOOOOOOOOOOOOOONNNNNNNNNNNNNNNEEEEEEEEEEEEE
+                            //Start Flywheel DOOOOOOOOOOOOOONNNNNNNNNNNNNNNEEEEEEEEEEEEE
                             .stopAndAdd(new SpinFlywheel(500,50))
-                            //TODO: Add Shoot Sequence DOOOOOOOOOOOOOONNNNNNNNNNNNNNNEEEEEEEEEEEEE
+                            //Shoot Sequence DOOOOOOOOOOOOOONNNNNNNNNNNNNNNEEEEEEEEEEEEE
                             .stopAndAdd(new transferUp())
                             .stopAndAdd(new RunIntake())
                             .waitSeconds(3)
                             .stopAndAdd(new startspindexer())
                             .waitSeconds(3)
-                            //TODO: Add Stop Sequence DOOOOOOOOOOOOOONNNNNNNNNNNNNNNEEEEEEEEEEEEE
+                            //Stop Sequence DOOOOOOOOOOOOOONNNNNNNNNNNNNNNEEEEEEEEEEEEE
                             .stopAndAdd(new StopFlywheel())
                             .stopAndAdd(new transferOff())
                             .stopAndAdd(new stopspindexer())
                             .stopAndAdd(new StopIntake())
-                            //TODO: Add Start Intake DOOOOOOOOOOOOOONNNNNNNNNNNNNNNEEEEEEEEEEEEE
+                            //Start Intake DOOOOOOOOOOOOOONNNNNNNNNNNNNNNEEEEEEEEEEEEE
                             .strafeToLinearHeading(new Vector2d(36, intakeStarty-10), Math.toRadians(360-270))
                             .stopAndAdd(new RunIntake())
                             .stopAndAdd(new startspindexer())
                             .strafeTo(new Vector2d(36, intakeFinishy+3))
-                            //TODO: Add Stop Intake DOOOOOOOOOOOOOONNNNNNNNNNNNNNNEEEEEEEEEEEEE
+                            //Stop Intake DOOOOOOOOOOOOOONNNNNNNNNNNNNNNEEEEEEEEEEEEE
                             .waitSeconds(3)
                             .stopAndAdd(new StopIntake())
                             .stopAndAdd(new stopspindexer())
                             .strafeToLinearHeading(shootingPos, shootingAngle)
-                            //TODO: Add Start Flywheel DOOOOOOOOOOOOOONNNNNNNNNNNNNNNEEEEEEEEEEEEE
+                            //Start Flywheel DOOOOOOOOOOOOOONNNNNNNNNNNNNNNEEEEEEEEEEEEE
                             .stopAndAdd(new SpinFlywheel(500,50))
-                            //TODO: Add Shoot Sequence
+                            //Add Shoot Sequence
                             .stopAndAdd(new transferUp())
                             .stopAndAdd(new RunIntake())
                             .waitSeconds(3)
@@ -167,63 +167,6 @@ public class AutonRedPathV2 extends LinearOpMode {
                             .build());
             break;
         }
-
-        // ===== TEST 1: Turret Auto-Aim ===== DDDDOOOOOOOOOOOOOOOONNNNNNNNNNNNEEEEEEEEEEE
-//        telemetry.addData("Test", "1. Turret Auto-Aim");
-//        telemetry.update();
-//        Action turretAim = new TurretAutoAimUntilAligned(5.0);
-//        runAction(turretAim, 3000); // 3 second timeout
-
-//        // ===== TEST 2: Hood Angle =====
-//        telemetry.addData("Test", "2. Hood Angle");
-//        telemetry.update();
-//        Action setHood = new SetHoodAngle(45.0);
-//        runAction(setHood, 2000);
-//
-//        // ===== TEST 3: Flywheel Spin ===== DDDDOOOOOOOOOOOOOOOONNNNNNNNNNNNEEEEEEEEEEE
-//        telemetry.addData("Test", "3. Flywheel");
-//        telemetry.update();
-//        Action spinFlywheel = new SpinFlywheel(2000, 50);
-//        runAction(spinFlywheel, 3000);
-//
-//        // ===== TEST 4: Stop Flywheel ===== DDDDOOOOOOOOOOOOOOOONNNNNNNNNNNNEEEEEEEEEEE
-//        telemetry.addData("Test", "4. Stop Flywheel");
-//        telemetry.update();
-//        Action stopFlywheel = new StopFlywheel();
-//        runAction(stopFlywheel, 500);
-//
-//        // ===== TEST 5: Intake ===== DDDDOOOOOOOOOOOOOOOONNNNNNNNNNNNEEEEEEEEEEE
-//        telemetry.addData("Test", "5. Intake Pixel");
-//        telemetry.update();
-//        Action intake = new IntakePixel(3000);
-//        runAction(intake, 3000);
-
-          // ===== TEST 6: Spindexer =====
-//        telemetry.addData("Test", "6. Spindexer to Motif");
-//        telemetry.update();
-//        Action spinMotif = new SpinToMotif(0);
-//        runAction(spinMotif, 3000);
-//        sleep(500);
-
-          // ===== TEST 7: Spin Transfer =====
-//        telemetry.addData("Test", "7. Transfer");
-//        telemetry.update();
-//        Action spinTransfer = new transferUp();
-//        runAction(spinTransfer);
-
-          // ===== TEST 8: Stop Transfer =====
-//        telemetry.addData("Test", "8. Transfer");
-//        telemetry.update();
-//        Action stopTransfer = new transferOff();
-//        runAction(stopTransfer);
-
-
-//        // ===== TEST 9: Full Shoot Sequence =====
-//        telemetry.addData("Test", "7. Complete Shoot Sequence");
-//        telemetry.update();
-//        Action shootSequence = new ShootSequence(45.0, 2000, 50);
-//        runAction(shootSequence, 10000);
-
         telemetry.addData("Status", "All Tests Complete");
         telemetry.update();
     }
