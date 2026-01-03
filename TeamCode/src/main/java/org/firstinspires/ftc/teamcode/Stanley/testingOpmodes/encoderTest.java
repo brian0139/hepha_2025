@@ -18,9 +18,22 @@ public class encoderTest extends LinearOpMode {
         encoder.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         waitForStart();
         while (opModeIsActive()){
-            servo.setPower(1);
+            if (gamepad1.yWasPressed()) {
+                encoder.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
+                while (encoder.getCurrentPosition() >= -3 * 8192) {
+                    servo.setPower(1);
+                    telemetry.addData("Encoder", encoder.getCurrentPosition());
+                    telemetry.addData("target", -3 * 8192);
+                    telemetry.update();
+                }
+                servo.setPower(0);
+            }
+            encoder.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
             telemetry.addData("Encoder",encoder.getCurrentPosition());
             telemetry.update();
+//            servo.setPower(1);
+//            telemetry.addData("Encoder",encoder.getCurrentPosition());
+//            telemetry.update();
         }
     }
 }
