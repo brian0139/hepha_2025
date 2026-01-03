@@ -21,10 +21,11 @@ import org.firstinspires.ftc.teamcode.Alvin.intake;
 import org.firstinspires.ftc.teamcode.Brian.spindexerColor;
 import org.firstinspires.ftc.teamcode.MecanumDrive;
 import org.firstinspires.ftc.teamcode.Stanley.finalizedClasses.outtakeV2;
+import org.firstinspires.ftc.teamcode.Stanley.finalizedClasses.outtakeV3;
 
 @Autonomous
 public class hoodAutonTest extends LinearOpMode {
-    outtakeV2 outtake;
+    outtakeV3 outtake;
     intake intakeSystem;
     spindexerColor spindexer;
     CRServo spindexerServo=null;
@@ -44,7 +45,7 @@ public class hoodAutonTest extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
         // Initialize subsystems
-        outtake = new outtakeV2(hardwareMap,flywheel,flywheelR,null,null,null,null,null,hood,hoodSensor,transfer,true);
+        outtake = new outtakeV3(hardwareMap,"Red",true);
         intakeSystem = new intake(hardwareMap,"intake","intakeSensor");
         spindexer=new spindexerColor(spindexerServo,intakeMotor,hardwareMap);
         spindexerServo=hardwareMap.crservo.get("spindexerServo");
@@ -190,10 +191,12 @@ public class hoodAutonTest extends LinearOpMode {
             // Update hood position
             boolean atPosition = outtake.setHood(targetAngle);
 
-            telemetry.addData("Hood: Current Angle", outtake.hoodAngle* outtake.servoDegPerRot);
-            dashboardTelemetry.addData("Hood: Current Angle", outtake.hoodAngle* outtake.servoDegPerRot);
+            telemetry.addData("Hood: Target",(66.81-targetAngle)/outtake.servoDegPerRot*outtake.ticksPerRevHood);
+            telemetry.addData("Hood: Current Angle", outtake.hoodEncoder.getCurrentPosition());
+            telemetry.addData("Power",outtake.hoodPID.power);
+            dashboardTelemetry.addData("Hood: Target",(66.81-targetAngle)/outtake.servoDegPerRot*outtake.ticksPerRevHood);
+            dashboardTelemetry.addData("Hood: Current Angle", outtake.hoodEncoder.getCurrentPosition());
             dashboardTelemetry.addData("Power",outtake.hoodPID.power);
-            dashboardTelemetry.addData("Voltage",outtake.hoodSensor.getVoltage());
             dashboardTelemetry.update();
             telemetry.addData("Hood: At Position", atPosition);
             telemetry.update();

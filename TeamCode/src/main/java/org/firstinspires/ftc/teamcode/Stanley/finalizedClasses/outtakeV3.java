@@ -21,7 +21,7 @@ public class outtakeV3 {
     public DcMotorEx flywheelDrive;
     //Outtake Hood Servo
     CRServo hoodServo;
-    CRServo turretServo;
+    public CRServo turretServo;
     //Degrees changed for every servo rotation
     public double servoDegPerRot =24.18;
     //Ticks/revolution for encoder
