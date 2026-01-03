@@ -27,7 +27,7 @@ public class tuningSpindexer extends LinearOpMode {
     @Override
     public void runOpMode(){
         spindexer=hardwareMap.get(CRServo.class,"spindexerServo");
-        hoodSensor=hardwareMap.get(AnalogInput.class,"spindexerSensor");
+        hoodSensor=hardwareMap.get(AnalogInput.class,"spindexerAnalog");
         spindexerOperator=new spindexerColor(spindexer,null,hardwareMap);
         dashboard = FtcDashboard.getInstance();
         dashboardTelemetry = dashboard.getTelemetry();
