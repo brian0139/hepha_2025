@@ -19,10 +19,9 @@ public class spindexerColor {
     colorSensor outtakesensor;
     colorSensor intakesensor;
     AnalogInput spindexerSensor;
-    public double kp = 0.00;
-    public double ki = 0.00;
-    public double kd = 0.00;
-    PID spindexerPID = new PID(kp, ki, kd);
+    public double[] kS={0.0,0.0,0.0};
+
+    public PID spindexerPID = new PID(kS[0], kS[1], kS[2]);
     double detectedLocation = 0;
     boolean lastDetected=false;
     boolean detectedLastLoop = false;
