@@ -71,7 +71,7 @@ public class spindexer{
 
             if ((detectedColor == 2 && numPurple >= 2) || (detectedColor == 1 && numGreen >= 2) && (emptySlot == 0 || emptySlot == 1 || emptySlot == 2)) {
                 rotateSpindexerInput(emptySlot);
-                intakeSystem.intake();
+                intakeSystem.start();
                 spindexerSlots[emptySlot] = colorSensor.getDetected(); // update spindexer slot to color that we intake
                 return 0; // intake ball succesfully
             } else {
