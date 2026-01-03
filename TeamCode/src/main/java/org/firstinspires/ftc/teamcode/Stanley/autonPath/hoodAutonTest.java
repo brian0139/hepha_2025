@@ -79,6 +79,7 @@ public class hoodAutonTest extends LinearOpMode {
             if (isStopRequested()) return;
             Actions.runBlocking(
                     drive.actionBuilder(beginPose)
+                            .stopAndAdd(new SetHoodAngle(45))
                             .build());
             break;
         }
