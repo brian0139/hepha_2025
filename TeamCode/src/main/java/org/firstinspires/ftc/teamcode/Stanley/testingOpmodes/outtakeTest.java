@@ -32,7 +32,7 @@ public class outtakeTest extends LinearOpMode{
         FtcDashboard dashboard=FtcDashboard.getInstance();
         Telemetry dashboardtelemetry=dashboard.getTelemetry();
         ElapsedTime timer=new ElapsedTime();
-        //TODO:add hood Sensor
+        //TODO:add turret Sensor
         outtakeV2 outtakeOperator = new outtakeV2(hardwareMap, flywheelDrive, flywheelDriveR,"Red",null,null,null,null,hoodServo,hoodSensor,transfer,false);
 
         //telemetry message to signify robot waiting

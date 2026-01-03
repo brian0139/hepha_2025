@@ -5,7 +5,6 @@ import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
-import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.teamcode.Aaron.aprilTagV3;
 
@@ -13,7 +12,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
-public class outtakeV2 {
+public class outtakeV3 {
     //Team color
     String teamColor;
     //April tag processor
@@ -24,9 +23,11 @@ public class outtakeV2 {
     //Outtake Hood Servo
     CRServo hoodServo;
     CRServo turretServo;
-    public AnalogInput hoodSensor;
+    public DcMotorEx hoodSensor;
     //Degrees changed for every servo rotation
     public double servoDegPerRot =26.53;
+    //Ticks/revolution for encoder
+    public int ticksPerRevHood=8192;
     //hood Axon voltage last loop
     double lastVolt=-1;
     //# of rotations hood servo has
@@ -56,7 +57,7 @@ public class outtakeV2 {
     //PID instance for hood
     public double[] Kh={3.0,0,0.06};
     public PID hoodPID=new PID(Kh[0],Kh[1],Kh[2]);
-    public outtakeV2(HardwareMap hardwareMap, DcMotorEx flywheelDrive, DcMotorEx flywheelDriveR, String teamColor, DcMotor leftFront, DcMotor rightFront, DcMotor leftBack, DcMotor rightBack, CRServo hoodServo, AnalogInput hoodSensor, DcMotor transfer, boolean useTag){
+    public outtakeV3(HardwareMap hardwareMap, DcMotorEx flywheelDrive, DcMotorEx flywheelDriveR, String teamColor, DcMotor leftFront, DcMotor rightFront, DcMotor leftBack, DcMotor rightBack, CRServo hoodServo, DcMotorEx hoodSensor, DcMotor transfer, boolean useTag){
         this.flywheelDriveR = flywheelDriveR;
         this.flywheelDrive=flywheelDrive;
         this.teamColor=teamColor;
