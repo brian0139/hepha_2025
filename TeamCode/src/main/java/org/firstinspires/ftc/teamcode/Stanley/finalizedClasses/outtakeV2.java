@@ -22,8 +22,8 @@ public class outtakeV2 {
     public DcMotorEx flywheelDriveR;
     public DcMotorEx flywheelDrive;
     //Outtake Hood Servo
-    CRServo hoodServo;
-    CRServo turretServo;
+    public CRServo hoodServo;
+    public CRServo turretServo;
     public AnalogInput hoodSensor;
     //Degrees changed for every servo rotation
     public double servoDegPerRot =26.53;
@@ -32,7 +32,7 @@ public class outtakeV2 {
     //# of rotations hood servo has
     int rotations=0;
     //transfer positions(up, down)
-    public static double[] transferpowers ={0.5,0};
+    public static double[] transferpowers ={1,0};
     //reference rotations
     public double referenceRotation=-1;
     //hood angle(in degrees)

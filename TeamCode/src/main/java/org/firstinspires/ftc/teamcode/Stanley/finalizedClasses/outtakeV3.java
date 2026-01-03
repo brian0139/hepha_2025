@@ -29,7 +29,7 @@ public class outtakeV3 {
     //Motor for hood encoder
     public DcMotor hoodEncoder=null;
     //transfer positions(up, down)
-    public static double[] transferpowers ={0.5,0};
+    public static double[] transferpowers ={1,0};
     //transfer servo
     public DcMotor transfer;
     //auto aim vars

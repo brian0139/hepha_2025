@@ -53,6 +53,15 @@ public class spindexerColor {
         }
         return false;
     }
+    public double calculateError(double setpoint, double currentpoint){
+        double range=3.3;
+        double error=setpoint-currentpoint;
+
+        while (error>range/2) error-=range;
+        while (error<-range/2) error+=range;
+
+        return error;
+    }
 
     public void initSpin() {
         detectedLocation = -1;
