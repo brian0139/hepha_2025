@@ -32,7 +32,7 @@ public class outtakeV2 {
     //# of rotations hood servo has
     int rotations=0;
     //transfer positions(up, down)
-    public static double[] transferpowers ={0.5,0};
+    public static double[] transferpowers ={1,0};
     //reference rotations
     public double referenceRotation=-1;
     //hood angle(in degrees)

@@ -83,20 +83,20 @@ public class AutonRedPathV2 extends LinearOpMode {
             Actions.runBlocking(
                     drive.actionBuilder(beginPose)
 
-                            .strafeToLinearHeading(shootingPos, shootingAngle+Math.toRadians(20))
-//                            //TODO: Add Start Flywheel DOOOOOOOOOOOOOONNNNNNNNNNNNNNNEEEEEEEEEEEEE
-                            .stopAndAdd(new SpinFlywheel(670,50))
-//                            //TODO: Add Shooting Sequence DOOOOOOOOOOOOOONNNNNNNNNNNNNNNEEEEEEEEEEEEE
-                            .stopAndAdd(new transferUp())
-                            .stopAndAdd(new RunIntake())
-                            .waitSeconds(3)
-                            .stopAndAdd(new startspindexer())
-                            .waitSeconds(3)
-//                            //TODO: Add Stop Sequence DOOOOOOOOOOOOOONNNNNNNNNNNNNNNEEEEEEEEEEEEE
-                            .stopAndAdd(new StopFlywheel())
-                            .stopAndAdd(new transferOff())
-                            .stopAndAdd(new stopspindexer())
-                            .stopAndAdd(new StopIntake())
+//                            .strafeToLinearHeading(shootingPos, shootingAngle+Math.toRadians(4))
+////                            //TODO: Add Start Flywheel DOOOOOOOOOOOOOONNNNNNNNNNNNNNNEEEEEEEEEEEEE
+//                            .stopAndAdd(new SpinFlywheel(670,50))
+////                            //TODO: Add Shooting Sequence DOOOOOOOOOOOOOONNNNNNNNNNNNNNNEEEEEEEEEEEEE
+//                            .stopAndAdd(new transferUp())
+//                            .stopAndAdd(new RunIntake())
+//                            .waitSeconds(3)
+//                            .stopAndAdd(new startspindexer())
+//                            .waitSeconds(3)
+////                            //TODO: Add Stop Sequence DOOOOOOOOOOOOOONNNNNNNNNNNNNNNEEEEEEEEEEEEE
+//                            .stopAndAdd(new StopFlywheel())
+//                            .stopAndAdd(new transferOff())
+//                            .stopAndAdd(new stopspindexer())
+//                            .stopAndAdd(new StopIntake())
                             .strafeToLinearHeading(new Vector2d(-14, intakeStarty), Math.toRadians(360-270))
                             //TODO: Add Intake Code DOOOOOOOOOOOOOONNNNNNNNNNNNNNNEEEEEEEEEEEEE
                             .stopAndAdd(new RunIntake())
@@ -111,7 +111,7 @@ public class AutonRedPathV2 extends LinearOpMode {
                             .stopAndAdd(new stopspindexer())
                             .strafeToLinearHeading(new Vector2d(-37,23), shootingAngle)
                             //TODO: Add Start Flywheel DOOOOOOOOOOOOOONNNNNNNNNNNNNNNEEEEEEEEEEEEE
-                            .stopAndAdd(new SpinFlywheel(670,50))
+                            .stopAndAdd(new SpinFlywheel(500,50))
                             //TODO: Add Shoot Sequence DOOOOOOOOOOOOOONNNNNNNNNNNNNNNEEEEEEEEEEEEE
                             .stopAndAdd(new transferUp())
                             .stopAndAdd(new RunIntake())
@@ -134,7 +134,7 @@ public class AutonRedPathV2 extends LinearOpMode {
                             .stopAndAdd(new stopspindexer())
                             .strafeToLinearHeading(new Vector2d(-35,23), shootingAngle)
                             //TODO: Add Start Flywheel DOOOOOOOOOOOOOONNNNNNNNNNNNNNNEEEEEEEEEEEEE
-                            .stopAndAdd(new SpinFlywheel(670,50))
+                            .stopAndAdd(new SpinFlywheel(500,50))
                             //TODO: Add Shoot Sequence DOOOOOOOOOOOOOONNNNNNNNNNNNNNNEEEEEEEEEEEEE
                             .stopAndAdd(new transferUp())
                             .stopAndAdd(new RunIntake())
@@ -157,7 +157,7 @@ public class AutonRedPathV2 extends LinearOpMode {
                             .stopAndAdd(new stopspindexer())
                             .strafeToLinearHeading(shootingPos, shootingAngle)
                             //TODO: Add Start Flywheel DOOOOOOOOOOOOOONNNNNNNNNNNNNNNEEEEEEEEEEEEE
-                            .stopAndAdd(new SpinFlywheel(670,50))
+                            .stopAndAdd(new SpinFlywheel(500,50))
                             //TODO: Add Shoot Sequence
                             .stopAndAdd(new transferUp())
                             .stopAndAdd(new RunIntake())
