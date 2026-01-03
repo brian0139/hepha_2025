@@ -34,7 +34,7 @@ public class spindexerColor {
         this.intake = intake;
         outtakesensor = new colorSensor(hardwareMap, "outtakeSensor");
         intakesensor = new colorSensor(hardwareMap, "intakeSensor");
-
+        spindexerSensor=hardwareMap.get(AnalogInput.class,"spindexerAnalog");
     }
 
 
