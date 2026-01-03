@@ -23,12 +23,13 @@ import org.firstinspires.ftc.teamcode.Brian.spindexer;
 import org.firstinspires.ftc.teamcode.Brian.spindexerColor;
 import org.firstinspires.ftc.teamcode.MecanumDrive;
 import org.firstinspires.ftc.teamcode.Stanley.finalizedClasses.outtakeV2;
+import org.firstinspires.ftc.teamcode.Stanley.finalizedClasses.outtakeV3;
 
 @Autonomous
 public class AutonRedPathV2 extends LinearOpMode {
 
     // TODO:Subsystem instances - initialize these in runOpMode
-    outtakeV2 outtake;
+    outtakeV3 outtake;
     intake intakeSystem;
     spindexerColor spindexer;
     CRServo spindexerServo=null;
@@ -59,7 +60,7 @@ public class AutonRedPathV2 extends LinearOpMode {
 //        transfer=hardwareMap.servo.get("transferServo");
         hood=hardwareMap.crservo.get("hoodServo");
         intakeSensor=hardwareMap.get(NormalizedColorSensor.class,"intakeSensor");
-        outtake = new outtakeV2(hardwareMap,flywheel,flywheelR,null,null,null,null,null,hood,hoodSensor,transfer,true);
+        outtake = new outtakeV3(hardwareMap,"Red",true);
         intakeSystem = new intake(hardwareMap,"intake","intakeSensor");
         spindexer=new spindexerColor(spindexerServo,intakeMotor,hardwareMap);
 
@@ -78,13 +79,7 @@ public class AutonRedPathV2 extends LinearOpMode {
             if (isStopRequested()) return;
             Actions.runBlocking(
                     drive.actionBuilder(beginPose)
-                            .stopAndAdd(new startspindexer())
-                            .stopAndAdd(new IntakePixel(3000))
-                            .waitSeconds(2)
-                            .stopAndAdd(new RunIntake(16000))
-                            .stopAndAdd(new transferUp())
-                            .stopAndAdd(new SpinFlywheel(1000,50))
-                            .waitSeconds(5)
+                            .stopAndAdd(new SetHoodAngle(45))
                             .build()
             );
             break;
@@ -225,6 +220,7 @@ public class AutonRedPathV2 extends LinearOpMode {
             if (!started) {
                 started = true;
                 telemetry.addData("Hood: Target Angle", targetAngle);
+                telemetry.update();
                 outtake.initHoodAngleBlocking();
                 outtake.hoodPID.init();
 //                outtake.updateHoodAngle();
@@ -233,10 +229,9 @@ public class AutonRedPathV2 extends LinearOpMode {
             // Update hood position
             boolean atPosition = outtake.setHood(targetAngle);
 
-            telemetry.addData("Hood: Current Angle", outtake.hoodAngle* outtake.servoDegPerRot);
-            dashboardTelemetry.addData("Hood: Current Angle", outtake.hoodAngle* outtake.servoDegPerRot);
+            telemetry.addData("Hood: Current Angle", outtake.hoodEncoder.getCurrentPosition()/outtake.ticksPerRevHood*outtake.servoDegPerRot);
+            dashboardTelemetry.addData("Hood: Current Angle", outtake.hoodEncoder.getCurrentPosition()/outtake.ticksPerRevHood*outtake.servoDegPerRot);
             dashboardTelemetry.addData("Power",outtake.hoodPID.power);
-            dashboardTelemetry.addData("Voltage",outtake.hoodSensor.getVoltage());
             dashboardTelemetry.update();
             telemetry.addData("Hood: At Position", atPosition);
             telemetry.update();

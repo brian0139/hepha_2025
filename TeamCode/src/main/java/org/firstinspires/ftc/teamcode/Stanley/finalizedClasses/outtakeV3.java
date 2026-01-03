@@ -23,11 +23,11 @@ public class outtakeV3 {
     CRServo hoodServo;
     CRServo turretServo;
     //Degrees changed for every servo rotation
-    public double servoDegPerRot =26.53;
+    public double servoDegPerRot =24.18;
     //Ticks/revolution for encoder
     public int ticksPerRevHood=8192;
     //Motor for hood encoder
-    public DcMotorEx hoodEncoder=null;
+    public DcMotor hoodEncoder=null;
     //transfer positions(up, down)
     public static double[] transferpowers ={0.5,0};
     //transfer servo
@@ -42,7 +42,7 @@ public class outtakeV3 {
     //voltage jump to be considered a rotation
     double maxVJump=3.3*0.5;
     //PID instance for hood
-    public double[] Kh={3.0,0,0.06};
+    public double[] Kh={0.0005,0.0005,0.00003};
     public PID hoodPID=new PID(Kh[0],Kh[1],Kh[2]);
     public outtakeV3(HardwareMap hardwareMap, String teamColor, boolean useTag){
         this.flywheelDriveR = hardwareMap.get(DcMotorEx.class,"flywheelR");
@@ -335,7 +335,7 @@ public class outtakeV3 {
      * @return if hood is at position
      */
     public boolean setHood(double degrees){
-        double epsilon=5;
+        double epsilon=35;
         double targetTicks=(66.81-degrees)/servoDegPerRot*ticksPerRevHood;
         double power=hoodPID.update(targetTicks-hoodEncoder.getCurrentPosition());
         hoodServo.setPower(power);
@@ -348,9 +348,9 @@ public class outtakeV3 {
      */
     public void initHoodAngleBlocking(){
         hoodEncoder.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
-        while(hoodEncoder.getCurrentPosition()>=-3*ticksPerRevHood) hoodServo.setPower(-1);
+        while(hoodEncoder.getCurrentPosition()>=-3*ticksPerRevHood) hoodServo.setPower(1);
         hoodServo.setPower(0);
-        hoodEncoder.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        hoodEncoder.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
     }
 
     /**

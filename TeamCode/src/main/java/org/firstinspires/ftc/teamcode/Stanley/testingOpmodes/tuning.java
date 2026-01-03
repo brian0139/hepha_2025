@@ -19,7 +19,7 @@ public class tuning extends LinearOpMode {
     int x=0;
     //TODO:Get real value+sync with outtakeV2 value
     //test
-    double angle=60;
+    double angle=66.81;
     boolean correctingtoggle=false;
     //FTC dashboard telemetry
     FtcDashboard dashboard=null;
@@ -29,7 +29,7 @@ public class tuning extends LinearOpMode {
     public void runOpMode(){
         hood=hardwareMap.get(CRServo.class,"hoodServo");
         hoodSensor=hardwareMap.get(AnalogInput.class,"hoodAnalog");
-        outtakeOperator=new outtakeV3(hardwareMap,"Red",false);
+        outtakeOperator=new outtakeV3(hardwareMap,"Red",true);
         dashboard = FtcDashboard.getInstance();
         dashboardTelemetry = dashboard.getTelemetry();
         waitForStart();
