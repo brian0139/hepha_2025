@@ -1,21 +1,13 @@
 package org.firstinspires.ftc.teamcode.Brian;
 
 import com.acmerobotics.dashboard.FtcDashboard;
-import com.acmerobotics.roadrunner.Pose2d;
-import com.acmerobotics.roadrunner.Vector2d;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.AnalogInput;
 import com.qualcomm.robotcore.hardware.CRServo;
-import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
-import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
-import org.firstinspires.ftc.teamcode.MecanumDrive;
 import org.firstinspires.ftc.teamcode.Stanley.finalizedClasses.PID;
-import org.firstinspires.ftc.teamcode.Stanley.finalizedClasses.holdPosition;
-import org.firstinspires.ftc.teamcode.Stanley.finalizedClasses.outtakeV2;
 
 @TeleOp
 public class tuningSpindexer extends LinearOpMode {
@@ -35,14 +27,13 @@ public class tuningSpindexer extends LinearOpMode {
     @Override
     public void runOpMode(){
         spindexer=hardwareMap.get(CRServo.class,"spindexerServo");
-        hoodSensor=hardwareMap.get(AnalogInput.class,"hoodAnalog");
-        spindexerOperator=new spindexerColor(spindexer,null,null);
+        hoodSensor=hardwareMap.get(AnalogInput.class,"spindexerSensor");
+        spindexerOperator=new spindexerColor(spindexer,null,hardwareMap);
         dashboard = FtcDashboard.getInstance();
         dashboardTelemetry = dashboard.getTelemetry();
         waitForStart();
         while (opModeIsActive()){
             if (gamepad1.yWasPressed()) correctingtoggle=!correctingtoggle;
-//            if (gamepad1.aWasPressed()) spindexerOperator.initHoodAngleBlocking();
             //shift speed
             if (gamepad1.rightBumperWasPressed()){
                 change*=10;
@@ -80,7 +71,7 @@ public class tuningSpindexer extends LinearOpMode {
                 if (i==x){
                     line1+="{";
                 }
-                spindexerOperator.kS[i]=(double) Math.round(spindexerOperator.kS[i] * Math.pow(10, 5)) / Math.pow(10, 5);
+                spindexerOperator.kS[i]=(double) Math.round(spindexerOperator.kS[i] * Math.pow(10, 7)) / Math.pow(10, 7);
                 line1+=spindexerOperator.kS[i];
                 if (i==x){
                     line1+="}";
@@ -91,11 +82,11 @@ public class tuningSpindexer extends LinearOpMode {
                 spindexerOperator.spindexerPID=new PID(spindexerOperator.kS[0],spindexerOperator.kS[1],spindexerOperator.kS[2]);
             }
 //            boolean atTarget=false;
-//            if (correctingtoggle){
-//                atTarget=spindexerOperator.setHood(angle);
-//            }else{
-//                spindexerOperator.stopHood();
-//            }
+            if (correctingtoggle){
+                spindexerOperator.setHood(angle);
+            }else{
+                spindexerOperator.stopHood();
+            }
 //            spindexerOperator.updateHoodAngle();
 
             telemetry.addLine(line1);
