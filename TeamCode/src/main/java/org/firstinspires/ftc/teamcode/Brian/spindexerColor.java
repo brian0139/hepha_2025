@@ -48,7 +48,7 @@ public class spindexerColor {
             spindexerPID.init();
         }
         if (detectedLocation != -1) {
-            spindexerServo.setPower(spindexerPID.update(detectedLocation - spindexerSensor.getVoltage()));
+            spindexerServo.setPower(spindexerPID.update(calculateError(detectedLocation,spindexerSensor.getVoltage())));
             return (spindexerSensor.getVoltage() >= detectedLocation - epsilon && spindexerSensor.getVoltage() <= detectedLocation + epsilon);
         }
         return false;

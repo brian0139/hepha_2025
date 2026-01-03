@@ -83,9 +83,9 @@ public class tuningSpindexer extends LinearOpMode {
             }
 //            boolean atTarget=false;
             if (correctingtoggle){
-                spindexerOperator.setHood(angle);
+                spindexerOperator.spindexerServo.setPower(spindexerOperator.spindexerPID.update(spindexerOperator.calculateError(angle,spindexerOperator.spindexerSensor.getVoltage())));
             }else{
-                spindexerOperator.stopHood();
+                spindexerOperator.spindexerServo.setPower(0);
             }
 //            spindexerOperator.updateHoodAngle();
 
