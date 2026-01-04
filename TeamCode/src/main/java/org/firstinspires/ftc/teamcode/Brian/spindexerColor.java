@@ -25,6 +25,9 @@ public class spindexerColor {
 
     public PID spindexerPID = new PID(kS[0], kS[1], kS[2]);
     double detectedLocation = 0;
+    public double mindetectiontime=300;
+    public double maxdetectiontime=500;
+    public double spinspeed=0.35;
     boolean lastDetected=false;
     boolean detectedLastLoop = false;
     public int[] spindexerSlots = {0, 0, 0}; //0 none, 1 green, 2 purple
@@ -77,14 +80,14 @@ public class spindexerColor {
         detectedLocation = -1;
         timer.reset();
         lastDetected=false;
-        spindexerServo.setPower(0.35);
+        spindexerServo.setPower(spinspeed);
     }
 
     public boolean spinToIntake() {
         double epsilon = 0.01;
 //        intake.setPower(0.75);
         if (intakesensor.isNone()){
-            if (timer.milliseconds()>=300 && lastDetected && timer.milliseconds()<=400){
+            if (timer.milliseconds()>=mindetectiontime && lastDetected && timer.milliseconds()<=maxdetectiontime){
                 detectedLocation=spindexerSensor.getVoltage();
                 spindexerPID.init();
             }else{
