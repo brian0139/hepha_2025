@@ -56,6 +56,21 @@ public class outtakeV2 {
     //PID instance for hood
     public double[] Kh={3.0,0,0.06};
     public PID hoodPID=new PID(Kh[0],Kh[1],Kh[2]);
+
+    // ==================== LIMELIGHT DISTANCE → FLYWHEEL SPEED ====================
+    // Tunables (distance in meters, speed in encoder ticks/sec)
+    public double flywheelMinDistanceM = 0.8;
+    public double flywheelMaxDistanceM = 3.0;
+    public double flywheelMinSpeedTicksPerSec = 1400.0;
+    public double flywheelMaxSpeedTicksPerSec = 2200.0;
+    public double flywheelSlewRateTicksPerSec2 = 3000.0;
+    public double flywheelHoldSecondsAfterLoss = 0.30;
+
+    public double lastTagDistanceM = Double.NaN;
+    public double flywheelSetpointTicksPerSec = 0.0;
+    private long lastTagSeenNanos = 0L;
+    private long lastFlywheelUpdateNanos = 0L;
+
     public outtakeV2(HardwareMap hardwareMap, DcMotorEx flywheelDrive, DcMotorEx flywheelDriveR, String teamColor, DcMotor leftFront, DcMotor rightFront, DcMotor leftBack, DcMotor rightBack, CRServo hoodServo, AnalogInput hoodSensor, DcMotor transfer, boolean useTag){
         this.flywheelDriveR = flywheelDriveR;
         this.flywheelDrive=flywheelDrive;
@@ -439,5 +454,58 @@ public class outtakeV2 {
         else{
             return false;
         }
+    }
+
+    /**
+     * Updates flywheel velocity based on current AprilTag distance from Limelight.
+     * Call this repeatedly in your loop; it rate-limits changes and handles tag loss.
+     *
+     * @return commanded flywheel setpoint in ticks/sec
+     */
+    public double updateFlywheelSpeedFromTagDistance(){
+        if (flywheelDriveR == null || flywheelDrive == null) return 0.0;
+
+        long now = System.nanoTime();
+        double dtSec = (lastFlywheelUpdateNanos == 0L) ? 0.0 : (now - lastFlywheelUpdateNanos) / 1e9;
+        lastFlywheelUpdateNanos = now;
+
+        if (apriltag != null) apriltag.scanOnce();
+        boolean hasValid = apriltag != null && apriltag.hasValidTarget();
+        double distanceM = hasValid ? apriltag.getDistance() : Double.NaN;
+        if (hasValid) lastTagSeenNanos = now;
+        if (hasValid && Double.isFinite(distanceM) && distanceM > 0.0) lastTagDistanceM = distanceM;
+
+        double targetSetpoint;
+        double timeSinceTagSec = (lastTagSeenNanos == 0L) ? Double.POSITIVE_INFINITY : (now - lastTagSeenNanos) / 1e9;
+        if (Double.isFinite(lastTagDistanceM) && timeSinceTagSec <= flywheelHoldSecondsAfterLoss) {
+            targetSetpoint = mapDistanceToFlywheelSpeedTicksPerSec(lastTagDistanceM);
+        } else if (timeSinceTagSec <= flywheelHoldSecondsAfterLoss) {
+            targetSetpoint = flywheelSetpointTicksPerSec;
+        } else {
+            targetSetpoint = 0.0;
+        }
+
+        if (dtSec <= 0.0) {
+            flywheelSetpointTicksPerSec = targetSetpoint;
+        } else {
+            double maxDelta = flywheelSlewRateTicksPerSec2 * dtSec;
+            double delta = clamp(targetSetpoint - flywheelSetpointTicksPerSec, -maxDelta, maxDelta);
+            flywheelSetpointTicksPerSec += delta;
+        }
+        flywheelSetpointTicksPerSec = clamp(flywheelSetpointTicksPerSec, 0.0, flywheelMaxSpeedTicksPerSec);
+
+        flywheelDriveR.setVelocity(flywheelSetpointTicksPerSec);
+        flywheelDrive.setVelocity(flywheelSetpointTicksPerSec);
+        return flywheelSetpointTicksPerSec;
+    }
+
+    private double mapDistanceToFlywheelSpeedTicksPerSec(double distanceM){
+        double t = (distanceM - flywheelMinDistanceM) / (flywheelMaxDistanceM - flywheelMinDistanceM);
+        t = clamp(t, 0.0, 1.0);
+        return flywheelMinSpeedTicksPerSec + t * (flywheelMaxSpeedTicksPerSec - flywheelMinSpeedTicksPerSec);
+    }
+
+    private static double clamp(double value, double min, double max){
+        return Math.max(min, Math.min(max, value));
     }
 }
