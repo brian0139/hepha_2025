@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.Stanley.finalizedClasses;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.teamcode.Aaron.aprilTagV3;
@@ -20,8 +21,8 @@ public class outtakeV3 {
     public DcMotorEx flywheelDriveR;
     public DcMotorEx flywheelDrive;
     //Outtake Hood Servo
-    CRServo hoodServo;
-    CRServo turretServo;
+    public CRServo hoodServo;
+    public CRServo turretServo;
     //Degrees changed for every servo rotation
     public double servoDegPerRot =24.18;
     //Ticks/revolution for encoder
@@ -35,7 +36,7 @@ public class outtakeV3 {
     //auto aim vars
     //  Drive = Error * Gain
     // Turn Control "Gain".  e.g. Ramp up to 25% power at a 25 degree error. (0.25 / 25.0)
-    public double[] Kturn={0.01,0.1,0.007};
+    public double[] Kturn={0.015,0,0.04};
     public PID turnPID=new PID(Kturn[0],Kturn[1],Kturn[2]);
     //vars
     int targetTagID=-1;
@@ -47,6 +48,7 @@ public class outtakeV3 {
     public outtakeV3(HardwareMap hardwareMap, String teamColor, boolean useTag){
         this.flywheelDriveR = hardwareMap.get(DcMotorEx.class,"flywheelR");
         this.flywheelDrive=hardwareMap.get(DcMotorEx.class,"flywheel");
+        flywheelDrive.setDirection(DcMotorSimple.Direction.REVERSE);
         this.teamColor=teamColor;
         this.hoodServo=hardwareMap.get(CRServo.class,"hoodServo");
         this.turretServo =hardwareMap.get(CRServo.class,"turretServo");
@@ -337,8 +339,8 @@ public class outtakeV3 {
     public boolean setHood(double degrees){
         double epsilon=35;
         double targetTicks=(66.81-degrees)/servoDegPerRot*ticksPerRevHood;
-        double power=hoodPID.update(targetTicks-hoodEncoder.getCurrentPosition());
-        hoodServo.setPower(power);
+        double power=hoodPID.update(targetTicks+hoodEncoder.getCurrentPosition());
+        hoodServo.setPower(-power);
         return hoodEncoder.getCurrentPosition() >= targetTicks - epsilon && hoodEncoder.getCurrentPosition() <= targetTicks + epsilon;
     }
 
@@ -348,7 +350,7 @@ public class outtakeV3 {
      */
     public void initHoodAngleBlocking(){
         hoodEncoder.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
-        while(hoodEncoder.getCurrentPosition()>=-3*ticksPerRevHood) hoodServo.setPower(1);
+        while(hoodEncoder.getCurrentPosition()<3*ticksPerRevHood) hoodServo.setPower(1);
         hoodServo.setPower(0);
         hoodEncoder.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
     }

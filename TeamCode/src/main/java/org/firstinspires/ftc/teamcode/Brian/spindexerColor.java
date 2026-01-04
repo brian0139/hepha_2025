@@ -46,6 +46,7 @@ public class spindexerColor {
         }
     }
 
+
     public boolean spinToMotif(int motifIndex) {
         double epsilon = 0.01;
         int nextmotif = dummyMotif[motifIndex];

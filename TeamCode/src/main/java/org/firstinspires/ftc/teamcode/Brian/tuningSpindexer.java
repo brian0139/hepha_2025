@@ -12,7 +12,7 @@ import org.firstinspires.ftc.teamcode.Stanley.finalizedClasses.PID;
 @TeleOp
 public class tuningSpindexer extends LinearOpMode {
     CRServo spindexer=null;
-    AnalogInput hoodSensor=null;
+    AnalogInput spindexerSensor =null;
     spindexerColor spindexerOperator=null;
     double change=0.1;
     int x=0;
@@ -27,7 +27,7 @@ public class tuningSpindexer extends LinearOpMode {
     @Override
     public void runOpMode(){
         spindexer=hardwareMap.get(CRServo.class,"spindexerServo");
-        hoodSensor=hardwareMap.get(AnalogInput.class,"spindexerSensor");
+        spindexerSensor =hardwareMap.get(AnalogInput.class,"spindexerAnalog");
         spindexerOperator=new spindexerColor(spindexer,null,hardwareMap);
         dashboard = FtcDashboard.getInstance();
         dashboardTelemetry = dashboard.getTelemetry();
@@ -96,6 +96,7 @@ public class tuningSpindexer extends LinearOpMode {
             telemetry.addData("Target",angle);
 //            telemetry.addData("Current",spindexerOperator.hoodAngle*spindexerOperator.servoDegPerRot);
             telemetry.addData("CurrentV",spindexerOperator.spindexerSensor.getVoltage());
+            telemetry.addData("Error",spindexerOperator.calculateError(angle,spindexerOperator.spindexerSensor.getVoltage()));
             telemetry.addData("Power",spindexerOperator.spindexerPID.power);
 //            telemetry.addData("Offset(rotations)",angle/spindexerOperator.servoDegPerRot-spindexerOperator.hoodAngle);
 //            telemetry.addData("AtTarget",atTarget);
@@ -105,6 +106,7 @@ public class tuningSpindexer extends LinearOpMode {
             dashboardTelemetry.addData("Target",angle);
 //            dashboardTelemetry.addData("Current",spindexerOperator.hoodAngle);
             dashboardTelemetry.addData("CurrentV",spindexerOperator.spindexerSensor.getVoltage());
+            dashboardTelemetry.addData("Error",spindexerOperator.calculateError(angle,spindexerOperator.spindexerSensor.getVoltage()));
             dashboardTelemetry.addData("Power",spindexerOperator.spindexerPID.power);
 //            dashboardTelemetry.addData("Offset(rotations)",angle/spindexerOperator.servoDegPerRot-spindexerOperator.hoodAngle);
 //            dashboardTelemetry.addData("AtTarget",atTarget);

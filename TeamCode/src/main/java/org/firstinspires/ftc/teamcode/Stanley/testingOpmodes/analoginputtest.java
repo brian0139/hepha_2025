@@ -16,8 +16,8 @@ public class analoginputtest extends LinearOpMode {
     Telemetry dashboardTelemetry=null;
     @Override
     public void runOpMode(){
-        input=hardwareMap.get(AnalogInput.class,"hoodAnalog");
-        servo=hardwareMap.get(CRServo.class,"hoodServo");
+        input=hardwareMap.get(AnalogInput.class,"spindexerAnalog");
+        servo=hardwareMap.get(CRServo.class,"spindexerServo");
         dashboard=FtcDashboard.getInstance();
         dashboardTelemetry=dashboard.getTelemetry();
         waitForStart();
