@@ -10,8 +10,8 @@ import com.qualcomm.robotcore.hardware.IMU;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
 import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.lang.reflect.Method;
 
 public class aprilTagV3 {
     private Limelight3A limelight;
@@ -28,6 +28,8 @@ public class aprilTagV3 {
     private double ty=0.0;
     private double ta=0.0;
     private Pose3D botPose=null;
+    // Distance from camera to detected AprilTag (meters), if available.
+    private double distanceMeters = Double.NaN;
 
     public aprilTagV3(HardwareMap hwMap){
         limelight=hwMap.get(Limelight3A.class,"limelight");
@@ -73,17 +75,26 @@ public class aprilTagV3 {
                 ty=llResult.getTy();
                 ta=llResult.getTa();
 
-//                // Get robot pose
-//                botPose=llResult.getBotpose_MT2();
+                // Pose estimate from MegaTag2 if enabled in the pipeline.
+                botPose=llResult.getBotpose_MT2();
+
+                // Distance to the detected AprilTag (best-effort; depends on SDK version).
+                double computedDistanceMeters = computeTagDistanceMeters(fiducial);
+                if (!Double.isFinite(computedDistanceMeters) && botPose != null) {
+                    computedDistanceMeters = Math.abs(botPose.getPosition().z);
+                }
+                distanceMeters = computedDistanceMeters;
             } else {
                 // No AprilTags detected
                 currentTagId=-1;
                 currentMotif=-1;
+                distanceMeters = Double.NaN;
             }
         } else {
             // No valid result
             currentTagId=-1;
             currentMotif=-1;
+            distanceMeters = Double.NaN;
         }
     }
 
@@ -129,10 +140,7 @@ public class aprilTagV3 {
 
     // Returns distance to target
     public double getDistance(){
-        if (botPose==null){
-            return Double.NaN;
-        }
-        return botPose.getPosition().z;
+        return distanceMeters;
     }
 
     // Get X position from botpose
@@ -173,5 +181,33 @@ public class aprilTagV3 {
     // Switch pipeline
     public void setPipeline(int pipeline){
         limelight.pipelineSwitch(pipeline);
+    }
+
+    private static double computeTagDistanceMeters(LLResultTypes.FiducialResult fiducial) {
+        Pose3D pose =
+                tryInvokePose3D(fiducial, "getTargetPoseCameraSpace");
+        if (pose == null) pose = tryInvokePose3D(fiducial, "getTargetPoseRobotSpace");
+        if (pose == null) pose = tryInvokePose3D(fiducial, "getCameraPoseTargetSpace");
+        if (pose == null) pose = tryInvokePose3D(fiducial, "getRobotPoseTargetSpace");
+        if (pose == null) return Double.NaN;
+
+        double x = pose.getPosition().x;
+        double y = pose.getPosition().y;
+        double z = pose.getPosition().z;
+        return Math.sqrt(x * x + y * y + z * z);
+    }
+
+    private static Pose3D tryInvokePose3D(Object target, String methodName) {
+        Object result = tryInvokeNoArg(target, methodName);
+        return (result instanceof Pose3D) ? (Pose3D) result : null;
+    }
+
+    private static Object tryInvokeNoArg(Object target, String methodName) {
+        try {
+            Method method = target.getClass().getMethod(methodName);
+            return method.invoke(target);
+        } catch (Exception ignored) {
+            return null;
+        }
     }
 }

@@ -21,6 +21,7 @@ public class limelighttest extends LinearOpMode {
             aprilTagOperator.scanOnce();
             telemetry.addData("tx", aprilTagOperator.getYaw());
             telemetry.addData("ty", aprilTagOperator.getPitch());
+            telemetry.addData("distanceM", aprilTagOperator.getDistance());
             telemetry.addData("Botpose", aprilTagOperator.getBotPose());
             telemetry.addData("Tag ID",aprilTagOperator.getTagId());
             telemetry.update();
