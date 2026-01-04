@@ -63,9 +63,9 @@ public class colorSensor {
         return inRange(hsv[0], PURPLE_H_MIN, PURPLE_H_MAX);
     }
 
-    public boolean isWall(){
+    public boolean isNone(){
         readHSV();
-        return inRange(hsv[0], 40, 44);
+        return (hsv[0]==0) && (hsv[1]==0) && (hsv[2]==0);
     }
 
     /**

@@ -34,6 +34,7 @@ public class spindexerColor {
     public spindexerColor(CRServo spindexerServo, DcMotor intake, HardwareMap hardwareMap) {
         this.spindexerServo = spindexerServo;
         this.intake = intake;
+        spindexerSensor=hardwareMap.get(AnalogInput.class,"spindexerAnalog");
         outtakesensor = new colorSensor(hardwareMap, "outtakeSensor");
         intakesensor = new colorSensor(hardwareMap, "intakeSensor");
     }
@@ -76,14 +77,14 @@ public class spindexerColor {
         detectedLocation = -1;
         timer.reset();
         lastDetected=false;
-        spindexerServo.setPower(0.75);
+        spindexerServo.setPower(0.35);
     }
 
     public boolean spinToIntake() {
         double epsilon = 0.01;
 //        intake.setPower(0.75);
-        if (intakesensor.getDetected()==0 && !intakesensor.isWall()){
-            if (timer.milliseconds()>=200 && lastDetected && timer.milliseconds()<=400){
+        if (intakesensor.isNone()){
+            if (timer.milliseconds()>=300 && lastDetected && timer.milliseconds()<=400){
                 detectedLocation=spindexerSensor.getVoltage();
                 spindexerPID.init();
             }else{
