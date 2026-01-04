@@ -20,7 +20,7 @@ public class outtakeV3 {
     public DcMotorEx flywheelDriveR;
     public DcMotorEx flywheelDrive;
     //Outtake Hood Servo
-    CRServo hoodServo;
+    public CRServo hoodServo;
     public CRServo turretServo;
     //Degrees changed for every servo rotation
     public double servoDegPerRot =24.18;
@@ -337,7 +337,7 @@ public class outtakeV3 {
     public boolean setHood(double degrees){
         double epsilon=35;
         double targetTicks=(66.81-degrees)/servoDegPerRot*ticksPerRevHood;
-        double power=hoodPID.update(targetTicks-hoodEncoder.getCurrentPosition());
+        double power=hoodPID.update(targetTicks+hoodEncoder.getCurrentPosition());
         hoodServo.setPower(-power);
         return hoodEncoder.getCurrentPosition() >= targetTicks - epsilon && hoodEncoder.getCurrentPosition() <= targetTicks + epsilon;
     }
@@ -348,7 +348,7 @@ public class outtakeV3 {
      */
     public void initHoodAngleBlocking(){
         hoodEncoder.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
-        while(hoodEncoder.getCurrentPosition()>=-3*ticksPerRevHood) hoodServo.setPower(1);
+        while(hoodEncoder.getCurrentPosition()<3*ticksPerRevHood) hoodServo.setPower(1);
         hoodServo.setPower(0);
         hoodEncoder.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
     }
