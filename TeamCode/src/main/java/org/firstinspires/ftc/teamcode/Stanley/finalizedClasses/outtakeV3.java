@@ -79,6 +79,7 @@ public class outtakeV3 {
         this.apriltag.scanOnce();
         if (!apriltag.hasValidTarget()){
             turretServo.setPower(0);
+            turnPID=new PID(Kturn[0],Kturn[1],Kturn[2]);
             return false;
         }
         // Determine heading, range and Yaw (tag image rotation) error so we can use them to control the robot automatically.
@@ -337,7 +338,7 @@ public class outtakeV3 {
      * @return if hood is at position
      */
     public boolean setHood(double degrees){
-        double epsilon=30;
+        double epsilon=40;
         double targetTicks=(66.81-degrees)/servoDegPerRot*ticksPerRevHood;
         double power=hoodPID.update(targetTicks+hoodEncoder.getCurrentPosition());
         hoodServo.setPower(-power);
