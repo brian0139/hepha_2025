@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.Alvin;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -9,7 +10,7 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 
 @TeleOp
-public class drivetrain extends LinearOpMode {
+public class drivetrain extends OpMode {
 
     // ==================== HARDWARE ====================
     // drivetrain motors
@@ -49,13 +50,9 @@ public class drivetrain extends LinearOpMode {
     private int flywheelSpeed = 2000;
     private int targetSpeed = 0;
 
-    // edge-detect
-    private boolean prevY = false;
-    private boolean prevX = false;
-    private boolean prevRB = false;
 
     @Override
-    public void runOpMode() {
+    public void init(){
         // init drivetrain
         leftFront  = hardwareMap.get(DcMotor.class, "leftFront");
         leftBack   = hardwareMap.get(DcMotor.class, "leftBack");
@@ -78,46 +75,35 @@ public class drivetrain extends LinearOpMode {
 
         // initial positions
         spindexer.setPosition(SPINDEXER_POSITIONS[1]);
+    }
 
-        telemetry.addLine("Robot Ready.");
-        telemetry.update();
+    @Override
+    public void loop() {
+        // 1) update state machines (transitions)
+        updateFlywheelSM();
+        updateSpindexerSM();
+        updateTransferSM();
+        updateHoodSM();
 
-        waitForStart();
+        // 2) continuous controls (intake + drivetrain)
+        updateIntake();
+        updateDrivetrain();
 
-        while (opModeIsActive()) {
-            // 1) update state machines (transitions)
-            updateFlywheelSM();
-            updateSpindexerSM();
-            updateTransferSM();
-            updateHoodSM();
-
-            // 2) continuous controls (intake + drivetrain)
-            updateIntake();
-            updateDrivetrain();
-
-            // 3) telemetry
-            updateTelemetry();
-
-            // 4) store edges
-            prevY = gamepad1.y;
-            prevX = gamepad1.x;
-            prevRB = gamepad1.right_bumper;
-        }
+        // 3) telemetry
+        updateTelemetry();
     }
 
     // ==================== FLYWHEEL SM ====================
     private void updateFlywheelSM() {
         // speed adjust (dpad up/down)
-        if (gamepad1.dpad_up) {
+        if (gamepad1.dpadUpWasPressed()) {
             flywheelSpeed += FLYWHEEL_SENSITIVITY;
-        } else if (gamepad1.dpad_down) {
+        } else if (gamepad1.dpadDownWasPressed()) {
             flywheelSpeed -= FLYWHEEL_SENSITIVITY;
             if (flywheelSpeed < 0) flywheelSpeed = 0;
         }
 
-        // toggle (Y edge)
-        boolean yEdge = gamepad1.y && !prevY;
-        if (yEdge) {
+        if (gamepad1.yWasPressed()) {
             flywheelState = (flywheelState == FlywheelState.OFF) ? FlywheelState.ON : FlywheelState.OFF;
         }
 
@@ -133,9 +119,7 @@ public class drivetrain extends LinearOpMode {
 
     // ==================== SPINDEXER SM ====================
     private void updateSpindexerSM() {
-        // toggle between two positions with right bumper edge
-        boolean rbEdge = gamepad1.right_bumper && !prevRB;
-        if (rbEdge) {
+        if (gamepad1.rightBumperWasPressed()) {
             spindexerState = (spindexerState == SpindexerState.POS_0) ? SpindexerState.POS_1 : SpindexerState.POS_0;
         }
 
@@ -146,9 +130,7 @@ public class drivetrain extends LinearOpMode {
 
     // ==================== TRANSFER SM ====================
     private void updateTransferSM() {
-        // toggle (X edge)
-        boolean xEdge = gamepad1.x && !prevX;
-        if (xEdge) {
+        if (gamepad1.xWasPressed()) {
             transferState = (transferState == TransferState.STOPPED) ? TransferState.RUNNING : TransferState.STOPPED;
         }
 
