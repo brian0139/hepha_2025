@@ -69,9 +69,8 @@ public class spindexerColor {
         lastDetected=false;
     }
 
-    public boolean spinToIntake(int motifIndex) {
+    public boolean spinToIntake() {
         double epsilon = 0.01;
-        int nextmotif = dummyMotif[motifIndex];
 //        intake.setPower(0.75);
         if (intakesensor.getDetected()==0){
             if (timer.milliseconds()>=400 && lastDetected && timer.milliseconds()<=1000){
