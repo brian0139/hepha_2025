@@ -20,6 +20,8 @@ public class spindexerColor {
     colorSensor intakesensor;
     AnalogInput spindexerSensor;
     public double[] kS={1.1,1.1,0.017};
+    int numGreen=0;
+    int numPurple=0;
 
     public PID spindexerPID = new PID(kS[0], kS[1], kS[2]);
     double detectedLocation = 0;
@@ -34,7 +36,14 @@ public class spindexerColor {
         this.intake = intake;
         outtakesensor = new colorSensor(hardwareMap, "outtakeSensor");
         intakesensor = new colorSensor(hardwareMap, "intakeSensor");
-        spindexerSensor=hardwareMap.get(AnalogInput.class,"spindexerAnalog");
+    }
+
+    public void getColor(){
+        if (intakesensor.isGreen()){
+            numGreen++;
+        }else if (intakesensor.isPurple()){
+            numPurple++;
+        }
     }
 
 
