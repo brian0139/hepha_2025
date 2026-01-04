@@ -35,7 +35,7 @@ public class outtakeV3 {
     //auto aim vars
     //  Drive = Error * Gain
     // Turn Control "Gain".  e.g. Ramp up to 25% power at a 25 degree error. (0.25 / 25.0)
-    public double[] Kturn={0.01,0.1,0.007};
+    public double[] Kturn={0.015,0,0.04};
     public PID turnPID=new PID(Kturn[0],Kturn[1],Kturn[2]);
     //vars
     int targetTagID=-1;
