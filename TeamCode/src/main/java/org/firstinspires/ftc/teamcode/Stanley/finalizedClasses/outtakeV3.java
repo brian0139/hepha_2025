@@ -337,11 +337,11 @@ public class outtakeV3 {
      * @return if hood is at position
      */
     public boolean setHood(double degrees){
-        double epsilon=35;
+        double epsilon=30;
         double targetTicks=(66.81-degrees)/servoDegPerRot*ticksPerRevHood;
         double power=hoodPID.update(targetTicks+hoodEncoder.getCurrentPosition());
         hoodServo.setPower(-power);
-        return hoodEncoder.getCurrentPosition() >= targetTicks - epsilon && hoodEncoder.getCurrentPosition() <= targetTicks + epsilon;
+        return (hoodEncoder.getCurrentPosition() >= targetTicks - epsilon) && (hoodEncoder.getCurrentPosition() <= targetTicks + epsilon);
     }
 
     /**

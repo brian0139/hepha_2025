@@ -297,6 +297,7 @@ public class AutonRedPathV2 extends LinearOpMode {
     public class SetHoodAngle implements Action {
         private final double targetAngle;
         private boolean started = false;
+        double epsilon=1;
 
         public SetHoodAngle(double angleDegrees) {
             this.targetAngle = angleDegrees;
@@ -336,7 +337,7 @@ public class AutonRedPathV2 extends LinearOpMode {
             telemetry.update();
 
             // Return false when at position (action complete)
-            return true;
+            return !(atPosition);
         }
     }
 
