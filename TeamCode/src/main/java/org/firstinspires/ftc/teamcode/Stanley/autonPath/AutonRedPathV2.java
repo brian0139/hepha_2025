@@ -80,7 +80,7 @@ public class AutonRedPathV2 extends LinearOpMode {
             Actions.runBlocking(
                     drive.actionBuilder(beginPose)
 
-                            .strafeToLinearHeading(shootingPos, shootingAngle+Math.toRadians(4))
+                            .strafeToLinearHeading(shootingPos, shootingAngle+Math.toRadians(7))
                             .stopAndAdd(new ScanMotif())
                             .waitSeconds(1)
                             //Start Flywheel
