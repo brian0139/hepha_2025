@@ -19,7 +19,7 @@ public class spindexerColor {
     colorSensor outtakesensor;
     colorSensor intakesensor;
     AnalogInput spindexerSensor;
-    public double[] kS={0.0,0.0,0.0};
+    public double[] kS={1.1,1.1,0.017};
 
     public PID spindexerPID = new PID(kS[0], kS[1], kS[2]);
     double detectedLocation = 0;
