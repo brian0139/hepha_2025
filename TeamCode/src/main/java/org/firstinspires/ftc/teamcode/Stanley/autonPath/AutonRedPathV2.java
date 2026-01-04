@@ -486,7 +486,7 @@ public class AutonRedPathV2 extends LinearOpMode {
                 initialized = true;
             }
 
-            boolean complete = spindexer.spinToIntake(motifIndex);
+            boolean complete = spindexer.spinToIntake();
 
             telemetry.addData("Spindexer: Motif Index", motifIndex);
             telemetry.addData("Spindexer: Status", complete ? "Complete" : "Spinning");

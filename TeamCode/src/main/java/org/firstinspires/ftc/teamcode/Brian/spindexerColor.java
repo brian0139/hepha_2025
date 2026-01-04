@@ -20,6 +20,8 @@ public class spindexerColor {
     colorSensor intakesensor;
     AnalogInput spindexerSensor;
     public double[] kS={1.1,1.1,0.017};
+    int numGreen=0;
+    int numPurple=0;
 
     public PID spindexerPID = new PID(kS[0], kS[1], kS[2]);
     double detectedLocation = 0;
@@ -34,9 +36,15 @@ public class spindexerColor {
         this.intake = intake;
         outtakesensor = new colorSensor(hardwareMap, "outtakeSensor");
         intakesensor = new colorSensor(hardwareMap, "intakeSensor");
-
     }
 
+    public void getColor(){
+        if (intakesensor.isGreen()){
+            numGreen++;
+        }else if (intakesensor.isPurple()){
+            numPurple++;
+        }
+    }
 
     public boolean spinToMotif(int motifIndex) {
         double epsilon = 0.01;
@@ -69,9 +77,8 @@ public class spindexerColor {
         lastDetected=false;
     }
 
-    public boolean spinToIntake(int motifIndex) {
+    public boolean spinToIntake() {
         double epsilon = 0.01;
-        int nextmotif = dummyMotif[motifIndex];
 //        intake.setPower(0.75);
         if (intakesensor.getDetected()==0){
             if (timer.milliseconds()>=400 && lastDetected && timer.milliseconds()<=1000){
