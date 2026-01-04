@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.Stanley.finalizedClasses;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.teamcode.Aaron.aprilTagV3;
@@ -47,6 +48,7 @@ public class outtakeV3 {
     public outtakeV3(HardwareMap hardwareMap, String teamColor, boolean useTag){
         this.flywheelDriveR = hardwareMap.get(DcMotorEx.class,"flywheelR");
         this.flywheelDrive=hardwareMap.get(DcMotorEx.class,"flywheel");
+        flywheelDrive.setDirection(DcMotorSimple.Direction.REVERSE);
         this.teamColor=teamColor;
         this.hoodServo=hardwareMap.get(CRServo.class,"hoodServo");
         this.turretServo =hardwareMap.get(CRServo.class,"turretServo");
