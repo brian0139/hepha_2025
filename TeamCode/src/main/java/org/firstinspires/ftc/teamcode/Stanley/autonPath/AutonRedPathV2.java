@@ -47,8 +47,8 @@ public class AutonRedPathV2 extends LinearOpMode {
         // Initialize subsystems
         outtake = new outtakeV3(hardwareMap,"Red",true);
         intakeSystem = new intake(hardwareMap,"intake","intakeSensor");
+        spindexerServo=hardwareMap.get(CRServo.class,"spindexerServo");
         spindexer=new spindexerColor(spindexerServo,intakeMotor,hardwareMap);
-        spindexerServo=hardwareMap.crservo.get("spindexerServo");
         intakeMotor=hardwareMap.dcMotor.get("intake");
         transfer=(DcMotorEx) hardwareMap.dcMotor.get("par1");
         flywheel=(DcMotorEx) hardwareMap.dcMotor.get("flywheel");

@@ -46,13 +46,13 @@ public class SpindexerTest extends LinearOpMode {
         // Initialize subsystems
         outtake = new outtakeV3(hardwareMap,"Red",true);
         intakeSystem = new intake(hardwareMap,"intake","intakeSensor");
-        spindexer=new spindexerColor(spindexerServo,intakeMotor,hardwareMap);
         spindexerServo=hardwareMap.crservo.get("spindexerServo");
+        spindexer=new spindexerColor(spindexerServo,intakeMotor,hardwareMap);
         intakeMotor=hardwareMap.dcMotor.get("intake");
         transfer=(DcMotorEx) hardwareMap.dcMotor.get("par1");
         flywheel=(DcMotorEx) hardwareMap.dcMotor.get("flywheel");
         flywheelR=(DcMotorEx) hardwareMap.dcMotor.get("flywheelR");
-        hood=hardwareMap.crservo.get("hoodServo");
+//        hood=hardwareMap.crservo.get("hoodServo");
         hoodSensor=hardwareMap.get(AnalogInput.class,"hoodAnalog");
         drive=new MecanumDrive(hardwareMap,beginPose);
         intakeSensor=hardwareMap.get(NormalizedColorSensor.class,"intakeSensor");

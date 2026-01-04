@@ -67,13 +67,14 @@ public class spindexerColor {
         detectedLocation = -1;
         timer.reset();
         lastDetected=false;
+        spindexerServo.setPower(0.75);
     }
 
     public boolean spinToIntake() {
         double epsilon = 0.01;
 //        intake.setPower(0.75);
-        if (intakesensor.getDetected()==0){
-            if (timer.milliseconds()>=400 && lastDetected && timer.milliseconds()<=1000){
+        if (intakesensor.getDetected()==0 && !intakesensor.isWall()){
+            if (timer.milliseconds()>=200 && lastDetected && timer.milliseconds()<=400){
                 detectedLocation=spindexerSensor.getVoltage();
                 spindexerPID.init();
             }else{

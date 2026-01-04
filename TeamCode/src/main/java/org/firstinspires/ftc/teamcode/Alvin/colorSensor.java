@@ -63,6 +63,11 @@ public class colorSensor {
         return inRange(hsv[0], PURPLE_H_MIN, PURPLE_H_MAX);
     }
 
+    public boolean isWall(){
+        readHSV();
+        return inRange(hsv[0], 40, 44);
+    }
+
     /**
      * Returns the detected color as an integer.
      *
