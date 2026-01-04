@@ -80,8 +80,8 @@ public class AutonRedPathV2 extends LinearOpMode {
             if (isStopRequested()) return;
             Actions.runBlocking(
                     drive.actionBuilder(beginPose)
-                            .stopAndAdd(new initHood())
-                            .stopAndAdd(new SetHoodAngle(45))
+//                            .stopAndAdd(new initHood())
+//                            .stopAndAdd(new SetHoodAngle(45))
                             .strafeToLinearHeading(shootingPos, shootingAngle+Math.toRadians(5.5))
                             .stopAndAdd(new TurretAutoAimUntilAligned())
 //                            .stopAndAdd(new ScanMotif())
