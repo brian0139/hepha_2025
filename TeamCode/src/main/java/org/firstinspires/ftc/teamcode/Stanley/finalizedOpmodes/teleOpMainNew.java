@@ -60,6 +60,7 @@ public class teleOpMainNew extends OpMode {
     // ==================== CONFIGURATION ====================
     static final double FLYWHEEL_SENSITIVITY = 5;
     static final double FLYWHEEL_EPSILON = 10;
+    static final double FLYWHEEL_EXIT_EPSILON = 25;
     static final double DRIVE_SPEED = 0.7;
     static final double STRAFE_SPEED = 0.5;
     static final double TWIST_SPEED = 0.5;
@@ -139,7 +140,13 @@ public class teleOpMainNew extends OpMode {
         }
 
         //Rumble within epsilon
-        if (Math.abs(targetSpeed-flywheel.getVelocity())<FLYWHEEL_EPSILON && )
+        if (Math.abs(targetSpeed-flywheel.getVelocity())<FLYWHEEL_EPSILON && !atFlywheelTarget){
+            atFlywheelTarget=true;
+            gamepad2.rumble(100);
+        }
+        if (Math.abs(targetSpeed-flywheel.getVelocity())>FLYWHEEL_EXIT_EPSILON){
+            atFlywheelTarget=false;
+        }
 
         // Toggle flywheel on/off with Y button
         if (gamepad2.yWasPressed()) {
