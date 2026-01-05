@@ -61,7 +61,7 @@ public class AutonRedPath_TowerStart extends LinearOpMode {
 
         final Vector2d shootingPos=new Vector2d(-34,23);
         final double shootingAngle=Math.toRadians(120);
-        final double intakeFinishy =36;
+        final double intakeFinishy=36;
         final double intakeStarty=13;
 
         dashboard=FtcDashboard.getInstance();

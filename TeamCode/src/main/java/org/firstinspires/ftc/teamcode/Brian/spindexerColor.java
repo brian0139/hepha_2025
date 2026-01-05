@@ -19,7 +19,7 @@ public class spindexerColor {
     colorSensor outtakesensor;
     colorSensor intakesensor;
     AnalogInput spindexerSensor;
-    public double[] kS={1.1,1.1,0.017};
+    public double[] kS={1.1,1.5,0.017};
     public double[] inslotsV={0.887,2.009,3.026};
     public double[] outslotsV={2.554,0.4,1.472};
     int numGreen=0;
@@ -31,7 +31,7 @@ public class spindexerColor {
     public double maxdetectiontime=500;
     public double spinspeed=0.35;
     boolean lastDetected=false;
-    int detectioncnt=-1;
+    public int detectioncnt=-1;
     boolean detectedLastLoop = false;
     public int[] spindexerSlots = {0, 0, 0}; //0 none, 1 green, 2 purple
     public int currentSlot=0;
@@ -98,12 +98,14 @@ public class spindexerColor {
         if (detectioncnt==3){
             return true;
         }
-        double epsilon = 0.05;
-        if (!(spindexerSensor.getVoltage()>=detectedLocation-epsilon&&spindexerSensor.getVoltage()<=detectedLocation+epsilon)){
-            spindexerServo.setPower(spindexerPID.update(inslotsV[currentSlot]-spindexerSensor.getVoltage()));
+        double epsilon = 0.01;
+        if (!((spindexerSensor.getVoltage()>=inslotsV[currentSlot]-epsilon)&&(spindexerSensor.getVoltage()<=inslotsV[currentSlot]+epsilon))){
+            spindexerServo.setPower(Math.min(spindexerPID.update(inslotsV[currentSlot]-spindexerSensor.getVoltage()),0.75));
         }else{
             detectioncnt++;
-            if (intakesensor.isNone()){
+            currentSlot++;
+            currentSlot%=3;
+            if (intakesensor.getDetected()==0){
                 spindexerServo.setPower(0);
                 return true;
             }
