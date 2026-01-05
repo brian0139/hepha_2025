@@ -20,6 +20,8 @@ public class spindexerColor {
     colorSensor intakesensor;
     AnalogInput spindexerSensor;
     public double[] kS={1.1,1.1,0.017};
+    public double[] inslotsV={0.887,2.009,3.026};
+    public double[] outslotsV={2.554,0.4,1.472};
     int numGreen=0;
     int numPurple=0;
 
@@ -29,8 +31,10 @@ public class spindexerColor {
     public double maxdetectiontime=500;
     public double spinspeed=0.35;
     boolean lastDetected=false;
+    int detectioncnt=-1;
     boolean detectedLastLoop = false;
     public int[] spindexerSlots = {0, 0, 0}; //0 none, 1 green, 2 purple
+    public int currentSlot=0;
     public int[] dummyMotif = {1, 2, 2};
     public int[] currentMotifPattern = null;
 
@@ -83,21 +87,26 @@ public class spindexerColor {
         spindexerServo.setPower(spinspeed);
     }
 
+    /**
+     * Spin empty slot on spindexer to intake
+     * @return False if searching, true if sucessful/searched all slots
+     */
     public boolean spinToIntake() {
-        double epsilon = 0.01;
-//        intake.setPower(0.75);
-        if (intakesensor.isNone()){
-            if (timer.milliseconds()>=mindetectiontime && lastDetected && timer.milliseconds()<=maxdetectiontime){
-                detectedLocation=spindexerSensor.getVoltage();
-                spindexerPID.init();
-            }else{
-                timer.reset();
-                lastDetected=true;
-            }
+        if (detectioncnt==-1){
+            detectioncnt=0;
         }
-        if (detectedLocation!=-1){
-            spindexerServo.setPower(spindexerPID.update(detectedLocation-spindexerSensor.getVoltage()));
-            return (spindexerSensor.getVoltage()>=detectedLocation-epsilon&&spindexerSensor.getVoltage()<=detectedLocation+epsilon);
+        if (detectioncnt==3){
+            return true;
+        }
+        double epsilon = 0.05;
+        if (!(spindexerSensor.getVoltage()>=detectedLocation-epsilon&&spindexerSensor.getVoltage()<=detectedLocation+epsilon)){
+            spindexerServo.setPower(spindexerPID.update(inslotsV[currentSlot]-spindexerSensor.getVoltage()));
+        }else{
+            detectioncnt++;
+            if (intakesensor.isNone()){
+                spindexerServo.setPower(0);
+                return true;
+            }
         }
         return false;
     }
