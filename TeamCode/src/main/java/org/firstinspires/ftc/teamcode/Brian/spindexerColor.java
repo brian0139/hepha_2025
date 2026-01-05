@@ -31,6 +31,7 @@ public class spindexerColor {
     public double maxdetectiontime=500;
     public double spinspeed=0.35;
     boolean lastDetected=false;
+    int detectioncnt=-1;
     boolean detectedLastLoop = false;
     public int[] spindexerSlots = {0, 0, 0}; //0 none, 1 green, 2 purple
     public int currentSlot=0;
@@ -86,17 +87,28 @@ public class spindexerColor {
         spindexerServo.setPower(spinspeed);
     }
 
+    /**
+     * Spin empty slot on spindexer to intake
+     * @return False if searching, true if sucessful/searched all slots
+     */
     public boolean spinToIntake() {
+        if (detectioncnt==-1){
+            detectioncnt=0;
+        }
+        if (detectioncnt==3){
+            return true;
+        }
         double epsilon = 0.05;
         if (!(spindexerSensor.getVoltage()>=detectedLocation-epsilon&&spindexerSensor.getVoltage()<=detectedLocation+epsilon)){
             spindexerServo.setPower(spindexerPID.update(inslotsV[currentSlot]-spindexerSensor.getVoltage()));
         }else{
+            detectioncnt++;
             if (intakesensor.isNone()){
                 spindexerServo.setPower(0);
-                return false;
+                return true;
             }
         }
-        return true;
+        return false;
     }
     public boolean spinAfterIntake(boolean intakesuccess){
         double epsilon =0.01;
