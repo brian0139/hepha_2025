@@ -20,6 +20,8 @@ public class spindexerColor {
     colorSensor intakesensor;
     AnalogInput spindexerSensor;
     public double[] kS={1.1,1.1,0.017};
+    public double[] inslotsV={0.887,2.009,3.026};
+    public double[] outslotsV={2.554,0.4,1.472};
     int numGreen=0;
     int numPurple=0;
 
@@ -31,6 +33,7 @@ public class spindexerColor {
     boolean lastDetected=false;
     boolean detectedLastLoop = false;
     public int[] spindexerSlots = {0, 0, 0}; //0 none, 1 green, 2 purple
+    public int currentSlot=0;
     public int[] dummyMotif = {1, 2, 2};
     public int[] currentMotifPattern = null;
 
@@ -85,10 +88,15 @@ public class spindexerColor {
 
     public boolean spinToIntake() {
         double epsilon = 0.01;
-//        intake.setPower(0.75);
-        if (intakesensor.isNone()){
-            if (timer.milliseconds()>=mindetectiontime && lastDetected && timer.milliseconds()<=maxdetectiontime){
-                detectedLocation=spindexerSensor.getVoltage();
+        if (intakesensor.getDetected()!=0){
+            currentSlot++;
+            currentSlot%=3;
+            spindexerPID.init();
+        }
+        if (!intakesensor.isNone()){
+            if (!(timer.milliseconds()>=mindetectiontime && lastDetected && timer.milliseconds()<=maxdetectiontime)){
+                currentSlot++;
+                currentSlot%=3;
                 spindexerPID.init();
             }else{
                 timer.reset();
@@ -96,7 +104,7 @@ public class spindexerColor {
             }
         }
         if (detectedLocation!=-1){
-            spindexerServo.setPower(spindexerPID.update(detectedLocation-spindexerSensor.getVoltage()));
+            spindexerServo.setPower(spindexerPID.update(inslotsV[currentSlot]-spindexerSensor.getVoltage()));
             return (spindexerSensor.getVoltage()>=detectedLocation-epsilon&&spindexerSensor.getVoltage()<=detectedLocation+epsilon);
         }
         return false;
