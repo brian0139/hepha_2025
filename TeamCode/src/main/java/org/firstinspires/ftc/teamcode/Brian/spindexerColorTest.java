@@ -54,6 +54,23 @@ public class spindexerColorTest extends LinearOpMode{
             if (spintointaketoggle && !intakeTrue) {
                 while(!intakeTrue){
                     intakeTrue=spindexercolor.spinToIntake();
+                    int detected = colorsensoroperator.getDetected();
+
+                    String result;
+                    if (detected == 1) {
+                        result = "GREEN";
+                    } else if (detected == 2) {
+                        result = "PURPLE";
+                    } else {
+                        result = "NONE";
+                    }
+
+                    telemetry.addData("Detected", result);
+                    float[] hsv = colorsensoroperator.readHSV();
+                    telemetry.addData("Hue", hsv[0]);
+                    telemetry.addData("Sat", hsv[1]);
+                    telemetry.addData("Val", hsv[2]);
+                    telemetry.update();
                 }
             }else{
                 spindexercolor.spindexerServo.setPower(0);
@@ -82,11 +99,6 @@ public class spindexerColorTest extends LinearOpMode{
             }
 
             telemetry.addData("Detected", result);
-
-            float[] hsv = colorsensoroperator.readHSV();
-            telemetry.addData("Hue", hsv[0]);
-            telemetry.addData("Sat", hsv[1]);
-            telemetry.addData("Val", hsv[2]);
 
             telemetry.addData("voltage", spindexerAnalog.getVoltage());
             telemetry.addData("Power",spindexercolor.spindexerPID.power);
