@@ -45,7 +45,7 @@ public class AutonRedPathV2 extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
         // Initialize subsystems
-        outtake = new outtakeV3(hardwareMap,"Red",true);
+        outtake = new outtakeV3(hardwareMap,"Red",true,drive);
         intakeSystem = new intake(hardwareMap,"intake","intakeSensor");
         spindexerServo=hardwareMap.get(CRServo.class,"spindexerServo");
         spindexer=new spindexerColor(spindexerServo,intakeMotor,hardwareMap);

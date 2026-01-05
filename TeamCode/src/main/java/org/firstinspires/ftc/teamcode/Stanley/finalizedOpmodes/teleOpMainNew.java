@@ -60,7 +60,7 @@ public class teleOpMainNew extends OpMode {
     // ==================== CONFIGURATION ====================
     static final double FLYWHEEL_SENSITIVITY = 5;
     static final double FLYWHEEL_EPSILON = 10;
-    static final double FLYWHEEL_EXIT_EPSILON = 25;
+    static final double FLYWHEEL_EXIT_EPSILON = 35;
     static final double DRIVE_SPEED = 0.7;
     static final double STRAFE_SPEED = 0.5;
     static final double TWIST_SPEED = 0.5;
@@ -174,6 +174,8 @@ public class teleOpMainNew extends OpMode {
                 if (gamepad2.xWasPressed()) {
                     transfer.setPower(TRANSFER_POWERS[TRANSFER_UP]);
                     transferState = TransferState.UP;
+                    spindexer.setPower(1);
+                    intake.setPower(0.75);
                 }
                 break;
 
@@ -181,6 +183,8 @@ public class teleOpMainNew extends OpMode {
                 if (gamepad2.xWasPressed()) {
                     transfer.setPower(TRANSFER_POWERS[TRANSFER_DOWN]);
                     transferState = TransferState.STOPPED;
+                    spindexer.setPower(0);
+                    intake.setPower(0);
                 }
                 break;
         }

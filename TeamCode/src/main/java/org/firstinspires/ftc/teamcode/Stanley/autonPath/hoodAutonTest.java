@@ -45,7 +45,7 @@ public class hoodAutonTest extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
         // Initialize subsystems
-        outtake = new outtakeV3(hardwareMap,"Red",true);
+        outtake = new outtakeV3(hardwareMap,"Red",true,drive);
         intakeSystem = new intake(hardwareMap,"intake","intakeSensor");
         spindexer=new spindexerColor(spindexerServo,intakeMotor,hardwareMap);
         spindexerServo=hardwareMap.crservo.get("spindexerServo");

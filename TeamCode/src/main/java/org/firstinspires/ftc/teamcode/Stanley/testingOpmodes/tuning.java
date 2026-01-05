@@ -29,7 +29,7 @@ public class tuning extends LinearOpMode {
     public void runOpMode(){
         hood=hardwareMap.get(CRServo.class,"hoodServo");
         hoodSensor=hardwareMap.get(AnalogInput.class,"hoodAnalog");
-        outtakeOperator=new outtakeV3(hardwareMap,"Red",true);
+        outtakeOperator=new outtakeV3(hardwareMap,"Red",true,null);
         dashboard = FtcDashboard.getInstance();
         dashboardTelemetry = dashboard.getTelemetry();
         waitForStart();

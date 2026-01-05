@@ -7,6 +7,7 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.teamcode.Aaron.aprilTagV3;
+import org.firstinspires.ftc.teamcode.MecanumDrive;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -23,10 +24,13 @@ public class outtakeV3 {
     //Outtake Hood Servo
     public CRServo hoodServo;
     public CRServo turretServo;
+    MecanumDrive drive = null;
     //Degrees changed for every servo rotation
     public double servoDegPerRot =24.18;
     //Ticks/revolution for encoder
     public int ticksPerRevHood=8192;
+    //Turret autoaim epsilon
+    public double turretEpsilon=1.5;
     //Motor for hood encoder
     public DcMotor hoodEncoder=null;
     //transfer positions(up, down)
@@ -45,10 +49,11 @@ public class outtakeV3 {
     //PID instance for hood
     public double[] Kh={0.0005,0.0005,0.00003};
     public PID hoodPID=new PID(Kh[0],Kh[1],Kh[2]);
-    public outtakeV3(HardwareMap hardwareMap, String teamColor, boolean useTag){
+    public outtakeV3(HardwareMap hardwareMap, String teamColor, boolean useTag, MecanumDrive drive){
         this.flywheelDriveR = hardwareMap.get(DcMotorEx.class,"flywheelR");
         this.flywheelDrive=hardwareMap.get(DcMotorEx.class,"flywheel");
         flywheelDrive.setDirection(DcMotorSimple.Direction.REVERSE);
+        this.drive=drive;
         this.teamColor=teamColor;
         this.hoodServo=hardwareMap.get(CRServo.class,"hoodServo");
         this.turretServo =hardwareMap.get(CRServo.class,"turretServo");
@@ -76,6 +81,7 @@ public class outtakeV3 {
      * @return False if canceled or teamColor not found, True if successful
      */
     public boolean autoturn(){
+//        if (drive.localizer.getPose().heading.toDouble())\[
         this.apriltag.scanOnce();
         if (!apriltag.hasValidTarget()){
             turretServo.setPower(0);
@@ -88,7 +94,23 @@ public class outtakeV3 {
         // Use the speed and turn "gains" to calculate how we want the robot to move.
         double power   = turnPID.update(headingError) ;
         turretServo.setPower(power);
-        return true;
+        return Math.abs(apriltag.getYaw())<=turretEpsilon;
+    }
+
+    /**
+     *
+     * @return
+     */
+    public double getDistance(){
+        /**
+         * Formula:
+         * d=(h2-h1)/tan (a1+a2)
+         * h1: Height of the Limelight lens from the floor.
+         * h2: Height of the target (AprilTag) from the floor.
+         * a1: Mounting angle of the Limelight (degrees back from vertical).
+         * a2: Vertical offset angle to the target, obtained from the Limelight's ty value.
+         */
+        return (29.5-11.4375)/Math.tan(Math.toRadians(20+apriltag.getPitch()));
     }
 
     public void setPipeLine(int pipeline){
