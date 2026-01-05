@@ -23,6 +23,11 @@ public class fullTest extends LinearOpMode{
     private DcMotor leftBack=null;
     private DcMotor rightFront=null;
     private DcMotor rightBack=null;
+    //drivetrain configs
+    private static final double DRIVE_SPEED = 0.7;
+    private static final double STRAFE_SPEED = 0.5;
+    private static final double TWIST_SPEED = 0.5;
+    private static final double SECONDARY_DILATION = 0.25;
     //other motors
     private DcMotorEx flywheelR =null;
     private DcMotorEx flywheel = null;
@@ -91,17 +96,17 @@ public class fullTest extends LinearOpMode{
         //repeat until opmode ends
         while (opModeIsActive()){
             //flywheel
-            if (gamepad1.dpad_up){
+            if (gamepad2.dpad_up){
                 flywheelspeed+=flywheelSensitivity;
             }
-            else if (gamepad1.dpad_down && flywheelspeed-flywheelSensitivity>=0){
+            else if (gamepad2.dpad_down && flywheelspeed-flywheelSensitivity>=0){
                 flywheelspeed-=flywheelSensitivity;
             }
-            else if (gamepad1.dpad_down && flywheelspeed-flywheelSensitivity<0){
+            else if (gamepad2.dpad_down && flywheelspeed-flywheelSensitivity<0){
                 flywheelspeed=0;
             }
             //toggle
-            if (gamepad1.yWasPressed()){
+            if (gamepad2.yWasPressed()){
                 flywheelToggle=!flywheelToggle;
                 if (flywheelToggle) {
                     targetspeed=flywheelspeed;
@@ -113,8 +118,8 @@ public class fullTest extends LinearOpMode{
                     flywheel.setVelocity(0);
                 }
             }
-            if (gamepad1.aWasPressed()) distance++;
-            if (gamepad1.bWasPressed()) distance--;
+            if (gamepad2.aWasPressed()) distance++;
+            if (gamepad2.bWasPressed()) distance--;
             telemetry.addLine("Flywheel Speed:"+flywheelspeed+" encoder ticks/s, "+flywheelspeed*60/28+" RPM");
             telemetry.addLine("Flywheel Target Speed:"+targetspeed+" encoder ticks/s, "+targetspeed*60/28+" RPM");
             telemetry.addLine("Flywheel Real Speed:"+flywheelR.getVelocity()+" encoder ticks/s, "+flywheelR.getVelocity()*60/28+" RPM");
@@ -136,9 +141,9 @@ public class fullTest extends LinearOpMode{
 //            else if (spindexerpos-gamepad1.left_stick_x*spindexerDialation>0.75){
 //                spindexerpos=0.75;
 //            }
-            if (gamepad1.right_bumper){
+            if (gamepad2.right_bumper){
                 spindexer.setPower(1);
-            }else if (gamepad1.left_bumper){
+            }else if (gamepad2.left_bumper){
                 spindexer.setPower(-1);
             }else{
                 spindexer.setPower(0);
@@ -150,7 +155,7 @@ public class fullTest extends LinearOpMode{
             //update gamepad+telemetry
             previousgamepad1.copy(gamepad1);
             //transfer
-            if (gamepad1.xWasPressed()){
+            if (gamepad2.xWasPressed()){
                 transferToggle=!transferToggle;
             }
             if (transferToggle) {
@@ -161,60 +166,70 @@ public class fullTest extends LinearOpMode{
                 telemetry.addLine("Transfer Position: Stopped");
             }
 //            telemetry.addData("transfer Target Speed:",transfer.getPosition());
-            //turret
-            if (gamepad1.dpad_right){
+            //hood
+            if (gamepad2.dpad_right){
                 hoodServo.setPower(hoodspeed);
             }
-            else if (gamepad1.dpad_left){
+            else if (gamepad2.dpad_left){
                 hoodServo.setPower(-hoodspeed);
             }
             else{
                 hoodServo.setPower(0);
             }
 
-
             //intake
             intake.setPower(gamepad1.right_trigger-gamepad1.left_trigger);
-            turret.setPower(-gamepad1.left_stick_x*0.5);
-//            //below is drivetrain
-//            // Mecanum drive is controlled with three axes: drive (front-and-back),
-//            // strafe (left-and-right), and twist (rotating the whole chassis).
-//            //Default:0.7
-//            double drive  = -gamepad1.left_stick_y*0.7;
-//            //Default:0.5
-//            double strafe = -gamepad1.left_stick_x*0.5;
-//            double twist  = -gamepad1.right_stick_x*0.5;
-//            telemetry.addData("drive: ", drive);
-//            telemetry.addData("strafe: ", strafe);
-//            telemetry.addData("twist: ", twist);
-//
-//            double[] speeds = {
-//                    (drive - strafe - twist), //forward-left motor
-//                    (drive + strafe + twist), //forward-right motor
-//                    (drive + strafe - twist), //back-left motor
-//                    (drive - strafe + twist)  //back-right motor
-//            };
-//
-//            // Loop through all values in the speeds[] array and find the greatest
-//            // *magnitude*.  Not the greatest velocity.
-//            double max = Math.abs(speeds[0]);
-//            for(int i = 0; i < speeds.length; i++) {
-//                if ( max < Math.abs(speeds[i]) ) max = Math.abs(speeds[i]);
-//            }
-//
-//            // If and only if the maximum is outside of the range we want it to be,
-//            // normalize all the other speeds based on the given speed value.
-//            if (max > 1) {
-//                for (int i = 0; i < speeds.length; i++) speeds[i] /= max;
-//            }
-//
-//            // apply the calculated values to the motors.
-//            leftFront.setPower(speeds[0]);
-//            rightFront.setPower(speeds[1]);
-//            leftBack.setPower(speeds[2]);
-//            rightBack.setPower(speeds[3]);
+            //turret
+            turret.setPower(-gamepad2.right_stick_x * 0.5);
+
+            //drivetrain (gamepad1)
+            updateDrivetrain();
             telemetry.update();
             dashboardTelemetry.update();
         }
+    }
+
+    private void updateDrivetrain() {
+        // Base control from analog sticks
+        double drive = -gamepad1.left_stick_y * DRIVE_SPEED;
+        double strafe = -gamepad1.left_stick_x * STRAFE_SPEED;
+        double twist = -gamepad1.right_stick_x * TWIST_SPEED;
+
+        // D-pad overrides for precise movement
+        if (gamepad1.dpad_up) drive = DRIVE_SPEED;
+        if (gamepad1.dpad_down) drive = -DRIVE_SPEED;
+        if (gamepad1.dpad_left) strafe = STRAFE_SPEED;
+        if (gamepad1.dpad_right) strafe = -STRAFE_SPEED;
+
+        // Face buttons for slow precise movement
+        if (gamepad1.y) drive = DRIVE_SPEED * SECONDARY_DILATION;
+        if (gamepad1.a) drive = -DRIVE_SPEED * SECONDARY_DILATION;
+        if (gamepad1.x) strafe = STRAFE_SPEED * SECONDARY_DILATION;
+        if (gamepad1.b) strafe = -STRAFE_SPEED * SECONDARY_DILATION;
+
+        double[] speeds = {
+                (drive - strafe - twist), // leftFront
+                (drive + strafe + twist), // rightFront
+                (drive + strafe - twist), // leftBack
+                (drive - strafe + twist)  // rightBack
+        };
+
+        double max = Math.abs(speeds[0]);
+        for (int i = 1; i < speeds.length; i++) {
+            if (Math.abs(speeds[i]) > max) {
+                max = Math.abs(speeds[i]);
+            }
+        }
+
+        if (max > 1.0) {
+            for (int i = 0; i < speeds.length; i++) {
+                speeds[i] /= max;
+            }
+        }
+
+        leftFront.setPower(speeds[0]);
+        rightFront.setPower(speeds[1]);
+        leftBack.setPower(speeds[2]);
+        rightBack.setPower(speeds[3]);
     }
 }
