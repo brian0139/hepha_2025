@@ -43,11 +43,11 @@ public class teleOpMainNew extends OpMode {
     DcMotorEx flywheel = null;
     DcMotorEx flywheelR = null;
     DcMotor intake = null;
+    DcMotor transfer = null;
 
     // Servos
     CRServo hoodServo = null;
-    Servo spindexer = null;
-    Servo transfer = null;
+    CRServo spindexer = null;
 
     //Analog Input
     AnalogInput spindexerAnalog = null;
@@ -91,17 +91,17 @@ public class teleOpMainNew extends OpMode {
         flywheel.setDirection(DcMotorSimple.Direction.REVERSE);
         flywheelR = hardwareMap.get(DcMotorEx.class,"flywheelR");
         intake = hardwareMap.get(DcMotor.class, "intake");
+        transfer = hardwareMap.get(DcMotor.class, "par1");
 
         // Initialize servos
         hoodServo = hardwareMap.get(CRServo.class, "hoodServo");
-        spindexer = hardwareMap.get(Servo.class, "spindexerServo");
-        transfer = hardwareMap.get(Servo.class, "transferServo");
+        spindexer = hardwareMap.get(CRServo.class, "spindexerServo");
 
         // Initialize analog input
         spindexerAnalog = hardwareMap.get(AnalogInput.class,"spindexerAnalog");
 
         // Set initial positions
-        transfer.setPosition(TRANSFER_POWERS[TRANSFER_DOWN]);
+        transfer.setPower(TRANSFER_POWERS[TRANSFER_DOWN]);
         transferState = TransferState.STOPPED;
 
         telemetry.addLine("Robot Initialized and Ready");
@@ -113,7 +113,6 @@ public class teleOpMainNew extends OpMode {
     public void loop() {
         // Update all state machines
         updateFlywheelStateMachine();
-        updateSpindexerStateMachine();
         updateTransferStateMachine();
         updateIntakeStateMachine();
         updateHoodControl();
@@ -157,83 +156,34 @@ public class teleOpMainNew extends OpMode {
         }
     }
 
-    // ==================== SPINDEXER STATE MACHINE ====================
-    void updateSpindexerStateMachine() {
-
-        switch (spindexerState) {
-            case INTAKE_MODE:
-                if (rightBumperPressed) {
-                    spindexerState = SpindexerState.TRANSITIONING;
-                    outtakePos++;
-                    spindexer.setPosition(OUTTAKE_SLOTS[outtakePos % 3]);
-                    spindexerState = SpindexerState.OUTTAKE_MODE;
-                } else if (leftBumperPressed) {
-                    intakePos++;
-                    spindexer.setPosition(INTAKE_SLOTS[intakePos % 3]);
-                }
-                break;
-
-            case OUTTAKE_MODE:
-                if (leftBumperPressed) {
-                    spindexerState = SpindexerState.TRANSITIONING;
-                    intakePos++;
-                    spindexer.setPosition(INTAKE_SLOTS[intakePos % 3]);
-                    spindexerState = SpindexerState.INTAKE_MODE;
-                } else if (rightBumperPressed) {
-                    outtakePos++;
-                    spindexer.setPosition(OUTTAKE_SLOTS[outtakePos % 3]);
-                }
-                break;
-
-            case TRANSITIONING:
-                // Transition is instant for servos, so this state is brief
-                break;
-        }
-    }
-
     // ==================== TRANSFER STATE MACHINE ====================
     void updateTransferStateMachine() {
-        // Only allow transfer control in outtake mode
-        if (spindexerState != SpindexerState.OUTTAKE_MODE) {
-            return;
-        }
-
         switch (transferState) {
-            case DOWN:
-                if (gamepad2.x) {
-                    transferState = TransferState.MOVING;
-                    transfer.setPosition(TRANSFER_POWERS[TRANSFER_UP]);
+            case STOPPED:
+                if (gamepad2.xWasPressed()) {
+                    transfer.setPower(TRANSFER_POWERS[TRANSFER_UP]);
                     transferState = TransferState.UP;
                 }
                 break;
 
             case UP:
-                if (!gamepad2.x) {
-                    transferState = TransferState.MOVING;
-                    transfer.setPosition(TRANSFER_POWERS[TRANSFER_DOWN]);
-                    transferState = TransferState.DOWN;
+                if (gamepad2.xWasPressed()) {
+                    transfer.setPower(TRANSFER_POWERS[TRANSFER_DOWN]);
+                    transferState = TransferState.STOPPED;
                 }
-                break;
-
-            case MOVING:
-                // Servo movement is instant, so this state is brief
                 break;
         }
     }
 
     // ==================== INTAKE STATE MACHINE ====================
     void updateIntakeStateMachine() {
-        double intakePower = gamepad1.right_trigger - gamepad1.left_trigger;
-
-        if (intakePower > 0.1) {
-            intakeState = IntakeState.INTAKING;
-            intake.setPower(intakePower);
-        } else if (intakePower < -0.1) {
-            intakeState = IntakeState.OUTTAKING;
-            intake.setPower(intakePower);
-        } else {
-            intakeState = IntakeState.STOPPED;
-            intake.setPower(0);
+        if (gamepad1.yWasPressed()){
+            switch (intakeState){
+                case STOPPED:
+                    intakeState=IntakeState.INTAKING;
+                    spindexer.setPower(0.1);
+                    break;
+            }
         }
     }
 
