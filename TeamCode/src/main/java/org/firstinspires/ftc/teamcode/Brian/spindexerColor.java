@@ -87,27 +87,16 @@ public class spindexerColor {
     }
 
     public boolean spinToIntake() {
-        double epsilon = 0.01;
-        if (intakesensor.getDetected()!=0){
-            currentSlot++;
-            currentSlot%=3;
-            spindexerPID.init();
-        }
-        if (!intakesensor.isNone()){
-            if (!(timer.milliseconds()>=mindetectiontime && lastDetected && timer.milliseconds()<=maxdetectiontime)){
-                currentSlot++;
-                currentSlot%=3;
-                spindexerPID.init();
-            }else{
-                timer.reset();
-                lastDetected=true;
+        double epsilon = 0.05;
+        if (!(spindexerSensor.getVoltage()>=detectedLocation-epsilon&&spindexerSensor.getVoltage()<=detectedLocation+epsilon)){
+            spindexerServo.setPower(spindexerPID.update(inslotsV[currentSlot]-spindexerSensor.getVoltage()));
+        }else{
+            if (intakesensor.isNone()){
+                spindexerServo.setPower(0);
+                return false;
             }
         }
-        if (detectedLocation!=-1){
-            spindexerServo.setPower(spindexerPID.update(inslotsV[currentSlot]-spindexerSensor.getVoltage()));
-            return (spindexerSensor.getVoltage()>=detectedLocation-epsilon&&spindexerSensor.getVoltage()<=detectedLocation+epsilon);
-        }
-        return false;
+        return true;
     }
     public boolean spinAfterIntake(boolean intakesuccess){
         double epsilon =0.01;
