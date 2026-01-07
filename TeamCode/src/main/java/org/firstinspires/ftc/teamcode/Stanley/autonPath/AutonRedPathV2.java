@@ -85,6 +85,7 @@ public class AutonRedPathV2 extends LinearOpMode {
             if (isStopRequested()) return;
             Actions.runBlocking(
                     drive.actionBuilder(beginPose)
+                            //TODO: Add hood adjustment/auto hood adjustment
 //                            .stopAndAdd(new initHood())
 //                            .stopAndAdd(new SetHoodAngle(45))
                             //Start Flywheel 0

@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.Aaron;
+package org.firstinspires.ftc.teamcode.Aaron.autonPath;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
@@ -23,7 +23,7 @@ import org.firstinspires.ftc.teamcode.MecanumDrive;
 import org.firstinspires.ftc.teamcode.Stanley.finalizedClasses.outtakeV3;
 
 @Autonomous
-public class AutonRedPath_Tower_CloseInsideShoot extends LinearOpMode {
+public class AutonRedPath_Tower_CloseDirectShoot extends LinearOpMode {
     outtakeV3 outtake;
     intake intakeSystem;
     spindexerColor spindexer;
@@ -59,7 +59,7 @@ public class AutonRedPath_Tower_CloseInsideShoot extends LinearOpMode {
 
         flywheel.setDirection(DcMotorSimple.Direction.REVERSE);
 
-        final Vector2d shootingPos=new Vector2d(-52,20);
+        final Vector2d shootingPos=new Vector2d(-34,23);
         final double shootingAngle=Math.toRadians(120);
         final double intakeFinishy=36;
         final double intakeStarty=13;
@@ -86,11 +86,12 @@ public class AutonRedPath_Tower_CloseInsideShoot extends LinearOpMode {
             if (isStopRequested()) return;
             Actions.runBlocking(
                     drive.actionBuilder(beginPose)
+                            //TODO: Add hood adjustment/auto hood adjustment
 //                            .stopAndAdd(new initHood())
 //                            .stopAndAdd(new SetHoodAngle(45))
                             //Start Flywheel 0
                             .stopAndAdd(new SpinFlywheel(flywheelSpeed,50))
-                            .strafeToLinearHeading(shootingPos, shootingAngle)
+                            .strafeToLinearHeading(shootingPos, shootingAngle+Math.toRadians(7))
                             //Shooting Sequence 0
                             .stopAndAdd(new TurretAutoAimUntilAligned())
                             .stopAndAdd(new transferUp())
@@ -125,7 +126,7 @@ public class AutonRedPath_Tower_CloseInsideShoot extends LinearOpMode {
                             .strafeToLinearHeading(new Vector2d(row2XPos, intakeStarty-7), Math.toRadians(360-270))
                             //Start Flywheel 2
                             .stopAndAdd(new SpinFlywheel(flywheelSpeed,50))
-                            .strafeToLinearHeading(shootingPos, shootingAngle)
+                            .strafeToLinearHeading(new Vector2d(-35,23), shootingAngle)
                             //Shoot Sequence 2
                             .stopAndAdd(new TurretAutoAimUntilAligned())
                             .stopAndAdd(new transferUp())
@@ -157,7 +158,7 @@ public class AutonRedPath_Tower_CloseInsideShoot extends LinearOpMode {
 
                             //Start Flywheel 1
                             .stopAndAdd(new SpinFlywheel(flywheelSpeed,50))
-                            .strafeToLinearHeading(shootingPos, shootingAngle)
+                            .strafeToLinearHeading(new Vector2d(-37,23), shootingAngle)
                             //Shoot Sequence 1
                             .stopAndAdd(new TurretAutoAimUntilAligned())
                             .stopAndAdd(new transferUp())
