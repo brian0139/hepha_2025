@@ -82,7 +82,14 @@ public class outtakeV3 {
      * @return False if canceled or teamColor not found, True if successful
      */
     public boolean autoturn(){
-//        if (drive.localizer.getPose().heading.toDouble())\[
+        //get current heading
+        double currentHeading=drive.localizer.getPose().heading.toDouble();
+        //Shift heading from 180 to -180 to 0 to 360
+        if (currentHeading<0){
+            currentHeading+=360;
+        }
+
+
         this.apriltag.scanOnce();
         if (!apriltag.hasValidTarget()){
             turretServo.setPower(0);
@@ -99,8 +106,8 @@ public class outtakeV3 {
     }
 
     /**
-     *
-     * @return
+     * Get distance to april tag using limelight
+     * @return Distance in in.
      */
     public double getDistance(){
         /**
