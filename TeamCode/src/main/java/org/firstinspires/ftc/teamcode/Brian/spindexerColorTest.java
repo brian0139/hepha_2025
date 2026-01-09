@@ -25,7 +25,7 @@ public class spindexerColorTest extends LinearOpMode{
     public void runOpMode() {
         //initiate drivetrain motors
         spindexer=hardwareMap.get(CRServo.class,"spindexerServo");
-        colorsensoroperator=new colorSensor(hardwareMap,"outtakeSensor");
+        colorsensoroperator=new colorSensor(hardwareMap,"intakeSensor");
         spindexerAnalog=hardwareMap.get(AnalogInput.class,"spindexerAnalog");
         intake=hardwareMap.get(DcMotor.class, "intake");
 
@@ -33,6 +33,7 @@ public class spindexerColorTest extends LinearOpMode{
         spindexercolor=new spindexerColor(spindexer,intake,hardwareMap);
 
         boolean tmp=false;
+        boolean spintointaketoggle=false;
 //        FtcDashboard dashboard=FtcDashboard.getInstance();
 //        telemetry= dashboard.getTelemetry();
         //telemetry message to signify robot waiting
@@ -42,12 +43,41 @@ public class spindexerColorTest extends LinearOpMode{
         //wait for driver to press play
         waitForStart();
         //repeat until opmode ends
-        while (opModeIsActive()){
+        while (opModeIsActive()) {
             if (gamepad1.yWasPressed()) {
                 spindexercolor.spinToMotif(motifIndex);
                 motifIndex++;
-                motifIndex%=3;
+                motifIndex %= 3;
             }
+            boolean intakeTrue = false;
+            if (gamepad1.xWasPressed()) spintointaketoggle=!spintointaketoggle;
+            if (spintointaketoggle && !intakeTrue) {
+                while(!intakeTrue){
+                    intakeTrue=spindexercolor.spinToIntake();
+                    int detected = colorsensoroperator.getDetected();
+
+                    String result;
+                    if (detected == 1) {
+                        result = "GREEN";
+                    } else if (detected == 2) {
+                        result = "PURPLE";
+                    } else {
+                        result = "NONE";
+                    }
+
+                    telemetry.addData("Detected", result);
+                    float[] hsv = colorsensoroperator.readHSV();
+                    telemetry.addData("Hue", hsv[0]);
+                    telemetry.addData("Sat", hsv[1]);
+                    telemetry.addData("Val", hsv[2]);
+                    telemetry.update();
+                }
+            }else{
+                spindexercolor.spindexerServo.setPower(0);
+                intakeTrue=false;
+                spindexercolor.detectioncnt=0;
+            }
+            telemetry.addData("spin to intake activated", intakeTrue);
 
 //            intake.setPower(0.75);
 //            if (gamepad1.yWasPressed()) spindexercolor.spinToMotif();
@@ -70,14 +100,12 @@ public class spindexerColorTest extends LinearOpMode{
 
             telemetry.addData("Detected", result);
 
-            float[] hsv = colorsensoroperator.readHSV();
-            telemetry.addData("Hue", hsv[0]);
-            telemetry.addData("Sat", hsv[1]);
-            telemetry.addData("Val", hsv[2]);
-
-            telemetry.addData("spindexer power",0.75);
-            telemetry.addData("stopping power",-0.01);
-            telemetry.addData("tmp boolean", tmp);
+            telemetry.addData("voltage", spindexerAnalog.getVoltage());
+            telemetry.addData("Power",spindexercolor.spindexerPID.power);
+            telemetry.addData("target voltage",spindexercolor.inslotsV[spindexercolor.currentSlot]);
+            telemetry.addData("triggered",!((spindexercolor.spindexerSensor.getVoltage()>=spindexercolor.inslotsV[spindexercolor.currentSlot]-0.05)&&(spindexercolor.spindexerSensor.getVoltage()<=spindexercolor.inslotsV[spindexercolor.currentSlot]+0.05)));
+            telemetry.addData("detectioncnt",spindexercolor.detectioncnt);
+            telemetry.addData("current slot",spindexercolor.currentSlot);
             telemetry.update();
         }
     }
