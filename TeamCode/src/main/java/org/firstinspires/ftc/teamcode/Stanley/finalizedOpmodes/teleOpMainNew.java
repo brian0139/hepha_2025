@@ -11,6 +11,9 @@ import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.teamcode.Brian.spindexerColor;
+import org.firstinspires.ftc.teamcode.MecanumDrive;
+import org.firstinspires.ftc.teamcode.Stanley.finalizedClasses.opModeDataTransfer;
+import org.firstinspires.ftc.teamcode.Stanley.finalizedClasses.outtakeV3;
 
 import java.lang.Math;
 
@@ -57,6 +60,8 @@ public class teleOpMainNew extends OpMode {
 
     // ==================== Classes ====================
     spindexerColor spindexerOperator=null;
+    outtakeV3 outtakeOperator=null;
+    MecanumDrive drive=null;
 
     // ==================== STATE VARIABLES ====================
     FlywheelState flywheelState = FlywheelState.IDLE;
@@ -114,7 +119,8 @@ public class teleOpMainNew extends OpMode {
 
         //Initialize classes
         spindexerOperator=new spindexerColor(spindexer,intake,hardwareMap);
-
+        drive=new MecanumDrive(hardwareMap, opModeDataTransfer.currentPose);
+        outtakeOperator=new outtakeV3(hardwareMap,"Red",true,drive);
 
         telemetry.addLine("Robot Initialized and Ready");
         telemetry.update();
