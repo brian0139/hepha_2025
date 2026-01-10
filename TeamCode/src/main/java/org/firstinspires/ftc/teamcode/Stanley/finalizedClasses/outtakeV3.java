@@ -71,6 +71,8 @@ public class outtakeV3 {
     int targetTagID=-1;
     //voltage jump to be considered a rotation
     double maxVJump=3.3*0.5;
+    //to use turret rotation limitation or not(requires initialized MecanumDrive
+    public boolean setRange=false;
 
     /**
      * Constructor
@@ -126,7 +128,7 @@ public class outtakeV3 {
      * Target tag set by teamColor variable in class, "Red" or "Blue"
      * @return False if canceled or teamColor not found, True if successful
      */
-    public boolean autoturn(boolean setRange){
+    public boolean autoturn(){
         setPipeLine(aprilTagPipeline);
 
 
