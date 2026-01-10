@@ -35,7 +35,7 @@ public class teleOpMainNew extends OpMode {
     enum IntakeState {
         STOPPED,
         INTAKING,
-        OUTTAKING
+        AWAITING_SPINDEXER
     }
 
     // ==================== HARDWARE DECLARATION ====================
@@ -137,6 +137,8 @@ public class teleOpMainNew extends OpMode {
         updateIntakeStateMachine();
         updateHoodControl();
         updateDrivetrain();
+        //Note: Manual currently has nothing in it
+        updateManual();
 
         // Update telemetry
         updateTelemetry();
@@ -210,14 +212,24 @@ public class teleOpMainNew extends OpMode {
 
     // ==================== INTAKE STATE MACHINE ====================
     void updateIntakeStateMachine() {
+        if (gamepad1.right_trigger!=0 || gamepad1.left_trigger!=0){
+            intakeState=IntakeState.STOPPED;
+            intake.setPower(gamepad1.right_trigger-gamepad1.left_trigger);
+        }
+        if (gamepad1.right_bumper || gamepad1.left_bumper){
+            if (intakeState==IntakeState.AWAITING_SPINDEXER){
+                intakeState=IntakeState.INTAKING;
+            }
+            if (gamepad1.right_bumper) spindexer.setPower(1);
+            else if (gamepad1.left_bumper) spindexer.setPower(-1);
+        }
+        //Toggle intake
         if (gamepad1.yWasPressed()){
             switch (intakeState){
                 case STOPPED:
-                    intakeState=IntakeState.INTAKING;
-                    spindexer.setPower(1);
-                    intake.setPower(1);
+                    intakeState=IntakeState.AWAITING_SPINDEXER;
                     break;
-                case OUTTAKING:
+                case AWAITING_SPINDEXER:
                 case INTAKING:
                     intakeState=IntakeState.STOPPED;
                     spindexer.setPower(0);
@@ -225,9 +237,26 @@ public class teleOpMainNew extends OpMode {
                     break;
             }
         }
-        if (gamepad1.xWasPressed()){
-            intakeState=IntakeState.OUTTAKING;
-            intake.setPower(-1);
+        if (intakeState==IntakeState.STOPPED){
+            intake.setPower(0);
+        }
+        else if (intakeState==IntakeState.INTAKING){
+            intake.setPower(1);
+            if (!spindexerOperator.intakesensor.isNone()){
+                intakeState=IntakeState.AWAITING_SPINDEXER;
+                gamepad1.rumble(10);
+                //TODO:delete this line if intake should not stop whist awaiting spindexer
+                intake.setPower(0);
+            }
+        }
+        else if (intakeState==IntakeState.AWAITING_SPINDEXER){
+            boolean result=spindexerOperator.spinToIntake();
+            if (result){
+                intakeState=IntakeState.INTAKING;
+            }else if (!result && spindexerOperator.detectioncnt==3){
+                intakeState=IntakeState.STOPPED;
+                gamepad1.rumble(100);
+            }
         }
     }
 
@@ -292,6 +321,10 @@ public class teleOpMainNew extends OpMode {
         telemetry.addLine("");
 
         telemetry.update();
+    }
+
+    // ==================== Manual Override/Misc ====================
+    void updateManual(){
     }
 
     @Override

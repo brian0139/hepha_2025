@@ -17,7 +17,7 @@ public class spindexerColor {
     public DcMotor intake=null;
     ElapsedTime timer = new ElapsedTime();
     colorSensor outtakesensor;
-    colorSensor intakesensor;
+    public colorSensor intakesensor;
     AnalogInput spindexerSensor;
     public double[] kS={1.1,1.5,0.017};
     public double[] inslotsV={0.887,2.009,3.026};
