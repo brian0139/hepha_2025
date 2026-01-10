@@ -33,7 +33,7 @@ public class outtakeTest extends LinearOpMode{
         transfer=hardwareMap.get(DcMotor.class,"par1");
         FtcDashboard dashboard=FtcDashboard.getInstance();
         Telemetry dashboardtelemetry=dashboard.getTelemetry();
-        outtakeV3 outtakeOperator = new outtakeV3(hardwareMap, "Red",false);
+        outtakeV3 outtakeOperator = new outtakeV3(hardwareMap, "Red",false,null);
         outtakeOperator.initHoodAngleBlocking();
 
         //telemetry message to signify robot waiting

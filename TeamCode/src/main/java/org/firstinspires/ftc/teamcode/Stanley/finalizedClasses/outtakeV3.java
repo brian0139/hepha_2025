@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.Stanley.finalizedClasses;
 
+import com.acmerobotics.roadrunner.Vector2d;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
@@ -7,6 +8,7 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.teamcode.Aaron.aprilTagV3;
+import org.firstinspires.ftc.teamcode.MecanumDrive;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -15,11 +17,27 @@ import java.util.Objects;
 public class outtakeV3 {
     //Team color
     String teamColor;
+
+    //================================  April Tag  ================================
     //April tag processor
     public aprilTagV3 apriltag;
+    //Target Apriltag pipeline
+    public int aprilTagPipeline=5;
+
+    //================================  Flywheel  ================================
     //Outtake flywheel
     public DcMotorEx flywheelDriveR;
     public DcMotorEx flywheelDrive;
+
+    //================================  Transfer  ================================
+    //transfer servo
+    public DcMotor transfer;
+    //transfer positions(up, down)
+    public static double[] transferpowers ={1,0};
+
+    //================================  Hood  ================================
+    //Motor for hood encoder
+    public DcMotor hoodEncoder=null;
     //Outtake Hood Servo
     public CRServo hoodServo;
     public CRServo turretServo;
@@ -27,28 +45,43 @@ public class outtakeV3 {
     public double servoDegPerRot =24.18;
     //Ticks/revolution for encoder
     public int ticksPerRevHood=8192;
-    //Motor for hood encoder
-    public DcMotor hoodEncoder=null;
-    //transfer positions(up, down)
-    public static double[] transferpowers ={1,0};
-    //transfer servo
-    public DcMotor transfer;
+    //PID instance for hood
+    public double[] Kh={0.0005,0.0005,0.00003};
+    public PID hoodPID=new PID(Kh[0],Kh[1],Kh[2]);
+    
+    //================================  Turret  ================================
+    //Robot drivetrain object
+    MecanumDrive drive = null;
+    //Acceptable angle rotation range of turret(0=right, 90=up, 180=left, 270=down)
+    public double minTurretAngle=0;
+    public double maxTurretAngle=180;
+    //Turret autoaim epsilon
+    public double turretEpsilon=1.5;
     //auto aim vars
     //  Drive = Error * Gain
     // Turn Control "Gain".  e.g. Ramp up to 25% power at a 25 degree error. (0.25 / 25.0)
-    public double[] Kturn={0.015,0.013,0.008};
+    // P, I, D
+    public double[] Kturn={0.014,0.01,0.008};
     public PID turnPID=new PID(Kturn[0],Kturn[1],Kturn[2]);
+
+    //================================  Config  ================================
     //vars
     int targetTagID=-1;
     //voltage jump to be considered a rotation
     double maxVJump=3.3*0.5;
-    //PID instance for hood
-    public double[] Kh={0.0005,0.0005,0.00003};
-    public PID hoodPID=new PID(Kh[0],Kh[1],Kh[2]);
-    public outtakeV3(HardwareMap hardwareMap, String teamColor, boolean useTag){
+
+    /**
+     * Constructor
+     * @param hardwareMap Hardwaremap
+     * @param teamColor Team color("Red" or "Blue")
+     * @param useTag To use april tag process or not
+     * @param drive Robot drivetrain
+     */
+    public outtakeV3(HardwareMap hardwareMap, String teamColor, boolean useTag, MecanumDrive drive){
         this.flywheelDriveR = hardwareMap.get(DcMotorEx.class,"flywheelR");
         this.flywheelDrive=hardwareMap.get(DcMotorEx.class,"flywheel");
         flywheelDrive.setDirection(DcMotorSimple.Direction.REVERSE);
+        this.drive=drive;
         this.teamColor=teamColor;
         this.hoodServo=hardwareMap.get(CRServo.class,"hoodServo");
         this.turretServo =hardwareMap.get(CRServo.class,"turretServo");
@@ -70,16 +103,73 @@ public class outtakeV3 {
             this.apriltag.init();
         }
     }
+
+    /**
+     * Helper function to normalize angle to +-180 range
+     * @param angle
+     * @return
+     */
+    public static double normalizeAngle(double angle) {
+        angle = angle % 360.0;
+        if (angle > 180.0) {
+            angle -= 360.0;
+        } else if (angle < -180.0) {
+            angle += 360.0;
+        }
+        return angle;
+    }
+
     /**
      * Autoaim to april tag.
      * Target tag set by teamColor variable in class, "Red" or "Blue"
      * @return False if canceled or teamColor not found, True if successful
      */
     public boolean autoturn(){
+        setPipeLine(aprilTagPipeline);
+
+
         this.apriltag.scanOnce();
         if (!apriltag.hasValidTarget()){
             turretServo.setPower(0);
             turnPID=new PID(Kturn[0],Kturn[1],Kturn[2]);
+            //get current heading
+            double currentHeading=drive.localizer.getPose().heading.toDouble();
+            //Shift heading from 180 to -180 to 0 to 360
+            if (currentHeading<0){
+                currentHeading+=360;
+            }
+            //get current position
+            Vector2d currentPos=drive.localizer.getPose().position;
+            // Robot position
+            double xr = currentPos.x;
+            double yr = currentPos.y;
+
+            // Target position
+            double xt = -61.5;
+            double yt = 0;
+            if (Objects.equals(this.teamColor, "Red")) {
+                yt = 52.5;
+            }else if (Objects.equals(this.teamColor,"Blue")){
+                yt=-53.5;
+            }
+
+            // Robot facing angle in degrees (-180 to 180)
+            double robotAngle = currentHeading;
+
+            // Compute vector to target
+            double dx = xt - xr;
+            double dy = yt - yr;
+
+            // Target angle in world coordinates (-180 to 180)
+            double targetAngle = Math.toDegrees(Math.atan2(dy, dx));
+
+            // Angle of target relative to robot front
+            double relativeAngle = normalizeAngle(targetAngle - robotAngle);
+
+            // Check if target is within turret range
+            if (relativeAngle >= minTurretAngle && relativeAngle <= maxTurretAngle) {
+                //TODO: Target is within turret rotation limits
+            }
             return false;
         }
         // Determine heading, range and Yaw (tag image rotation) error so we can use them to control the robot automatically.
@@ -88,7 +178,23 @@ public class outtakeV3 {
         // Use the speed and turn "gains" to calculate how we want the robot to move.
         double power   = turnPID.update(headingError) ;
         turretServo.setPower(power);
-        return true;
+        return Math.abs(apriltag.getYaw())<=turretEpsilon;
+    }
+
+    /**
+     * Get distance to april tag using limelight
+     * @return Distance in in.
+     */
+    public double getDistance(){
+        /*
+          Formula:
+          d=(h2-h1)/tan (a1+a2)
+          h1: Height of the Limelight lens from the floor.
+          h2: Height of the target (AprilTag) from the floor.
+          a1: Mounting angle of the Limelight (degrees back from vertical).
+          a2: Vertical offset angle to the target, obtained from the Limelight's ty value.
+         */
+        return (29.5-11.4375)/Math.tan(Math.toRadians(20+apriltag.getPitch()));
     }
 
     public void setPipeLine(int pipeline){

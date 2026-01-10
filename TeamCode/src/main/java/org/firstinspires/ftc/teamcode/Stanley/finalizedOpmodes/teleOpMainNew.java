@@ -60,6 +60,7 @@ public class teleOpMainNew extends OpMode {
     // ==================== CONFIGURATION ====================
     static final double FLYWHEEL_SENSITIVITY = 5;
     static final double FLYWHEEL_EPSILON = 10;
+    static final double FLYWHEEL_EXIT_EPSILON = 35;
     static final double DRIVE_SPEED = 0.7;
     static final double STRAFE_SPEED = 0.5;
     static final double TWIST_SPEED = 0.5;
@@ -72,6 +73,7 @@ public class teleOpMainNew extends OpMode {
     // ==================== WORKING VARIABLES ====================
     int flywheelSpeed = 2000;
     int targetSpeed = 0;
+    boolean atFlywheelTarget=false;
 
     // ==================== INITIALIZATION ====================
     @Override
@@ -137,6 +139,15 @@ public class teleOpMainNew extends OpMode {
             }
         }
 
+        //Rumble within epsilon
+        if (Math.abs(targetSpeed-flywheel.getVelocity())<FLYWHEEL_EPSILON && !atFlywheelTarget){
+            atFlywheelTarget=true;
+            gamepad2.rumble(100);
+        }
+        if (Math.abs(targetSpeed-flywheel.getVelocity())>FLYWHEEL_EXIT_EPSILON){
+            atFlywheelTarget=false;
+        }
+
         // Toggle flywheel on/off with Y button
         if (gamepad2.yWasPressed()) {
             switch (flywheelState) {
@@ -163,6 +174,8 @@ public class teleOpMainNew extends OpMode {
                 if (gamepad2.xWasPressed()) {
                     transfer.setPower(TRANSFER_POWERS[TRANSFER_UP]);
                     transferState = TransferState.UP;
+                    spindexer.setPower(1);
+                    intake.setPower(0.75);
                 }
                 break;
 
@@ -170,6 +183,8 @@ public class teleOpMainNew extends OpMode {
                 if (gamepad2.xWasPressed()) {
                     transfer.setPower(TRANSFER_POWERS[TRANSFER_DOWN]);
                     transferState = TransferState.STOPPED;
+                    spindexer.setPower(0);
+                    intake.setPower(0);
                 }
                 break;
         }
@@ -181,9 +196,20 @@ public class teleOpMainNew extends OpMode {
             switch (intakeState){
                 case STOPPED:
                     intakeState=IntakeState.INTAKING;
-                    spindexer.setPower(0.1);
+                    spindexer.setPower(1);
+                    intake.setPower(1);
+                    break;
+                case OUTTAKING:
+                case INTAKING:
+                    intakeState=IntakeState.STOPPED;
+                    spindexer.setPower(0);
+                    intake.setPower(0);
                     break;
             }
+        }
+        if (gamepad1.xWasPressed()){
+            intakeState=IntakeState.OUTTAKING;
+            intake.setPower(-1);
         }
     }
 
@@ -242,7 +268,10 @@ public class teleOpMainNew extends OpMode {
 
     // ==================== TELEMETRY ====================
     void updateTelemetry() {
-
+        telemetry.addLine("=== Flywheel ===");
+        telemetry.addData("Target Speed",flywheelSpeed);
+        telemetry.addData("Actual Speed",flywheel.getVelocity());
+        telemetry.addLine("");
 
         telemetry.update();
     }
