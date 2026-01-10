@@ -126,7 +126,7 @@ public class outtakeV3 {
      * Target tag set by teamColor variable in class, "Red" or "Blue"
      * @return False if canceled or teamColor not found, True if successful
      */
-    public boolean autoturn(){
+    public boolean autoturn(boolean setRange){
         setPipeLine(aprilTagPipeline);
 
 
@@ -134,45 +134,47 @@ public class outtakeV3 {
         if (!apriltag.hasValidTarget()){
             turretServo.setPower(0);
             turnPID=new PID(Kturn[0],Kturn[1],Kturn[2]);
-            //get current heading
-            double currentHeading=drive.localizer.getPose().heading.toDouble();
-            //Shift heading from 180 to -180 to 0 to 360
-            if (currentHeading<0){
-                currentHeading+=360;
-            }
-            //get current position
-            Vector2d currentPos=drive.localizer.getPose().position;
-            // Robot position
-            double xr = currentPos.x;
-            double yr = currentPos.y;
+            if (setRange) {
+                //get current heading
+                double currentHeading = drive.localizer.getPose().heading.toDouble();
+                //Shift heading from 180 to -180 to 0 to 360
+                if (currentHeading < 0) {
+                    currentHeading += 360;
+                }
+                //get current position
+                Vector2d currentPos = drive.localizer.getPose().position;
+                // Robot position
+                double xr = currentPos.x;
+                double yr = currentPos.y;
 
-            // Target position
-            double xt = -61.5;
-            double yt = 0;
-            if (Objects.equals(this.teamColor, "Red")) {
-                yt = 52.5;
-            }else if (Objects.equals(this.teamColor,"Blue")){
-                yt=-53.5;
-            }
+                // Target position
+                double xt = -61.5;
+                double yt = 0;
+                if (Objects.equals(this.teamColor, "Red")) {
+                    yt = 52.5;
+                } else if (Objects.equals(this.teamColor, "Blue")) {
+                    yt = -53.5;
+                }
 
-            // Robot facing angle in degrees (-180 to 180)
-            double robotAngle = currentHeading;
+                // Robot facing angle in degrees (-180 to 180)
+                double robotAngle = currentHeading;
 
-            // Compute vector to target
-            double dx = xt - xr;
-            double dy = yt - yr;
+                // Compute vector to target
+                double dx = xt - xr;
+                double dy = yt - yr;
 
-            // Target angle in world coordinates (-180 to 180)
-            double targetAngle = Math.toDegrees(Math.atan2(dy, dx));
+                // Target angle in world coordinates (-180 to 180)
+                double targetAngle = Math.toDegrees(Math.atan2(dy, dx));
 
-            // Angle of target relative to robot front
-            double relativeAngle = normalizeAngle(targetAngle - robotAngle);
+                // Angle of target relative to robot front
+                double relativeAngle = normalizeAngle(targetAngle - robotAngle);
 
-            // Attempt to move camera within range
-            if (relativeAngle>maxTurretAngle){
-                turretServo.setPower(0.1);
-            } else if (relativeAngle<minTurretAngle){
-                turretServo.setPower(-0.1);
+                // Attempt to move camera within range
+                if (relativeAngle > maxTurretAngle) {
+                    turretServo.setPower(0.1);
+                } else if (relativeAngle < minTurretAngle) {
+                    turretServo.setPower(-0.1);
+                }
             }
             return false;
         }

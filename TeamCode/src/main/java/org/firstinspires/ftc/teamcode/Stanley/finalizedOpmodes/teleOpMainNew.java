@@ -85,6 +85,7 @@ public class teleOpMainNew extends OpMode {
     int flywheelSpeed = 2000;
     int targetSpeed = 0;
     boolean atFlywheelTarget=false;
+    boolean useInitializer=false;
 
     // ==================== INITIALIZATION ====================
     @Override
