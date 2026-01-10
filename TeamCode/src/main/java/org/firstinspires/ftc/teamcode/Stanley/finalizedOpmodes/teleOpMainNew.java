@@ -9,6 +9,9 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.Servo;
+
+import org.firstinspires.ftc.teamcode.Brian.spindexerColor;
+
 import java.lang.Math;
 
 @TeleOp
@@ -51,6 +54,9 @@ public class teleOpMainNew extends OpMode {
 
     //Analog Input
     AnalogInput spindexerAnalog = null;
+
+    // ==================== Classes ====================
+    spindexerColor spindexerOperator=null;
 
     // ==================== STATE VARIABLES ====================
     FlywheelState flywheelState = FlywheelState.IDLE;
@@ -105,6 +111,10 @@ public class teleOpMainNew extends OpMode {
         // Set initial positions
         transfer.setPower(TRANSFER_POWERS[TRANSFER_DOWN]);
         transferState = TransferState.STOPPED;
+
+        //Initialize classes
+        spindexerOperator=new spindexerColor(spindexer,intake,hardwareMap);
+
 
         telemetry.addLine("Robot Initialized and Ready");
         telemetry.update();

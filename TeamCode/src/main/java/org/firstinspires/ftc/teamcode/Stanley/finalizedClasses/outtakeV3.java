@@ -166,9 +166,11 @@ public class outtakeV3 {
             // Angle of target relative to robot front
             double relativeAngle = normalizeAngle(targetAngle - robotAngle);
 
-            // Check if target is within turret range
-            if (relativeAngle >= minTurretAngle && relativeAngle <= maxTurretAngle) {
-                //TODO: Target is within turret rotation limits
+            // Attempt to move camera within range
+            if (relativeAngle>maxTurretAngle){
+                turretServo.setPower(0.1);
+            } else if (relativeAngle<minTurretAngle){
+                turretServo.setPower(-0.1);
             }
             return false;
         }
