@@ -43,6 +43,8 @@ public class outtakeV3 {
     public CRServo turretServo;
     //Degrees changed for every servo rotation
     public double servoDegPerRot =24.18;
+    //Encoder tick offset for encoder
+    public int encoderOffset=0;
     //Ticks/revolution for encoder
     public int ticksPerRevHood=8192;
     //PID instance for hood
@@ -448,9 +450,9 @@ public class outtakeV3 {
     public boolean setHood(double degrees){
         double epsilon=40;
         double targetTicks=(66.81-degrees)/servoDegPerRot*ticksPerRevHood;
-        double power=hoodPID.update(targetTicks+hoodEncoder.getCurrentPosition());
+        double power=hoodPID.update(targetTicks+hoodEncoder.getCurrentPosition()+encoderOffset);
         hoodServo.setPower(-power);
-        return (hoodEncoder.getCurrentPosition() >= targetTicks - epsilon) && (hoodEncoder.getCurrentPosition() <= targetTicks + epsilon);
+        return (hoodEncoder.getCurrentPosition()+encoderOffset >= targetTicks - epsilon) && (hoodEncoder.getCurrentPosition()+encoderOffset <= targetTicks + epsilon);
     }
 
     /**
@@ -459,7 +461,7 @@ public class outtakeV3 {
      */
     public void initHoodAngleBlocking(){
         hoodEncoder.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
-        while(hoodEncoder.getCurrentPosition()<3*ticksPerRevHood) hoodServo.setPower(1);
+        while((hoodEncoder.getCurrentPosition()+encoderOffset)<3*ticksPerRevHood) hoodServo.setPower(1);
         hoodServo.setPower(0);
         hoodEncoder.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
     }
@@ -471,6 +473,7 @@ public class outtakeV3 {
      */
     public void resetHoodAngle(){
         hoodEncoder.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
+        encoderOffset=0;
     }
 
     /**

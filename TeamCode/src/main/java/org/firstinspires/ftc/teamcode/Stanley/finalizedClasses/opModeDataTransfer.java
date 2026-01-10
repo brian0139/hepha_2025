@@ -4,5 +4,5 @@ import com.acmerobotics.roadrunner.Pose2d;
 
 public class opModeDataTransfer {
     public static Pose2d currentPose=null;
-    public static double currentHood=66.81;
+    public static int currentHood=0;
 }

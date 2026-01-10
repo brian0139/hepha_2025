@@ -121,6 +121,7 @@ public class teleOpMainNew extends OpMode {
         spindexerOperator=new spindexerColor(spindexer,intake,hardwareMap);
         drive=new MecanumDrive(hardwareMap, opModeDataTransfer.currentPose);
         outtakeOperator=new outtakeV3(hardwareMap,"Red",true,drive);
+        outtakeOperator.encoderOffset=opModeDataTransfer.currentHood;
 
         telemetry.addLine("Robot Initialized and Ready");
         telemetry.update();
