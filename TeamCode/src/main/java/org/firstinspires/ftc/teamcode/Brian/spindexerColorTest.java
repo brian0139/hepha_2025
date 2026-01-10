@@ -48,6 +48,9 @@ public class spindexerColorTest extends LinearOpMode{
                 motifIndex++;
                 motifIndex%=3;
             }
+            if (gamepad1.xWasPressed()) {
+                spindexercolor.spinToIntake();
+            }
 
 //            intake.setPower(0.75);
 //            if (gamepad1.yWasPressed()) spindexercolor.spinToMotif();
