@@ -377,6 +377,7 @@ public class teleOpMainNew extends OpMode {
             switch (turretState){
                 case MANUAL:
                     turretState=TurretState.AUTO;
+                    outtakeOperator.turnPID.init();
                     break;
                 case AUTO:
                     turretState=TurretState.MANUAL;
