@@ -342,6 +342,8 @@ public class teleOpMainNew extends OpMode {
         telemetry.addLine("=== Toggles ===");
         telemetry.addData("Auto Hood",hoodState==HoodState.AUTO);
         telemetry.addData("Auto Turret",turretState==TurretState.AUTO);
+        telemetry.addLine("=== Limelight ===");
+        telemetry.addData("Has Target",outtakeOperator.apriltag.hasValidTarget());
         telemetry.addLine("=== Intake ===");
         if (intakeState==IntakeState.AWAITING_SPINDEXER){
             telemetry.addData("Intake State","Awaiting Spindexer");
