@@ -61,6 +61,7 @@ public class AutonRedPath_Tower_CloseInsideShoot extends LinearOpMode {
 
         final Vector2d shootingPos=new Vector2d(-52,20);
         final double shootingAngle=Math.toRadians(120);
+        final double hoodAngle=45;
         final double intakeFinishy=36;
         final double intakeStarty=13;
         final double waitTime=1.5;
@@ -87,8 +88,8 @@ public class AutonRedPath_Tower_CloseInsideShoot extends LinearOpMode {
             Actions.runBlocking(
                     drive.actionBuilder(beginPose)
                             //TODO: Add hood adjustment/auto hood adjustment
-//                            .stopAndAdd(new initHood())
-//                            .stopAndAdd(new SetHoodAngle(45))
+                            .stopAndAdd(new initHood())
+                            .stopAndAdd(new SetHoodAngle(hoodAngle))
                             //Start Flywheel 0
                             .stopAndAdd(new SpinFlywheel(flywheelSpeed,50))
                             .strafeToLinearHeading(shootingPos, shootingAngle)

@@ -60,6 +60,7 @@ public class AutonRedPath_Tower_CloseDirectShoot extends LinearOpMode {
         flywheel.setDirection(DcMotorSimple.Direction.REVERSE);
 
         final Vector2d shootingPos=new Vector2d(-34,23);
+        final double hoodAngle=45;
         final double shootingAngle=Math.toRadians(120);
         final double intakeFinishy=36;
         final double intakeStarty=13;
@@ -87,8 +88,8 @@ public class AutonRedPath_Tower_CloseDirectShoot extends LinearOpMode {
             Actions.runBlocking(
                     drive.actionBuilder(beginPose)
                             //TODO: Add hood adjustment/auto hood adjustment
-//                            .stopAndAdd(new initHood())
-//                            .stopAndAdd(new SetHoodAngle(45))
+                            .stopAndAdd(new initHood())
+                            .stopAndAdd(new SetHoodAngle(hoodAngle))
                             //Start Flywheel 0
                             .stopAndAdd(new SpinFlywheel(flywheelSpeed,50))
                             .strafeToLinearHeading(shootingPos, shootingAngle+Math.toRadians(7))
