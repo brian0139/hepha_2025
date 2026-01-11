@@ -58,11 +58,19 @@ public class spindexerColor {
     public boolean spinToMotif(int motifIndex) {
         double epsilon = 0.01;
         int nextmotif = dummyMotif[motifIndex];
-        if (outtakesensor.getDetected() != nextmotif) {
+        if (outtakesensor.getDetected() != nextmotif && !lastDetected) {
             spindexerServo.setPower(0.75);
             detectedLocation = -1;
-        } else {
+            lastDetected=false;
+        } else if (detectedLocation==-1){
+            /*TODO:Adjust for color sensor offset
+            If adjust is negative,
+               detectedLocation = Math.abs(spindexerSensor.getVoltage()-adjust);
+            If adjust is positive,
+               detectedLocation = (spindexerSensor.getVoltage()+adjust)%3.3;
+            */
             detectedLocation = spindexerSensor.getVoltage();
+            lastDetected=true;
             spindexerPID.init();
         }
         if (detectedLocation != -1) {
