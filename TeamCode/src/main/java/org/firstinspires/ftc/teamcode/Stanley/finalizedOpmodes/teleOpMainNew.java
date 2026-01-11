@@ -7,6 +7,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.Gamepad;
 
 import org.firstinspires.ftc.teamcode.Brian.spindexerColor;
 import org.firstinspires.ftc.teamcode.MecanumDrive;
@@ -34,7 +35,8 @@ public class teleOpMainNew extends OpMode {
     enum IntakeState {
         STOPPED,
         INTAKING,
-        AWAITING_SPINDEXER
+        AWAITING_SPINDEXER,
+        MANUAL
     }
 
     enum HoodState{
@@ -136,6 +138,7 @@ public class teleOpMainNew extends OpMode {
         drive=new MecanumDrive(hardwareMap, opModeDataTransfer.currentPose);
         outtakeOperator=new outtakeV3(hardwareMap,"Red",true,drive);
         outtakeOperator.encoderOffset=opModeDataTransfer.currentHood;
+        outtakeOperator.apriltag.init();
 
         telemetry.addLine("Robot Initialized and Ready");
         telemetry.update();
@@ -224,7 +227,7 @@ public class teleOpMainNew extends OpMode {
     // ==================== INTAKE STATE MACHINE ====================
     void updateIntakeStateMachine() {
         if (gamepad1.right_trigger!=0 || gamepad1.left_trigger!=0){
-            intakeState=IntakeState.STOPPED;
+            intakeState=IntakeState.MANUAL;
             intake.setPower(gamepad1.right_trigger-gamepad1.left_trigger);
         }
         if (gamepad1.right_bumper || gamepad1.left_bumper){
@@ -234,11 +237,17 @@ public class teleOpMainNew extends OpMode {
             if (gamepad1.right_bumper) spindexer.setPower(1);
             else if (gamepad1.left_bumper) spindexer.setPower(-1);
         }
+        if (gamepad1.rightBumperWasReleased() || gamepad1.leftBumperWasReleased()){
+            intakeState=IntakeState.STOPPED;
+            spindexer.setPower(0);
+        }
         //Toggle intake
         if (gamepad1.yWasPressed()){
             switch (intakeState){
+                case MANUAL:
                 case STOPPED:
                     intakeState=IntakeState.AWAITING_SPINDEXER;
+                    spindexerOperator.detectioncnt=0;
                     break;
                 case AWAITING_SPINDEXER:
                 case INTAKING:
@@ -253,9 +262,10 @@ public class teleOpMainNew extends OpMode {
         }
         else if (intakeState==IntakeState.INTAKING){
             intake.setPower(1);
-            if (!spindexerOperator.intakesensor.isNone()){
+            if (!(spindexerOperator.intakesensor.getDetected()==0)){
                 intakeState=IntakeState.AWAITING_SPINDEXER;
-                gamepad1.rumble(10);
+                spindexerOperator.detectioncnt=0;
+                gamepad1.rumbleBlips(3);
                 //TODO:delete this line if intake should not stop whist awaiting spindexer
                 intake.setPower(0);
             }
@@ -329,13 +339,30 @@ public class teleOpMainNew extends OpMode {
         telemetry.addLine("=== Flywheel ===");
         telemetry.addData("Target Speed",flywheelSpeed);
         telemetry.addData("Actual Speed",flywheel.getVelocity());
-        telemetry.addLine("");
+        telemetry.addLine("=== Toggles ===");
+        telemetry.addData("Auto Hood",hoodState==HoodState.AUTO);
+        telemetry.addData("Auto Turret",turretState==TurretState.AUTO);
+        telemetry.addLine("=== Intake ===");
+        if (intakeState==IntakeState.AWAITING_SPINDEXER){
+            telemetry.addData("Intake State","Awaiting Spindexer");
+        }else if (intakeState==IntakeState.INTAKING){
+            telemetry.addData("Intake State","Intake");
+        }else if (intakeState==IntakeState.MANUAL){
+            telemetry.addData("Intake State","Manual");
+        }else if (intakeState==IntakeState.STOPPED){
+            telemetry.addData("Intake State","Stopped");
+        }
 
         telemetry.update();
     }
 
     // ==================== Manual Override/Misc ====================
     void updateManual(){
+        if (gamepad2.leftBumperWasPressed()){
+            outtakeOperator.initHoodAngleBlocking();
+            gamepad2.rumbleBlips(2);
+            gamepad2.rumble(50);
+        }
         if (gamepad2.dpadUpWasPressed()){
             switch (hoodState){
                 case MANUAL:
@@ -356,7 +383,6 @@ public class teleOpMainNew extends OpMode {
                     break;
             }
         }
-        //TODO:Get real min angle + flywheel Diameter values
         Map<String,String> output=outtakeOperator.findOptimalLaunch(outtakeOperator.getDistance(),40,40.03,66.81,outtakeOperator.calculateCurvedExitSpeed(2100,FLYWHEEL_DIAMETER,FLYWHEEL_EFFICIENCY),90,170,160,386.4,10,0.1,100);
         if (hoodState==HoodState.AUTO && outtakeOperator.apriltag.hasValidTarget()){
             outtakeOperator.setHood(Double.parseDouble(output.get("angle")));
@@ -365,7 +391,10 @@ public class teleOpMainNew extends OpMode {
             updateHoodControl();
         }
         if (turretState==TurretState.AUTO){
+            outtakeOperator.setPipeLine(5);
             outtakeOperator.autoturn();
+        }else{
+            outtakeOperator.turretServo.setPower(gamepad2.right_trigger-gamepad2.left_trigger);
         }
     }
 
