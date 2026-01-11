@@ -60,6 +60,7 @@ public class spindexerColor {
         int nextmotif = dummyMotif[motifIndex];
         if (outtakesensor.getDetected() != nextmotif) {
             spindexerServo.setPower(0.75);
+            detectedLocation = -1;
         } else {
             detectedLocation = spindexerSensor.getVoltage();
             spindexerPID.init();
