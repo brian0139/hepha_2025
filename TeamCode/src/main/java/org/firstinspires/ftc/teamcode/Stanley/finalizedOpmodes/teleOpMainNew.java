@@ -16,6 +16,7 @@ import org.firstinspires.ftc.teamcode.Stanley.finalizedClasses.opModeDataTransfe
 import org.firstinspires.ftc.teamcode.Stanley.finalizedClasses.outtakeV3;
 
 import java.lang.Math;
+import java.util.Map;
 
 @TeleOp
 public class teleOpMainNew extends OpMode {
@@ -36,6 +37,16 @@ public class teleOpMainNew extends OpMode {
         STOPPED,
         INTAKING,
         AWAITING_SPINDEXER
+    }
+
+    enum HoodState{
+        MANUAL,
+        AUTO
+    }
+
+    enum TurretState{
+        MANUAL,
+        AUTO
     }
 
     // ==================== HARDWARE DECLARATION ====================
@@ -67,11 +78,15 @@ public class teleOpMainNew extends OpMode {
     FlywheelState flywheelState = FlywheelState.IDLE;
     TransferState transferState = TransferState.STOPPED;
     IntakeState intakeState = IntakeState.STOPPED;
+    HoodState hoodState = HoodState.AUTO;
+    TurretState turretState = TurretState.AUTO;
 
     // ==================== CONFIGURATION ====================
     static final double FLYWHEEL_SENSITIVITY = 5;
     static final double FLYWHEEL_EPSILON = 10;
     static final double FLYWHEEL_EXIT_EPSILON = 35;
+    static final double FLYWHEEL_DIAMETER = 4;
+    static final double FLYWHEEL_EFFICIENCY = 0.95;
     static final double DRIVE_SPEED = 0.7;
     static final double STRAFE_SPEED = 0.5;
     static final double TWIST_SPEED = 0.5;
@@ -137,7 +152,6 @@ public class teleOpMainNew extends OpMode {
         updateIntakeStateMachine();
         updateHoodControl();
         updateDrivetrain();
-        //Note: Manual currently has nothing in it
         updateManual();
 
         // Update telemetry
@@ -325,6 +339,35 @@ public class teleOpMainNew extends OpMode {
 
     // ==================== Manual Override/Misc ====================
     void updateManual(){
+        if (gamepad2.dpadUpWasPressed()){
+            switch (hoodState){
+                case MANUAL:
+                    hoodState=HoodState.AUTO;
+                    break;
+                case AUTO:
+                    hoodState=HoodState.MANUAL;
+                    break;
+            }
+        }
+        if (gamepad2.dpadDownWasPressed()){
+            switch (turretState){
+                case MANUAL:
+                    turretState=TurretState.AUTO;
+                    break;
+                case AUTO:
+                    turretState=TurretState.MANUAL;
+                    break;
+            }
+        }
+        //TODO:Get real min angle + flywheel Diameter values
+        Map<String,String> output=outtakeOperator.findOptimalLaunch(outtakeOperator.getDistance(),40,28,66.81,outtakeOperator.calculateCurvedExitSpeed(2100,FLYWHEEL_DIAMETER,FLYWHEEL_EFFICIENCY),90,170,160,386.4,10,0.1,100);
+        if (hoodState==HoodState.AUTO){
+            outtakeOperator.setHood(Double.parseDouble(output.get("angle")));
+            flywheelSpeed=(int) Math.round(outtakeOperator.calculateRequiredRPM(Double.parseDouble(output.get("velocity")),FLYWHEEL_DIAMETER,FLYWHEEL_EFFICIENCY));
+        }
+        if (turretState==TurretState.AUTO){
+            outtakeOperator.autoturn();
+        }
     }
 
     @Override

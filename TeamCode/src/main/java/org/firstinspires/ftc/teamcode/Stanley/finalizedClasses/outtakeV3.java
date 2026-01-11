@@ -205,6 +205,48 @@ public class outtakeV3 {
         return (29.5-11.4375)/Math.tan(Math.toRadians(20+apriltag.getPitch()));
     }
 
+    /**
+     * Calculates exit speed for a curved hood system.
+     * @param rpm Flywheel rotations per minute.
+     * @param wheelDiameter Diameter of the flywheel (meters).
+     * @param efficiency Realistic efficiency (0.90 to 0.98 for curved hoods).
+     * @return Realistic exit speed in meters per second.
+     */
+    public double calculateCurvedExitSpeed(double rpm, double wheelDiameter, double efficiency) {
+        // Tangential velocity: (RPM * PI * D) / 60
+        double tangentialVelocity = (rpm * Math.PI * wheelDiameter) / 60.0;
+
+        // Theoretical exit speed is exactly half of tangential velocity
+        double theoreticalSpeed = tangentialVelocity / 2.0;
+
+        // Apply hood efficiency to account for minor slip and compression losses
+        return theoreticalSpeed * efficiency;
+    }
+
+    /**
+     * Calculates the required RPM to reach a target ball exit velocity.
+     *
+     * @param targetVelocity The desired ball speed (e.g., meters per second).
+     * @param diameter The diameter of the flywheel (same units as velocity, e.g., meters).
+     * @param efficiency The slip/compression factor (0.0 to 1.0).
+     *                   Use 0.90 - 0.95 for a well-tuned curved hood.
+     * @return The required motor speed in RPM.
+     */
+    public double calculateRequiredRPM(double targetVelocity, double diameter, double efficiency) {
+        // Validation to avoid division by zero
+        if (diameter <= 0 || efficiency <= 0) return 0;
+
+        // Requirement: Wheel surface speed = 2 * Target Ball Speed
+        double requiredSurfaceVelocity = targetVelocity * 2.0;
+
+        // Convert Surface Velocity to RPM:
+        // RPM = (v_surface * 60) / (pi * diameter)
+        double theoreticalRPM = (requiredSurfaceVelocity * 60.0) / (Math.PI * diameter);
+
+        // Adjust for efficiency (lower efficiency requires higher RPM)
+        return theoreticalRPM / efficiency;
+    }
+
     public void setPipeLine(int pipeline){
         apriltag.setPipeline(pipeline);
     }
@@ -220,18 +262,19 @@ public class outtakeV3 {
      * @param minAngleDeg minimum hood angle range (degrees from horizontal)
      * @param maxAngleDeg maximum hood angle range (degrees from horizontal)
      * @param maxVelocity maximum launch velocity (inches/second)
-     * @param minImpactAngleDeg minimum acceptable impact angle (degrees from horizontal, 180=straight down)
-     * @param maxImpactAngleDeg maximum acceptable impact angle (degrees from horizontal, 180=straight down)
+     * @param minImpactAngleDeg minimum acceptable impact angle (degrees from horizontal)
+     * @param maxImpactAngleDeg maximum acceptable impact angle (degrees from horizontal)
+     * @param optimalImpactAngleDeg impact angle program should attempt to hit
      * @param g gravitational acceleration (inches/s^2, default 386.4 for Earth)
      * @param yEpsilon acceptable y-position error for hitting target (inches)
      * @param angleEpsilon convergence threshold for angle binary search (degrees)
      * @param maxIterations maximum iterations before giving up
      * @return Map<string,string> with keys: angle, velocity, impactAngle, yError, impactAngleError, success, reason
      */
-    public static Map<String,String> findOptimalLaunch(double targetX, double targetY,
+    public Map<String,String> findOptimalLaunch(double targetX, double targetY,
                                                        double minAngleDeg, double maxAngleDeg,
                                                        double maxVelocity,
-                                                       double minImpactAngleDeg, double maxImpactAngleDeg,
+                                                       double minImpactAngleDeg, double maxImpactAngleDeg, double optimalImpactAngleDeg,
                                                        double g, double yEpsilon, double angleEpsilon,
                                                        int maxIterations) {
 
@@ -240,7 +283,7 @@ public class outtakeV3 {
         double maxAngle = Math.toRadians(maxAngleDeg);
         double minImpactAngle = Math.toRadians(minImpactAngleDeg);
         double maxImpactAngle = Math.toRadians(maxImpactAngleDeg);
-        double medianImpactAngle = (minImpactAngle + maxImpactAngle) / 2.0;
+        double medianImpactAngle = Math.toRadians(optimalImpactAngleDeg);
 
         // Track best solution found so far
         Map<String,String> bestSolution = null;
@@ -346,7 +389,7 @@ public class outtakeV3 {
                 // Impact angle from horizontal (negative v_y means going down)
                 // atan2 gives angle from positive x-axis
                 double impactAngle = Math.atan2(vY, vX);
-                // Convert to 0-180 range where 180 is straight down
+                // Convert to 0-180 range
                 if (impactAngle < 0) {
                     impactAngle = Math.PI + impactAngle;  // Convert negative angles
                 }
