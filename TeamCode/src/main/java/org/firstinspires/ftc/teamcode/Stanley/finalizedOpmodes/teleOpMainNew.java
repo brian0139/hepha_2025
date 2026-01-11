@@ -7,8 +7,6 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
-import com.qualcomm.robotcore.hardware.Gamepad;
-import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.teamcode.Brian.spindexerColor;
 import org.firstinspires.ftc.teamcode.MecanumDrive;
@@ -85,7 +83,7 @@ public class teleOpMainNew extends OpMode {
     static final double FLYWHEEL_SENSITIVITY = 5;
     static final double FLYWHEEL_EPSILON = 10;
     static final double FLYWHEEL_EXIT_EPSILON = 35;
-    static final double FLYWHEEL_DIAMETER = 4;
+    static final double FLYWHEEL_DIAMETER = 2.8346456692913386;
     static final double FLYWHEEL_EFFICIENCY = 0.95;
     static final double DRIVE_SPEED = 0.7;
     static final double STRAFE_SPEED = 0.5;
@@ -150,7 +148,6 @@ public class teleOpMainNew extends OpMode {
         updateFlywheelStateMachine();
         updateTransferStateMachine();
         updateIntakeStateMachine();
-        updateHoodControl();
         updateDrivetrain();
         updateManual();
 
@@ -360,10 +357,12 @@ public class teleOpMainNew extends OpMode {
             }
         }
         //TODO:Get real min angle + flywheel Diameter values
-        Map<String,String> output=outtakeOperator.findOptimalLaunch(outtakeOperator.getDistance(),40,28,66.81,outtakeOperator.calculateCurvedExitSpeed(2100,FLYWHEEL_DIAMETER,FLYWHEEL_EFFICIENCY),90,170,160,386.4,10,0.1,100);
-        if (hoodState==HoodState.AUTO){
+        Map<String,String> output=outtakeOperator.findOptimalLaunch(outtakeOperator.getDistance(),40,40.03,66.81,outtakeOperator.calculateCurvedExitSpeed(2100,FLYWHEEL_DIAMETER,FLYWHEEL_EFFICIENCY),90,170,160,386.4,10,0.1,100);
+        if (hoodState==HoodState.AUTO && outtakeOperator.apriltag.hasValidTarget()){
             outtakeOperator.setHood(Double.parseDouble(output.get("angle")));
             flywheelSpeed=(int) Math.round(outtakeOperator.calculateRequiredRPM(Double.parseDouble(output.get("velocity")),FLYWHEEL_DIAMETER,FLYWHEEL_EFFICIENCY));
+        }else{
+            updateHoodControl();
         }
         if (turretState==TurretState.AUTO){
             outtakeOperator.autoturn();
