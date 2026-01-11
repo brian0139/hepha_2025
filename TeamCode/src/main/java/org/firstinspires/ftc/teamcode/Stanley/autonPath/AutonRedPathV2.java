@@ -235,7 +235,7 @@ public class AutonRedPathV2 extends LinearOpMode {
     public class TurretAutoAimUntilAligned implements Action {
         private boolean initialized=false;
         private boolean isComplete = false;
-        private final double alignmentThreshold = 1.5; // degrees, adjust as needed
+        private final double alignmentThreshold = 2; // degrees, adjust as needed
 
         @Override
         public boolean run(TelemetryPacket telemetryPacket) {

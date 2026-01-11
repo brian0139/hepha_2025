@@ -63,7 +63,7 @@ public class outtakeV3 {
     //  Drive = Error * Gain
     // Turn Control "Gain".  e.g. Ramp up to 25% power at a 25 degree error. (0.25 / 25.0)
     // P, I, D
-    public double[] Kturn={0.014,0.01,0.008};
+    public double[] Kturn={0.015,0.0002,0.04};
     public PID turnPID=new PID(Kturn[0],Kturn[1],Kturn[2]);
 
     //================================  Config  ================================
@@ -185,7 +185,7 @@ public class outtakeV3 {
 
         // Use the speed and turn "gains" to calculate how we want the robot to move.
         double power   = turnPID.update(headingError) ;
-        turretServo.setPower(power);
+        turretServo.setPower(-power);
         return Math.abs(apriltag.getYaw())<=turretEpsilon;
     }
 
