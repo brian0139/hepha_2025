@@ -15,6 +15,7 @@ import org.firstinspires.ftc.teamcode.Stanley.finalizedClasses.PID;
 public class spindexerColor {
     public CRServo spindexerServo = null;
     public DcMotor intake=null;
+    public double adjust=0.1;
     ElapsedTime timer = new ElapsedTime();
     colorSensor outtakesensor;
     public colorSensor intakesensor;
@@ -69,7 +70,7 @@ public class spindexerColor {
             If adjust is positive,
                detectedLocation = (spindexerSensor.getVoltage()+adjust)%3.3;
             */
-            detectedLocation = spindexerSensor.getVoltage();
+            detectedLocation = Math.abs(spindexerSensor.getVoltage()-adjust);
             lastDetected=true;
             spindexerPID.init();
         }
