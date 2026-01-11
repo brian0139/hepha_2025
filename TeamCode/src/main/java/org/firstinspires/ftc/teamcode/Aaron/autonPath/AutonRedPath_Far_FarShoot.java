@@ -87,8 +87,8 @@ public class AutonRedPath_Far_FarShoot extends LinearOpMode {
             Actions.runBlocking(
                     drive.actionBuilder(beginPose)
                             //TODO: Add hood adjustment/auto hood adjustment
-//                            .stopAndAdd(new initHood())
-//                            .stopAndAdd(new SetHoodAngle(45))
+                            .stopAndAdd(new initHood())
+                            .stopAndAdd(new SetHoodAngle(45))
                             //Start Flywheel 0
                             .stopAndAdd(new SpinFlywheel(flywheelSpeed,50))
                             .waitSeconds(waitTime)
