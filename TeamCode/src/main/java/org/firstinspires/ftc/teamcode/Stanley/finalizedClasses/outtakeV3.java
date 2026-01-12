@@ -49,7 +49,8 @@ public class outtakeV3 {
     public int ticksPerRevHood=8192;
     //PID instance for hood
 //    public double[] Kh={0.0005,0.0005,0.00003};
-    public double[] Kh={0.0001,0.0000,0.00003};
+    //35 little too low
+    public double[] Kh={0.000035,0.001,0.00000};
     public PID hoodPID=new PID(Kh[0],Kh[1],Kh[2]);
     
     //================================  Turret  ================================
@@ -63,7 +64,7 @@ public class outtakeV3 {
     //auto aim vars
     // P, I, D
 //    public double[] Kturn={0.013,0.0002,0.02};
-    public double[] Kturn={0.03,0.0,0.0};
+    public double[] Kturn={0.013,0.01,0.003};
     public PID turnPID=new PID(Kturn[0],Kturn[1],Kturn[2]);
 
     //================================  Config  ================================
