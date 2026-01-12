@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.Stanley.finalizedOpmodes;
 
+import com.acmerobotics.dashboard.FtcDashboard;
 import com.qualcomm.robotcore.hardware.AnalogInput;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
@@ -10,6 +11,7 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.Brian.spindexerColor;
 import org.firstinspires.ftc.teamcode.MecanumDrive;
 import org.firstinspires.ftc.teamcode.Stanley.finalizedClasses.opModeDataTransfer;
@@ -103,6 +105,14 @@ public class teleOpMainNew extends OpMode {
     boolean atFlywheelTarget=false;
     boolean useInitializer=false;
     ElapsedTime timer=new ElapsedTime();
+    Map<String, String> output = Map.of(
+            "angle", "66.81",
+            "velocity","0"
+    );
+
+    // ==================== WORKING VARIABLES ====================
+    FtcDashboard dashboard=FtcDashboard.getInstance();
+    Telemetry dashboardtelemetry=dashboard.getTelemetry();
 
     // ==================== INITIALIZATION ====================
     @Override
@@ -351,7 +361,10 @@ public class teleOpMainNew extends OpMode {
         telemetry.addData("Has Target",outtakeOperator.apriltag.hasValidTarget());
         telemetry.addData("Offset(Deg)",outtakeOperator.apriltag.getYaw());
         telemetry.addData("Power",outtakeOperator.turnPID.power);
-        telemetry.addLine("=== Intake ===");
+        dashboardtelemetry.addData("Has Target",outtakeOperator.apriltag.hasValidTarget());
+        dashboardtelemetry.addData("Offset(Deg)",outtakeOperator.apriltag.getYaw());
+        dashboardtelemetry.addData("Power",outtakeOperator.turnPID.power);
+        dashboardtelemetry.addLine("=== Intake ===");
         if (intakeState==IntakeState.AWAITING_SPINDEXER){
             telemetry.addData("Intake State","Awaiting Spindexer");
         }else if (intakeState==IntakeState.INTAKING){
@@ -363,6 +376,7 @@ public class teleOpMainNew extends OpMode {
         }
 
         telemetry.update();
+        dashboardtelemetry.update();
     }
 
     // ==================== Manual Override/Misc ====================
@@ -393,9 +407,15 @@ public class teleOpMainNew extends OpMode {
                     break;
             }
         }
-        if (hoodState==HoodState.AUTO && outtakeOperator.apriltag.hasValidTarget()){
-            if (timer.milliseconds()>=500) {
-                Map<String, String> output = outtakeOperator.findOptimalLaunch(outtakeOperator.getDistance(), 40, 40.03, 66.81, outtakeOperator.calculateCurvedExitSpeed(2100, FLYWHEEL_DIAMETER, FLYWHEEL_EFFICIENCY), 90, 170, 160, 386.4, 10, 0.1, 100);
+        telemetry.addData("Angle Target",Double.parseDouble(output.get("angle")));
+        telemetry.addData("Encoder Reading",outtakeOperator.hoodEncoder.getCurrentPosition());
+        telemetry.addData("Encoder Target",(66.81-Double.parseDouble(output.get("angle")))/outtakeOperator.servoDegPerRot*outtakeOperator.ticksPerRevHood);
+        telemetry.addData("Error",((66.81-Double.parseDouble(output.get("angle")))/outtakeOperator.servoDegPerRot*outtakeOperator.ticksPerRevHood)-outtakeOperator.hoodEncoder.getCurrentPosition());
+        telemetry.addData("Power",outtakeOperator.hoodPID.power);
+//        if (hoodState==HoodState.AUTO && outtakeOperator.apriltag.hasValidTarget()){
+        if (hoodState==HoodState.AUTO){
+            if (timer.milliseconds()>=1000) {
+                output = outtakeOperator.findOptimalLaunch(outtakeOperator.getDistance(), 40, 40.03, 66.81, outtakeOperator.calculateCurvedExitSpeed(2100, FLYWHEEL_DIAMETER, FLYWHEEL_EFFICIENCY), 90, 170, 160, 386.4, 10, 0.1, 100);
                 outtakeOperator.setHood(Double.parseDouble(output.get("angle")));
                 flywheelSpeed=(int) Math.round(outtakeOperator.calculateRequiredRPM(Double.parseDouble(output.get("velocity")),FLYWHEEL_DIAMETER,FLYWHEEL_EFFICIENCY));
                 timer.reset();

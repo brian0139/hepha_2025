@@ -48,7 +48,8 @@ public class outtakeV3 {
     //Ticks/revolution for encoder
     public int ticksPerRevHood=8192;
     //PID instance for hood
-    public double[] Kh={0.0005,0.0005,0.00003};
+//    public double[] Kh={0.0005,0.0005,0.00003};
+    public double[] Kh={0.0001,0.0000,0.00003};
     public PID hoodPID=new PID(Kh[0],Kh[1],Kh[2]);
     
     //================================  Turret  ================================
@@ -61,7 +62,8 @@ public class outtakeV3 {
     public double turretEpsilon=1.5;
     //auto aim vars
     // P, I, D
-    public double[] Kturn={0.012,0.0002,0.025};
+//    public double[] Kturn={0.013,0.0002,0.02};
+    public double[] Kturn={0.03,0.0,0.0};
     public PID turnPID=new PID(Kturn[0],Kturn[1],Kturn[2]);
 
     //================================  Config  ================================
@@ -495,7 +497,7 @@ public class outtakeV3 {
     public boolean setHood(double degrees){
         double epsilon=40;
         double targetTicks=(66.81-degrees)/servoDegPerRot*ticksPerRevHood;
-        double power=hoodPID.update(targetTicks+hoodEncoder.getCurrentPosition()+encoderOffset);
+        double power=hoodPID.update(targetTicks-hoodEncoder.getCurrentPosition()+encoderOffset);
         hoodServo.setPower(-power);
         return (hoodEncoder.getCurrentPosition()+encoderOffset >= targetTicks - epsilon) && (hoodEncoder.getCurrentPosition()+encoderOffset <= targetTicks + epsilon);
     }
