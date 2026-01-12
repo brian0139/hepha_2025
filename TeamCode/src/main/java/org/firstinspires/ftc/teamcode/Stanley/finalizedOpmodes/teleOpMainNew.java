@@ -414,14 +414,17 @@ public class teleOpMainNew extends OpMode {
         telemetry.addData("Power",outtakeOperator.hoodPID.power);
         dashboardtelemetry.addData("Error Hood",((66.81-Double.parseDouble(output.get("angle")))/outtakeOperator.servoDegPerRot*outtakeOperator.ticksPerRevHood)-outtakeOperator.hoodEncoder.getCurrentPosition());
         dashboardtelemetry.addData("Power Hood",outtakeOperator.hoodPID.power);
+        dashboardtelemetry.addData("P",outtakeOperator.hoodPID.Pd);
+        dashboardtelemetry.addData("I",outtakeOperator.hoodPID.Id);
+        dashboardtelemetry.addData("D",outtakeOperator.hoodPID.Dd);
 //        if (hoodState==HoodState.AUTO && outtakeOperator.apriltag.hasValidTarget()){
         if (hoodState==HoodState.AUTO){
             if (timer.milliseconds()>=1000) {
                 output = outtakeOperator.findOptimalLaunch(outtakeOperator.getDistance(), 40, 40.03, 66.81, outtakeOperator.calculateCurvedExitSpeed(2100, FLYWHEEL_DIAMETER, FLYWHEEL_EFFICIENCY), 90, 170, 160, 386.4, 10, 0.1, 100);
-                outtakeOperator.setHood(Double.parseDouble(output.get("angle")));
                 flywheelSpeed=(int) Math.round(outtakeOperator.calculateRequiredRPM(Double.parseDouble(output.get("velocity")),FLYWHEEL_DIAMETER,FLYWHEEL_EFFICIENCY));
                 timer.reset();
             }
+            outtakeOperator.setHood(Double.parseDouble(output.get("angle")));
         }else{
             updateHoodControl();
         }

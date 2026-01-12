@@ -50,8 +50,8 @@ public class outtakeV3 {
     //PID instance for hood
 //    public double[] Kh={0.0005,0.0005,0.00003};
     //35 little too low
-    public double[] Kh={0.000035,0.001,0.00000};
-    public PID hoodPID=new PID(Kh[0],Kh[1],Kh[2]);
+    public double[] Kh={0.0005,0.0005,0.00002};
+    public PIDhood hoodPID=new PIDhood(Kh[0],Kh[1],Kh[2]);
     
     //================================  Turret  ================================
     //Robot drivetrain object

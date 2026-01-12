@@ -5,15 +5,17 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.AnalogInput;
 import com.qualcomm.robotcore.hardware.CRServo;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.Stanley.finalizedClasses.PID;
+import org.firstinspires.ftc.teamcode.Stanley.finalizedClasses.PIDhood;
 import org.firstinspires.ftc.teamcode.Stanley.finalizedClasses.outtakeV3;
 
 @TeleOp
 public class tuning extends LinearOpMode {
     CRServo hood=null;
-    AnalogInput hoodSensor=null;
     outtakeV3 outtakeOperator=null;
     double change=0.1;
     int x=0;
@@ -28,8 +30,8 @@ public class tuning extends LinearOpMode {
     @Override
     public void runOpMode(){
         hood=hardwareMap.get(CRServo.class,"hoodServo");
-        hoodSensor=hardwareMap.get(AnalogInput.class,"hoodAnalog");
         outtakeOperator=new outtakeV3(hardwareMap,"Red",true,null);
+        outtakeOperator.hoodEncoder.setDirection(DcMotorSimple.Direction.REVERSE);
         dashboard = FtcDashboard.getInstance();
         dashboardTelemetry = dashboard.getTelemetry();
         waitForStart();
@@ -81,7 +83,7 @@ public class tuning extends LinearOpMode {
                 line1+=", ";
             }
             if (gamepad1.xWasPressed()){
-                outtakeOperator.hoodPID=new PID(outtakeOperator.Kh[0],outtakeOperator.Kh[1],outtakeOperator.Kh[2]);
+                outtakeOperator.hoodPID=new PIDhood(outtakeOperator.Kh[0],outtakeOperator.Kh[1],outtakeOperator.Kh[2]);
             }
             boolean atTarget=false;
             if (correctingtoggle){
