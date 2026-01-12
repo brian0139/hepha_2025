@@ -82,12 +82,11 @@ public class AutonRedPath_TowerStart extends LinearOpMode {
                     drive.actionBuilder(beginPose)
                             .stopAndAdd(new initHood())
                             .stopAndAdd(new SetHoodAngle(hoodAngle))
-                            .strafeToLinearHeading(shootingPos, shootingAngle+Math.toRadians(6))
-                            .stopAndAdd(new TurretAutoAimUntilAligned())
 //                            .stopAndAdd(new ScanMotif())
                             .waitSeconds(1)
                             //Start Flywheel 0
                             .stopAndAdd(new SpinFlywheel(1600,50))
+                            .strafeToLinearHeading(shootingPos, shootingAngle+Math.toRadians(6))
                             //Shooting Sequence 0
                             .stopAndAdd(new TurretAutoAimUntilAligned())
                             .stopAndAdd(new transferUp())
