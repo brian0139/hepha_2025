@@ -8,6 +8,7 @@ import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Gamepad;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.Brian.spindexerColor;
 import org.firstinspires.ftc.teamcode.MecanumDrive;
@@ -88,7 +89,7 @@ public class teleOpMainNew extends OpMode {
     static final double FLYWHEEL_DIAMETER = 2.8346456692913386;
     static final double FLYWHEEL_EFFICIENCY = 0.95;
     static final double DRIVE_SPEED = 0.7;
-    static final double STRAFE_SPEED = 0.5;
+    static final double STRAFE_SPEED = 0.8;
     static final double TWIST_SPEED = 0.5;
     static final double SECONDARY_DILATION = 0.25;
 
@@ -101,6 +102,7 @@ public class teleOpMainNew extends OpMode {
     int targetSpeed = 0;
     boolean atFlywheelTarget=false;
     boolean useInitializer=false;
+    ElapsedTime timer=new ElapsedTime();
 
     // ==================== INITIALIZATION ====================
     @Override
@@ -148,10 +150,10 @@ public class teleOpMainNew extends OpMode {
     @Override
     public void loop() {
         // Update all state machines
-        updateFlywheelStateMachine();
-        updateTransferStateMachine();
-        updateIntakeStateMachine();
-        updateDrivetrain();
+//        updateFlywheelStateMachine();
+//        updateTransferStateMachine();
+//        updateIntakeStateMachine();
+//        updateDrivetrain();
         updateManual();
 
         // Update telemetry
@@ -343,8 +345,12 @@ public class teleOpMainNew extends OpMode {
         telemetry.addLine("=== Toggles ===");
         telemetry.addData("Auto Hood",hoodState==HoodState.AUTO);
         telemetry.addData("Auto Turret",turretState==TurretState.AUTO);
+//        telemetry.addLine("=== Hood ===");
+//        telemetry.addData("Target Angle",Double.parseDouble(.get("angle")));
         telemetry.addLine("=== Limelight ===");
         telemetry.addData("Has Target",outtakeOperator.apriltag.hasValidTarget());
+        telemetry.addData("Offset(Deg)",outtakeOperator.apriltag.getYaw());
+        telemetry.addData("Power",outtakeOperator.turnPID.power);
         telemetry.addLine("=== Intake ===");
         if (intakeState==IntakeState.AWAITING_SPINDEXER){
             telemetry.addData("Intake State","Awaiting Spindexer");
@@ -387,15 +393,18 @@ public class teleOpMainNew extends OpMode {
                     break;
             }
         }
-        Map<String,String> output=outtakeOperator.findOptimalLaunch(outtakeOperator.getDistance(),40,40.03,66.81,outtakeOperator.calculateCurvedExitSpeed(2100,FLYWHEEL_DIAMETER,FLYWHEEL_EFFICIENCY),90,170,160,386.4,10,0.1,100);
         if (hoodState==HoodState.AUTO && outtakeOperator.apriltag.hasValidTarget()){
-            outtakeOperator.setHood(Double.parseDouble(output.get("angle")));
-            flywheelSpeed=(int) Math.round(outtakeOperator.calculateRequiredRPM(Double.parseDouble(output.get("velocity")),FLYWHEEL_DIAMETER,FLYWHEEL_EFFICIENCY));
+            if (timer.milliseconds()>=500) {
+                Map<String, String> output = outtakeOperator.findOptimalLaunch(outtakeOperator.getDistance(), 40, 40.03, 66.81, outtakeOperator.calculateCurvedExitSpeed(2100, FLYWHEEL_DIAMETER, FLYWHEEL_EFFICIENCY), 90, 170, 160, 386.4, 10, 0.1, 100);
+                outtakeOperator.setHood(Double.parseDouble(output.get("angle")));
+                flywheelSpeed=(int) Math.round(outtakeOperator.calculateRequiredRPM(Double.parseDouble(output.get("velocity")),FLYWHEEL_DIAMETER,FLYWHEEL_EFFICIENCY));
+                timer.reset();
+            }
         }else{
             updateHoodControl();
         }
         if (turretState==TurretState.AUTO){
-            outtakeOperator.setPipeLine(5);
+//            outtakeOperator.setPipeLine(5);
             outtakeOperator.autoturn();
         }else{
             outtakeOperator.turretServo.setPower(gamepad2.right_trigger-gamepad2.left_trigger);

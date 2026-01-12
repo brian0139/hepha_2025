@@ -9,11 +9,12 @@ import com.qualcomm.robotcore.hardware.CRServo;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.Stanley.finalizedClasses.PID;
 import org.firstinspires.ftc.teamcode.Stanley.finalizedClasses.outtakeV2;
+import org.firstinspires.ftc.teamcode.Stanley.finalizedClasses.outtakeV3;
 
 @TeleOp
 public class tuningTurret extends LinearOpMode {
     CRServo turret =null;
-    outtakeV2 outtakeOperator=null;
+    outtakeV3 outtakeOperator=null;
     double change=0.1;
     int x=0;
     //TODO:Get real value+sync with outtakeV2 value
@@ -28,7 +29,7 @@ public class tuningTurret extends LinearOpMode {
     @Override
     public void runOpMode(){
         turret =hardwareMap.get(CRServo.class,"turretServo");
-        outtakeOperator=new outtakeV2(hardwareMap,null,null,"Red",null,null,null,null, null,null,null,true);
+        outtakeOperator=new outtakeV3(hardwareMap,"Red",true,null);
         dashboard = FtcDashboard.getInstance();
         dashboardTelemetry = dashboard.getTelemetry();
         waitForStart();
