@@ -262,16 +262,17 @@ public class teleOpMainNew extends OpMode {
         }
         else if (intakeState==IntakeState.INTAKING){
             intake.setPower(1);
+            spindexerOperator.holdSpindexer();
             if (!(spindexerOperator.intakesensor.getDetected()==0)){
                 intakeState=IntakeState.AWAITING_SPINDEXER;
                 spindexerOperator.detectioncnt=0;
                 gamepad1.rumbleBlips(3);
-                //TODO:delete this line if intake should not stop whist awaiting spindexer
-                intake.setPower(0);
+                intake.setPower(0.7);
             }
         }
         else if (intakeState==IntakeState.AWAITING_SPINDEXER){
             boolean result=spindexerOperator.spinToIntake();
+            intake.setPower(0.7);
             if (result){
                 intakeState=IntakeState.INTAKING;
             }else if (!result && spindexerOperator.detectioncnt==3){

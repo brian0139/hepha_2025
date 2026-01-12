@@ -122,6 +122,11 @@ public class spindexerColor {
         }
         return false;
     }
+
+    public void holdSpindexer(){
+        spindexerServo.setPower(Math.min(spindexerPID.update(calculateError(inslotsV[currentSlot],spindexerSensor.getVoltage())),0.75));
+    }
+
     public boolean spinAfterIntake(boolean intakesuccess){
         double epsilon =0.01;
         if (intakesuccess){
