@@ -61,7 +61,7 @@ public class AutonRedPath_Tower_CloseDirectShoot extends LinearOpMode {
 
         final Vector2d shootingPos=new Vector2d(-34,23);
         final double hoodAngle=45;
-        final double shootingAngle=Math.toRadians(120);
+        final double shootingAngle=Math.toRadians(155);
         final double intakeFinishy=36;
         final double intakeStarty=13;
         final double waitTime=1.5;
@@ -127,7 +127,7 @@ public class AutonRedPath_Tower_CloseDirectShoot extends LinearOpMode {
                             .strafeToLinearHeading(new Vector2d(row2XPos, intakeStarty-7), Math.toRadians(360-270))
                             //Start Flywheel 2
                             .stopAndAdd(new SpinFlywheel(flywheelSpeed,50))
-                            .strafeToLinearHeading(new Vector2d(-35,23), shootingAngle)
+                            .strafeToLinearHeading(new Vector2d(row2XPos, intakeStarty), shootingAngle)
                             //Shoot Sequence 2
                             .stopAndAdd(new TurretAutoAimUntilAligned())
                             .stopAndAdd(new transferUp())
@@ -159,7 +159,7 @@ public class AutonRedPath_Tower_CloseDirectShoot extends LinearOpMode {
 
                             //Start Flywheel 1
                             .stopAndAdd(new SpinFlywheel(flywheelSpeed,50))
-                            .strafeToLinearHeading(new Vector2d(-37,23), shootingAngle)
+                            .strafeToLinearHeading(new Vector2d(row1XPos, intakeStarty), shootingAngle)
                             //Shoot Sequence 1
                             .stopAndAdd(new TurretAutoAimUntilAligned())
                             .stopAndAdd(new transferUp())
@@ -190,7 +190,7 @@ public class AutonRedPath_Tower_CloseDirectShoot extends LinearOpMode {
                             .stopAndAdd(new stopspindexer())
                             //Start Flywheel 3
                             .stopAndAdd(new SpinFlywheel(flywheelSpeed,50))
-                            .strafeToLinearHeading(shootingPos, shootingAngle)
+                            .strafeToLinearHeading(new Vector2d(row3XPos, intakeStarty), shootingAngle)
                             //Shoot Sequence 3
                             .stopAndAdd(new TurretAutoAimUntilAligned())
                             .stopAndAdd(new transferUp())

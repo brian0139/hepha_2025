@@ -61,7 +61,7 @@ public class AutonRedPathV2 extends LinearOpMode {
         flywheel.setDirection(DcMotorSimple.Direction.REVERSE);
 
         final Vector2d shootingPos=new Vector2d(-34,23);
-        final double shootingAngle=Math.toRadians(120);
+        final double shootingAngle=Math.toRadians(155);
         final double intakeFinishy =36;
         final double intakeStarty=13;
         final double waitTime=1.5;
@@ -86,11 +86,11 @@ public class AutonRedPathV2 extends LinearOpMode {
             Actions.runBlocking(
                     drive.actionBuilder(beginPose)
                             //TODO: Add hood adjustment/auto hood adjustment
-//                            .stopAndAdd(new initHood())
-//                            .stopAndAdd(new SetHoodAngle(45))
+                            .stopAndAdd(new initHood())
+                            .stopAndAdd(new SetHoodAngle(45))
                             //Start Flywheel 0
                             .stopAndAdd(new SpinFlywheel(1600,50))
-                            .strafeToLinearHeading(shootingPos, shootingAngle+Math.toRadians(7))
+                            .strafeToLinearHeading(shootingPos, Math.toRadians(122))
                             //Shooting Sequence 0
                             .stopAndAdd(new TurretAutoAimUntilAligned())
                             .stopAndAdd(new transferUp())
@@ -118,7 +118,7 @@ public class AutonRedPathV2 extends LinearOpMode {
 
                             //Start Flywheel 1
                             .stopAndAdd(new SpinFlywheel(1600,50))
-                            .strafeToLinearHeading(new Vector2d(-37,23), shootingAngle)
+                            .strafeToLinearHeading(new Vector2d(row1XPos, intakeStarty), shootingAngle)
                             //Shoot Sequence 1
                             .stopAndAdd(new TurretAutoAimUntilAligned())
                             .stopAndAdd(new transferUp())
@@ -145,7 +145,7 @@ public class AutonRedPathV2 extends LinearOpMode {
                             .strafeToLinearHeading(new Vector2d(row2XPos, intakeStarty-7), Math.toRadians(360-270))
                             //Start Flywheel 2
                             .stopAndAdd(new SpinFlywheel(1600,50))
-                            .strafeToLinearHeading(new Vector2d(-35,23), shootingAngle)
+                            .strafeToLinearHeading(new Vector2d(row2XPos, intakeStarty), shootingAngle)
                             //Shoot Sequence 2
                             .stopAndAdd(new TurretAutoAimUntilAligned())
                             .stopAndAdd(new transferUp())
@@ -171,7 +171,7 @@ public class AutonRedPathV2 extends LinearOpMode {
                             .stopAndAdd(new stopspindexer())
                             //Start Flywheel 3
                             .stopAndAdd(new SpinFlywheel(1600,50))
-                            .strafeToLinearHeading(shootingPos, shootingAngle)
+                            .strafeToLinearHeading(new Vector2d(row3XPos, intakeStarty), shootingAngle)
                             //Shoot Sequence 3
                             .stopAndAdd(new TurretAutoAimUntilAligned())
                             .stopAndAdd(new transferUp())
