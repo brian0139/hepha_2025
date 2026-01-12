@@ -21,8 +21,8 @@ public class spindexerColor {
     public colorSensor intakesensor;
     AnalogInput spindexerSensor;
     public double[] kS={1.1,1.5,0.017};
-    public double[] inslotsV={0.887,2.009,3.026};
-    public double[] outslotsV={2.554,0.4,1.472};
+    public double[] inslotsV={0.678,1.755,2.833};
+    public double[] outslotsV={2.285,0.131,1.2};
     int numGreen=0;
     int numPurple=0;
 
@@ -110,7 +110,7 @@ public class spindexerColor {
         }
         double epsilon = 0.01;
         if (!((spindexerSensor.getVoltage()>=inslotsV[currentSlot]-epsilon)&&(spindexerSensor.getVoltage()<=inslotsV[currentSlot]+epsilon))){
-            spindexerServo.setPower(Math.min(spindexerPID.update(calculateError(inslotsV[currentSlot],spindexerSensor.getVoltage())),0.75));
+            spindexerServo.setPower(Math.max(spindexerPID.update(calculateError(inslotsV[currentSlot],spindexerSensor.getVoltage())),0.75));
         }else{
             detectioncnt++;
             currentSlot++;
