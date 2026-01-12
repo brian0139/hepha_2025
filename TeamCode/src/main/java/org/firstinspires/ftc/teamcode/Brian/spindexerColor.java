@@ -38,6 +38,7 @@ public class spindexerColor {
     public int currentSlot=0;
     public int[] dummyMotif = {1, 2, 2};
     public int[] currentMotifPattern = null;
+    public boolean ballIn=false;
 
     public spindexerColor(CRServo spindexerServo, DcMotor intake, HardwareMap hardwareMap) {
         this.spindexerServo = spindexerServo;
@@ -117,10 +118,28 @@ public class spindexerColor {
             currentSlot%=3;
             if (intakesensor.getDetected()==0){
                 spindexerServo.setPower(0);
+                ballIn=true;
                 return true;
             }
         }
+        ballIn=false;
         return false;
+    }
+
+    public int trackballs(){
+        if (ballIn==true){
+            int numBalls=0;
+            for (int i=0;i<3;i++){
+                if (spindexerSlots[i]!=0){
+                    numBalls++;
+                }
+                if (spindexerSlots[i]==spindexerSensor.getVoltage()){
+                    spindexerSlots[i]=1;
+                }
+            }
+            return numBalls;
+        }
+        return 0;
     }
 
     public void holdSpindexer(){
