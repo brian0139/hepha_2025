@@ -414,9 +414,12 @@ public class teleOpMainNew extends OpMode {
         telemetry.addData("Power",outtakeOperator.hoodPID.power);
         dashboardtelemetry.addData("Error Hood",((66.81-Double.parseDouble(output.get("angle")))/outtakeOperator.servoDegPerRot*outtakeOperator.ticksPerRevHood)-outtakeOperator.hoodEncoder.getCurrentPosition());
         dashboardtelemetry.addData("Power Hood",outtakeOperator.hoodPID.power);
-        dashboardtelemetry.addData("P",outtakeOperator.hoodPID.Pd);
-        dashboardtelemetry.addData("I",outtakeOperator.hoodPID.Id);
-        dashboardtelemetry.addData("D",outtakeOperator.hoodPID.Dd);
+        dashboardtelemetry.addData("P",outtakeOperator.turnPID.P);
+        dashboardtelemetry.addData("I",outtakeOperator.turnPID.I);
+        dashboardtelemetry.addData("D",outtakeOperator.turnPID.D);
+        telemetry.addLine();
+        telemetry.addData("Distance",outtakeOperator.getDistance());
+        telemetry.addData("Max Velocity",outtakeOperator.calculateCurvedExitSpeed(2100, FLYWHEEL_DIAMETER, FLYWHEEL_EFFICIENCY));
 //        if (hoodState==HoodState.AUTO && outtakeOperator.apriltag.hasValidTarget()){
         if (hoodState==HoodState.AUTO){
             if (timer.milliseconds()>=1000) {

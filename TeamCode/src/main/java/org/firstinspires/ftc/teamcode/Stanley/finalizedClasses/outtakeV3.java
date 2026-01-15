@@ -64,7 +64,7 @@ public class outtakeV3 {
     //auto aim vars
     // P, I, D
 //    public double[] Kturn={0.013,0.0002,0.02};
-    public double[] Kturn={0.013,0.01,0.003};
+    public double[] Kturn={0.013,0.01,0.0023};
     public PID turnPID=new PID(Kturn[0],Kturn[1],Kturn[2]);
 
     //================================  Config  ================================
@@ -203,7 +203,8 @@ public class outtakeV3 {
           a1: Mounting angle of the Limelight (degrees back from vertical).
           a2: Vertical offset angle to the target, obtained from the Limelight's ty value.
          */
-        return (29.5-11.4375)/Math.tan(Math.toRadians(20+apriltag.getPitch()));
+        return (29.5-11.4375)/Math.tan(Math.toRadians(20-apriltag.getPitch()));
+//        return (18.75-11.4375)/Math.tan(Math.toRadians(20-apriltag.getPitch()));
     }
 
     /**
