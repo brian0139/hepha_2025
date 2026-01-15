@@ -160,10 +160,10 @@ public class teleOpMainNew extends OpMode {
     @Override
     public void loop() {
         // Update all state machines
-//        updateFlywheelStateMachine();
-//        updateTransferStateMachine();
-//        updateIntakeStateMachine();
-//        updateDrivetrain();
+        updateFlywheelStateMachine();
+        updateTransferStateMachine();
+        updateIntakeStateMachine();
+        updateDrivetrain();
         updateManual();
 
         // Update telemetry
