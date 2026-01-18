@@ -90,7 +90,7 @@ public class AutonRedPathV2 extends LinearOpMode {
                             .stopAndAdd(new SetHoodAngle(45))
                             //Start Flywheel 0
                             .stopAndAdd(new SpinFlywheel(1600,50))
-                            .strafeToLinearHeading(shootingPos, Math.toRadians(122))
+                            .strafeToLinearHeading(shootingPos, shootingAngle)
                             //Shooting Sequence 0
                             .stopAndAdd(new TurretAutoAimUntilAligned())
                             .stopAndAdd(new transferUp())
