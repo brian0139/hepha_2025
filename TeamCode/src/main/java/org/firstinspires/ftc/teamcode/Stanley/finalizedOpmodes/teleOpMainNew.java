@@ -282,6 +282,10 @@ public class teleOpMainNew extends OpMode {
         }
         else if (spindexerState==SpindexerState.HOLDING){
             spindexerOperator.holdSpindexer();
+            if (spindexerOperator.intakesensor.isGreen() || spindexerOperator.intakesensor.isPurple()){
+                spindexerState=SpindexerState.INTAKE;
+                spindexerOperator.initSpin();
+            }
         }
         else if (spindexerState==SpindexerState.OUTTAKE){
             spindexer.setPower(1);

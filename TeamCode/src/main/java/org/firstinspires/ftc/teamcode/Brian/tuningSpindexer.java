@@ -18,7 +18,7 @@ public class tuningSpindexer extends LinearOpMode {
     int x=0;
     //TODO:Get real value+sync with outtakeV2 value
     //test
-    double angle=60;
+    double angle=0.131;
     boolean correctingtoggle=false;
     //FTC dashboard telemetry
     FtcDashboard dashboard=null;
