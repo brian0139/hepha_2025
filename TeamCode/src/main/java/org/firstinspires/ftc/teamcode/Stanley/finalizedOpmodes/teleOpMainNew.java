@@ -81,7 +81,7 @@ public class teleOpMainNew extends OpMode {
     FlywheelState flywheelState = FlywheelState.IDLE;
     TransferState transferState = TransferState.STOPPED;
     IntakeState intakeState = IntakeState.STOPPED;
-    HoodState hoodState = HoodState.AUTO;
+    HoodState hoodState = HoodState.MANUAL;
     TurretState turretState = TurretState.AUTO;
 
     // ==================== CONFIGURATION ====================
@@ -160,10 +160,10 @@ public class teleOpMainNew extends OpMode {
     @Override
     public void loop() {
         // Update all state machines
-//        updateFlywheelStateMachine();
-//        updateTransferStateMachine();
-//        updateIntakeStateMachine();
-//        updateDrivetrain();
+        updateFlywheelStateMachine();
+        updateTransferStateMachine();
+        updateIntakeStateMachine();
+        updateDrivetrain();
         updateManual();
 
         // Update telemetry
@@ -198,7 +198,6 @@ public class teleOpMainNew extends OpMode {
         if (gamepad2.yWasPressed()) {
             switch (flywheelState) {
                 case STOPPED:
-
                 case IDLE:
                     flywheelState = FlywheelState.SPINNING;
                     targetSpeed = flywheelSpeed;
