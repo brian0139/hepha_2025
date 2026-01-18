@@ -91,7 +91,7 @@ public class teleOpMainNew extends OpMode {
     static final double FLYWHEEL_DIAMETER = 2.8346456692913386;
     static final double FLYWHEEL_EFFICIENCY = 0.95;
     static final double DRIVE_SPEED = 0.7;
-    static final double STRAFE_SPEED = 0.8;
+    static final double STRAFE_SPEED = 1;
     static final double TWIST_SPEED = 0.5;
     static final double SECONDARY_DILATION = 0.25;
 
