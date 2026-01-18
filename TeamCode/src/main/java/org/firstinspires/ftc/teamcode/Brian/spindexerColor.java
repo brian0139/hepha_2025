@@ -112,7 +112,7 @@ public class spindexerColor {
         }
         double epsilon = 0.01;
         if (!((spindexerSensor.getVoltage()>=inslotsV[currentSlot]-epsilon)&&(spindexerSensor.getVoltage()<=inslotsV[currentSlot]+epsilon))){
-            spindexerServo.setPower(Math.max(spindexerPID.update(calculateError(inslotsV[currentSlot],spindexerSensor.getVoltage())),0.75));
+            spindexerServo.setPower(Math.max(spindexerPID.update(calculateError(inslotsV[currentSlot],spindexerSensor.getVoltage())),0.5));
         }else{
             detectioncnt++;
             currentSlot++;
