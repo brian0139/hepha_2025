@@ -166,6 +166,7 @@ public class teleOpMainNew extends OpMode {
         updateFlywheelStateMachine();
         updateTransferStateMachine();
         updateIntakeStateMachine();
+        updateSpindexerStateMachine();
         updateDrivetrain();
         updateManual();
 
