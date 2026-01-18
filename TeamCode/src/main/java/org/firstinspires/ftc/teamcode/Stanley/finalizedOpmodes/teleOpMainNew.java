@@ -38,6 +38,7 @@ public class teleOpMainNew extends OpMode {
 
     enum SpindexerState {
         STOPPED,
+        HOLDING,
         INTAKE,
         OUTTAKE,
         OUTTAKE_SORTED
@@ -260,23 +261,32 @@ public class teleOpMainNew extends OpMode {
                     spindexerState=SpindexerState.INTAKE;
                     spindexerOperator.initSpin();
                     break;
+                case HOLDING:
                 case INTAKE:
                     spindexerState=SpindexerState.STOPPED;
                     break;
             }
         }
         if (spindexerState==SpindexerState.INTAKE){
-            if (spindexerOperator.spinToIntake()){
-                spindexerState=SpindexerState.STOPPED;
+            boolean result=spindexerOperator.spinToIntake();
+            intake.setPower(0.7);
+            if (result){
+                spindexerState= SpindexerState.HOLDING;
+            }else if (!result && spindexerOperator.detectioncnt==3){
+                spindexerState= SpindexerState.HOLDING;
+                gamepad1.rumble(100);
             }
         }
-        if (spindexerState==SpindexerState.STOPPED){
+        else if (spindexerState==SpindexerState.STOPPED){
             spindexer.setPower(0);
         }
-        if (spindexerState==SpindexerState.OUTTAKE){
+        else if (spindexerState==SpindexerState.HOLDING){
+            spindexerOperator.holdSpindexer();
+        }
+        else if (spindexerState==SpindexerState.OUTTAKE){
             spindexer.setPower(1);
         }
-        if (spindexerState==SpindexerState.OUTTAKE_SORTED){
+        else if (spindexerState==SpindexerState.OUTTAKE_SORTED){
             spindexerOperator.spinToMotif(1);
         }
     }

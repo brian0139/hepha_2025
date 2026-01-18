@@ -21,8 +21,8 @@ public class spindexerColor {
     public colorSensor intakesensor;
     AnalogInput spindexerSensor;
     public double[] kS={1.1,1.5,0.017};
-    public double[] inslotsV={0.678,1.755,2.833};
-    public double[] outslotsV={2.285,0.131,1.2};
+    public double[] inslotsV={2.285,0.131,1.2};
+    public double[] outslotsV={0.678,1.755,2.833};
     int numGreen=0;
     int numPurple=0;
 
@@ -30,7 +30,7 @@ public class spindexerColor {
     double detectedLocation = 0;
     public double mindetectiontime=300;
     public double maxdetectiontime=500;
-    public double spinspeed=0.35;
+    public double spinspeed=0.5;
     boolean lastDetected=false;
     public int detectioncnt=-1;
     boolean detectedLastLoop = false;
@@ -93,6 +93,7 @@ public class spindexerColor {
 
     public void initSpin() {
         detectedLocation = -1;
+        detectioncnt=0;
         timer.reset();
         lastDetected=false;
         spindexerServo.setPower(spinspeed);
