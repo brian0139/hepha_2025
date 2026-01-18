@@ -355,6 +355,7 @@ public class teleOpMainNew extends OpMode {
         telemetry.addData("Has Target",outtakeOperator.apriltag.hasValidTarget());
         telemetry.addData("Offset(Deg)",outtakeOperator.apriltag.getYaw());
         telemetry.addData("Power",outtakeOperator.turnPID.power);
+        telemetry.addData("Distance",outtakeOperator.getDistance());
         dashboardtelemetry.addData("Has Target",outtakeOperator.apriltag.hasValidTarget());
         dashboardtelemetry.addData("Offset(Deg)",outtakeOperator.apriltag.getYaw());
         dashboardtelemetry.addData("Power",outtakeOperator.turnPID.power);
@@ -405,10 +406,14 @@ public class teleOpMainNew extends OpMode {
         if (hoodState==HoodState.AUTO){
             if (timer.milliseconds()>=1000) {
                 output = outtakeOperator.findOptimalLaunch(outtakeOperator.getDistance());
-                flywheelSpeed=(int) Math.round(outtakeOperator.calculateRequiredRPM(Double.parseDouble(output.get("velocity")),FLYWHEEL_DIAMETER,FLYWHEEL_EFFICIENCY));
+                if (Double.parseDouble(output.get("velocity"))>=0) {
+                    flywheelSpeed = (int) Math.round(Double.parseDouble(output.get("velocity")));
+                }
                 timer.reset();
             }
-            outtakeOperator.setHood(Double.parseDouble(output.get("angle")));
+            if (Double.parseDouble(output.get("angle"))>=0){
+                outtakeOperator.setHood(Double.parseDouble(output.get("angle")));
+            }
         }else{
             updateHoodControl();
         }

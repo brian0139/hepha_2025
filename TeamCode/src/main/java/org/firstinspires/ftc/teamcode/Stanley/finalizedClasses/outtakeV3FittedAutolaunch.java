@@ -256,11 +256,11 @@ public class outtakeV3FittedAutolaunch {
     /**
      * Find optimal launch angle and velocity to hit a target with specific impact angle constraints.
      *
-     * @param distance Distance to target in ft.
+     * @param distance Distance to target in in.
      * @return Map<string,string> with keys: angle, velocity(in encoder ticks/s)
      */
     public Map<String,String> findOptimalLaunch(double distance) {
-
+        distance=distance/12;
         if (distance < 2){
             return new HashMap<>(Map.of(
                     "angle", Double.toString(-1.0),
