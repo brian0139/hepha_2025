@@ -8,7 +8,6 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
-import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
@@ -32,7 +31,8 @@ public class teleOpMainNew extends OpMode {
 
     enum TransferState {
         UP,
-        STOPPED
+        STOPPED,
+        DOWN
     }
 
     enum IntakeState {
@@ -82,7 +82,7 @@ public class teleOpMainNew extends OpMode {
     TransferState transferState = TransferState.STOPPED;
     IntakeState intakeState = IntakeState.STOPPED;
     HoodState hoodState = HoodState.MANUAL;
-    TurretState turretState = TurretState.AUTO;
+    TurretState turretState = TurretState.MANUAL;
 
     // ==================== CONFIGURATION ====================
     static final double FLYWHEEL_SENSITIVITY = 5;
@@ -103,8 +103,11 @@ public class teleOpMainNew extends OpMode {
     int flywheelSpeed = 2000;
     int targetSpeed = 0;
     boolean atFlywheelTarget=false;
-    boolean useInitializer=false;
+    boolean intakeReleased=false;
+    boolean reversingTransfer=false;
+
     ElapsedTime timer=new ElapsedTime();
+    ElapsedTime transferTimer =new ElapsedTime();
     Map<String, String> output = Map.of(
             "angle", "66.81",
             "velocity","0"
@@ -226,30 +229,42 @@ public class teleOpMainNew extends OpMode {
 
             case UP:
                 if (gamepad2.xWasPressed()) {
-                    transfer.setPower(TRANSFER_POWERS[TRANSFER_DOWN]);
-                    transferState = TransferState.STOPPED;
+                    transfer.setPower(-1);
+                    transferState = TransferState.DOWN;
+                    transferTimer.reset();
                     spindexer.setPower(0);
                     intake.setPower(0);
                 }
                 break;
+            case DOWN:
+                if (transferTimer.milliseconds()>=500){
+                    transfer.setPower(0);
+                    transferState=TransferState.STOPPED;
+                    break;
+                }
         }
     }
 
     // ==================== INTAKE STATE MACHINE ====================
     void updateIntakeStateMachine() {
         if (gamepad1.right_trigger!=0 || gamepad1.left_trigger!=0){
+            intakeReleased=true;
             intakeState=IntakeState.MANUAL;
             intake.setPower(gamepad1.right_trigger-gamepad1.left_trigger);
         }
-        if (gamepad1.right_bumper || gamepad1.left_bumper){
+        if (intakeReleased){
+            intakeReleased=false;
+            intake.setPower(0);
+        }
+        if (gamepad1.right_bumper || gamepad1.left_bumper || gamepad2.right_bumper){
             if (intakeState==IntakeState.AWAITING_SPINDEXER){
                 intakeState=IntakeState.INTAKING;
             }
-            if (gamepad1.right_bumper) spindexer.setPower(1);
+            if (gamepad1.right_bumper || gamepad2.right_bumper) spindexer.setPower(1);
             else if (gamepad1.left_bumper) spindexer.setPower(-1);
         }
-        if (gamepad1.rightBumperWasReleased() || gamepad1.leftBumperWasReleased()){
-            intakeState=IntakeState.STOPPED;
+        if (gamepad1.rightBumperWasReleased() || gamepad1.leftBumperWasReleased() || gamepad2.rightBumperWasReleased()){
+//            intakeState=IntakeState.STOPPED;
             spindexer.setPower(0);
         }
         //Toggle intake
@@ -311,13 +326,6 @@ public class teleOpMainNew extends OpMode {
         if (gamepad1.dpad_left) strafe = STRAFE_SPEED;
         if (gamepad1.dpad_right) strafe = -STRAFE_SPEED;
 
-        // Face buttons for slow precise movement
-        if (gamepad1.y) drive = DRIVE_SPEED * SECONDARY_DILATION;
-        if (gamepad1.a) drive = -DRIVE_SPEED * SECONDARY_DILATION;
-        if (gamepad1.x) strafe = STRAFE_SPEED * SECONDARY_DILATION;
-        if (gamepad1.b) strafe = -STRAFE_SPEED * SECONDARY_DILATION;
-
-        // Calculate mecanum wheel speeds
         double[] speeds = {
                 (drive - strafe - twist), // leftFront
                 (drive + strafe + twist), // rightFront
@@ -325,7 +333,6 @@ public class teleOpMainNew extends OpMode {
                 (drive - strafe + twist)  // rightBack
         };
 
-        // Normalize speeds if any exceed 1.0
         double max = Math.abs(speeds[0]);
         for (int i = 1; i < speeds.length; i++) {
             if (Math.abs(speeds[i]) > max) {
@@ -339,7 +346,6 @@ public class teleOpMainNew extends OpMode {
             }
         }
 
-        // Apply speeds to motors
         leftFront.setPower(speeds[0]);
         rightFront.setPower(speeds[1]);
         leftBack.setPower(speeds[2]);

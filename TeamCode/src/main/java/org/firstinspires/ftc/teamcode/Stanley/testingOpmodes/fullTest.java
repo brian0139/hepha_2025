@@ -25,7 +25,7 @@ public class fullTest extends LinearOpMode{
     private DcMotor rightBack=null;
     //drivetrain configs
     private static final double DRIVE_SPEED = 0.7;
-    private static final double STRAFE_SPEED = 0.5;
+    private static final double STRAFE_SPEED = 0.7;
     private static final double TWIST_SPEED = 0.5;
     private static final double SECONDARY_DILATION = 0.25;
     //other motors
