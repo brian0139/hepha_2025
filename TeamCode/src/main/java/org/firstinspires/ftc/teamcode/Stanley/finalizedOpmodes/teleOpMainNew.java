@@ -35,11 +35,11 @@ public class teleOpMainNew extends OpMode {
         DOWN
     }
 
-    enum IntakeState {
+    enum SpindexerState {
         STOPPED,
-        INTAKING,
-        AWAITING_SPINDEXER,
-        MANUAL
+        INTAKE,
+        OUTTAKE,
+        OUTTAKE_SORTED
     }
 
     enum HoodState{
@@ -80,7 +80,7 @@ public class teleOpMainNew extends OpMode {
     // ==================== STATE VARIABLES ====================
     FlywheelState flywheelState = FlywheelState.IDLE;
     TransferState transferState = TransferState.STOPPED;
-    IntakeState intakeState = IntakeState.STOPPED;
+    SpindexerState spindexerState = SpindexerState.STOPPED;
     HoodState hoodState = HoodState.MANUAL;
     TurretState turretState = TurretState.MANUAL;
 
@@ -222,7 +222,7 @@ public class teleOpMainNew extends OpMode {
                 if (gamepad2.xWasPressed()) {
                     transfer.setPower(TRANSFER_POWERS[TRANSFER_UP]);
                     transferState = TransferState.UP;
-                    spindexer.setPower(1);
+                    spindexerState=SpindexerState.OUTTAKE;
                     intake.setPower(0.75);
                 }
                 break;
@@ -232,7 +232,7 @@ public class teleOpMainNew extends OpMode {
                     transfer.setPower(-1);
                     transferState = TransferState.DOWN;
                     transferTimer.reset();
-                    spindexer.setPower(0);
+                    spindexerState=SpindexerState.STOPPED;
                     intake.setPower(0);
                 }
                 break;
@@ -247,64 +247,33 @@ public class teleOpMainNew extends OpMode {
 
     // ==================== INTAKE STATE MACHINE ====================
     void updateIntakeStateMachine() {
-        if (gamepad1.right_trigger!=0 || gamepad1.left_trigger!=0){
-            intakeReleased=true;
-            intakeState=IntakeState.MANUAL;
-            intake.setPower(gamepad1.right_trigger-gamepad1.left_trigger);
-        }
-        if (intakeReleased){
-            intakeReleased=false;
-            intake.setPower(0);
-        }
-        if (gamepad1.right_bumper || gamepad1.left_bumper || gamepad2.right_bumper){
-            if (intakeState==IntakeState.AWAITING_SPINDEXER){
-                intakeState=IntakeState.INTAKING;
+        intake.setPower(gamepad1.right_trigger-gamepad1.left_trigger);
+    }
+
+    // ==================== SPINDEXER STATE MACHINE ====================
+    void updateSpindexerStateMachine(){
+        if (gamepad1.yWasPressed()){
+            switch (spindexerState){
+                case STOPPED:
+                    spindexerState=SpindexerState.INTAKE;
+                    spindexerOperator.initSpin();
+                    break;
+                case INTAKE:
+                    spindexerState=SpindexerState.STOPPED;
+                    break;
             }
-            if (gamepad1.right_bumper || gamepad2.right_bumper) spindexer.setPower(1);
-            else if (gamepad1.left_bumper) spindexer.setPower(-1);
         }
-        if (gamepad1.rightBumperWasReleased() || gamepad1.leftBumperWasReleased() || gamepad2.rightBumperWasReleased()){
-//            intakeState=IntakeState.STOPPED;
+        if (spindexerState==SpindexerState.INTAKE){
+            spindexerOperator.spinToIntake();
+        }
+        if (spindexerState==SpindexerState.STOPPED){
             spindexer.setPower(0);
         }
-        //Toggle intake
-        if (gamepad1.yWasPressed()){
-            switch (intakeState){
-                case MANUAL:
-                case STOPPED:
-                    intakeState=IntakeState.AWAITING_SPINDEXER;
-                    spindexerOperator.detectioncnt=0;
-                    break;
-                case AWAITING_SPINDEXER:
-                case INTAKING:
-                    intakeState=IntakeState.STOPPED;
-                    spindexer.setPower(0);
-                    intake.setPower(0);
-                    break;
-            }
+        if (spindexerState==SpindexerState.OUTTAKE){
+            spindexer.setPower(1);
         }
-        if (intakeState==IntakeState.STOPPED){
-            intake.setPower(0);
-        }
-        else if (intakeState==IntakeState.INTAKING){
-            intake.setPower(1);
-            spindexerOperator.holdSpindexer();
-            if (!(spindexerOperator.intakesensor.getDetected()==0)){
-                intakeState=IntakeState.AWAITING_SPINDEXER;
-                spindexerOperator.detectioncnt=0;
-                gamepad1.rumbleBlips(3);
-                intake.setPower(0.7);
-            }
-        }
-        else if (intakeState==IntakeState.AWAITING_SPINDEXER){
-            boolean result=spindexerOperator.spinToIntake();
-            intake.setPower(0.7);
-            if (result){
-                intakeState=IntakeState.INTAKING;
-            }else if (!result && spindexerOperator.detectioncnt==3){
-                intakeState=IntakeState.STOPPED;
-                gamepad1.rumble(100);
-            }
+        if (spindexerState==SpindexerState.OUTTAKE_SORTED){
+            spindexerOperator.spinToMotif(1);
         }
     }
 
@@ -369,16 +338,6 @@ public class teleOpMainNew extends OpMode {
         dashboardtelemetry.addData("Has Target",outtakeOperator.apriltag.hasValidTarget());
         dashboardtelemetry.addData("Offset(Deg)",outtakeOperator.apriltag.getYaw());
         dashboardtelemetry.addData("Power",outtakeOperator.turnPID.power);
-        dashboardtelemetry.addLine("=== Intake ===");
-        if (intakeState==IntakeState.AWAITING_SPINDEXER){
-            telemetry.addData("Intake State","Awaiting Spindexer");
-        }else if (intakeState==IntakeState.INTAKING){
-            telemetry.addData("Intake State","Intake");
-        }else if (intakeState==IntakeState.MANUAL){
-            telemetry.addData("Intake State","Manual");
-        }else if (intakeState==IntakeState.STOPPED){
-            telemetry.addData("Intake State","Stopped");
-        }
 
         telemetry.update();
         dashboardtelemetry.update();
@@ -419,12 +378,9 @@ public class teleOpMainNew extends OpMode {
         telemetry.addData("Power",outtakeOperator.hoodPID.power);
         dashboardtelemetry.addData("Error Hood",((66.81-Double.parseDouble(output.get("angle")))/outtakeOperator.servoDegPerRot*outtakeOperator.ticksPerRevHood)-outtakeOperator.hoodEncoder.getCurrentPosition());
         dashboardtelemetry.addData("Power Hood",outtakeOperator.hoodPID.power);
-        dashboardtelemetry.addData("P",outtakeOperator.turnPID.P);
-        dashboardtelemetry.addData("I",outtakeOperator.turnPID.I);
-        dashboardtelemetry.addData("D",outtakeOperator.turnPID.D);
-        telemetry.addLine();
-        telemetry.addData("Distance",outtakeOperator.getDistance());
-        telemetry.addData("Max Velocity",outtakeOperator.calculateCurvedExitSpeed(2100, FLYWHEEL_DIAMETER, FLYWHEEL_EFFICIENCY));
+        dashboardtelemetry.addData("P",outtakeOperator.hoodPID.Pd);
+        dashboardtelemetry.addData("I",outtakeOperator.hoodPID.Id);
+        dashboardtelemetry.addData("D",outtakeOperator.hoodPID.Dd);
 //        if (hoodState==HoodState.AUTO && outtakeOperator.apriltag.hasValidTarget()){
         if (hoodState==HoodState.AUTO){
             if (timer.milliseconds()>=1000) {
