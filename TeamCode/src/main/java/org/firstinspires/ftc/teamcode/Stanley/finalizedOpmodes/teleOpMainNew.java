@@ -15,6 +15,7 @@ import org.firstinspires.ftc.teamcode.Brian.spindexerColor;
 import org.firstinspires.ftc.teamcode.MecanumDrive;
 import org.firstinspires.ftc.teamcode.Stanley.finalizedClasses.opModeDataTransfer;
 import org.firstinspires.ftc.teamcode.Stanley.finalizedClasses.outtakeV3;
+import org.firstinspires.ftc.teamcode.Stanley.finalizedClasses.outtakeV3FittedAutolaunch;
 
 import java.lang.Math;
 import java.util.Map;
@@ -74,7 +75,7 @@ public class teleOpMainNew extends OpMode {
 
     // ==================== Classes ====================
     spindexerColor spindexerOperator=null;
-    outtakeV3 outtakeOperator=null;
+    outtakeV3FittedAutolaunch outtakeOperator=null;
     MecanumDrive drive=null;
 
     // ==================== STATE VARIABLES ====================
@@ -151,7 +152,7 @@ public class teleOpMainNew extends OpMode {
         //Initialize classes
         spindexerOperator=new spindexerColor(spindexer,intake,hardwareMap);
         drive=new MecanumDrive(hardwareMap, opModeDataTransfer.currentPose);
-        outtakeOperator=new outtakeV3(hardwareMap,"Red",true,drive);
+        outtakeOperator=new outtakeV3FittedAutolaunch(hardwareMap,"Red",true,drive);
         outtakeOperator.encoderOffset=opModeDataTransfer.currentHood;
         outtakeOperator.apriltag.init();
 
@@ -265,7 +266,9 @@ public class teleOpMainNew extends OpMode {
             }
         }
         if (spindexerState==SpindexerState.INTAKE){
-            spindexerOperator.spinToIntake();
+            if (spindexerOperator.spinToIntake()){
+                spindexerState=SpindexerState.STOPPED;
+            }
         }
         if (spindexerState==SpindexerState.STOPPED){
             spindexer.setPower(0);
@@ -330,8 +333,10 @@ public class teleOpMainNew extends OpMode {
         telemetry.addLine("=== Toggles ===");
         telemetry.addData("Auto Hood",hoodState==HoodState.AUTO);
         telemetry.addData("Auto Turret",turretState==TurretState.AUTO);
-//        telemetry.addLine("=== Hood ===");
-//        telemetry.addData("Target Angle",Double.parseDouble(.get("angle")));
+        telemetry.addLine("=== Spindexer ===");
+        telemetry.addData("State",spindexerState);
+        telemetry.addData("Hue",spindexerOperator.intakesensor.readHSV()[0]);
+        telemetry.addData("Detected",spindexerOperator.intakesensor.getDetected());
         telemetry.addLine("=== Limelight ===");
         telemetry.addData("Has Target",outtakeOperator.apriltag.hasValidTarget());
         telemetry.addData("Offset(Deg)",outtakeOperator.apriltag.getYaw());
@@ -385,7 +390,7 @@ public class teleOpMainNew extends OpMode {
 //        if (hoodState==HoodState.AUTO && outtakeOperator.apriltag.hasValidTarget()){
         if (hoodState==HoodState.AUTO){
             if (timer.milliseconds()>=1000) {
-                output = outtakeOperator.findOptimalLaunch(outtakeOperator.getDistance(), 40, 40.03, 66.81, outtakeOperator.calculateCurvedExitSpeed(2100, FLYWHEEL_DIAMETER, FLYWHEEL_EFFICIENCY), 90, 170, 160, 386.4, 10, 0.1, 100);
+                output = outtakeOperator.findOptimalLaunch(outtakeOperator.getDistance());
                 flywheelSpeed=(int) Math.round(outtakeOperator.calculateRequiredRPM(Double.parseDouble(output.get("velocity")),FLYWHEEL_DIAMETER,FLYWHEEL_EFFICIENCY));
                 timer.reset();
             }

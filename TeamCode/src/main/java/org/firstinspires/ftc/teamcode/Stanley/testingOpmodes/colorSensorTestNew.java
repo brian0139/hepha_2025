@@ -19,7 +19,7 @@ public class colorSensorTestNew extends LinearOpMode{
     public void runOpMode() {
         //initiate drivetrain motors
         spindexer=hardwareMap.get(CRServo.class,"spindexerServo");
-        colorsensoroperator=new colorSensor(hardwareMap,"outtakeSensor");
+        colorsensoroperator=new colorSensor(hardwareMap,"intakeSensor");
         double spindexerPower=0.75;
         int waittime=400;
         boolean waiting=false;
