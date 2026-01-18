@@ -273,7 +273,7 @@ public class teleOpMainNew extends OpMode {
             if (result){
                 spindexerState= SpindexerState.HOLDING;
             }else if (!result && spindexerOperator.detectioncnt==3){
-                spindexerState= SpindexerState.HOLDING;
+                spindexerState= SpindexerState.STOPPED;
                 gamepad1.rumble(100);
             }
         }
