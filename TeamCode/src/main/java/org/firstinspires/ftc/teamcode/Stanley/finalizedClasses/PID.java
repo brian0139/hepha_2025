@@ -6,6 +6,9 @@ public class PID {
     public double Kp;
     public double Ki;
     public double Kd;
+    public double P;
+    public double I;
+    public double D;
     public double error;
     public double lastError=0;
     public double integral;
@@ -43,10 +46,10 @@ public class PID {
     public double update(double target, double current){
         double dt=timer.seconds();
         error=target-current;
-        double P=Kp*error;
-        double I=Ki*integral;
+        P=Kp*error;
+        I=Ki*integral;
         derivative=(error-lastError)/dt;
-        double D=Kd*derivative;
+        D=Kd*derivative;
         double candidateOutput=P+I+D;
         //Integral conditional clamping
         if (!(candidateOutput>=maxOutput && error>0) && !(candidateOutput<=minOutput && error<0)) {
@@ -67,10 +70,10 @@ public class PID {
      */
     public double update(double error){
         double dt=timer.seconds();
-        double P=Kp*error;
-        double I=Ki*integral;
+        P=Kp*error;
+        I=Ki*integral;
         derivative=(error-lastError)/dt;
-        double D=Kd*derivative;
+        D=Kd*derivative;
         double candidateOutput=P+I+D;
         //Integral conditional clamping
         if (!(candidateOutput>=maxOutput && error>0) && !(candidateOutput<=minOutput && error<0)) {

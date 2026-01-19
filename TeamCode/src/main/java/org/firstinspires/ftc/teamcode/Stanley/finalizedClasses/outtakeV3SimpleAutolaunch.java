@@ -1,0 +1,341 @@
+package org.firstinspires.ftc.teamcode.Stanley.finalizedClasses;
+
+import com.acmerobotics.roadrunner.Vector2d;
+import com.qualcomm.robotcore.hardware.CRServo;
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.HardwareMap;
+
+import org.firstinspires.ftc.teamcode.Aaron.aprilTagV3;
+import org.firstinspires.ftc.teamcode.MecanumDrive;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
+
+public class outtakeV3SimpleAutolaunch {
+    //Team color
+    String teamColor;
+
+    //================================  April Tag  ================================
+    //April tag processor
+    public aprilTagV3 apriltag;
+    //Target Apriltag pipeline
+    public int aprilTagPipeline=5;
+
+    //================================  Flywheel  ================================
+    //Outtake flywheel
+    public DcMotorEx flywheelDriveR;
+    public DcMotorEx flywheelDrive;
+
+    //================================  Transfer  ================================
+    //transfer servo
+    public DcMotor transfer;
+    //transfer positions(up, down)
+    public static double[] transferpowers ={1,0};
+
+    //================================  Hood  ================================
+    //Motor for hood encoder
+    public DcMotor hoodEncoder=null;
+    //Outtake Hood Servo
+    public CRServo hoodServo;
+    public CRServo turretServo;
+    //Degrees changed for every servo rotation
+    public double servoDegPerRot =24.18;
+    //Encoder tick offset for encoder
+    public int encoderOffset=0;
+    //Ticks/revolution for encoder
+    public int ticksPerRevHood=8192;
+    //PID instance for hood
+//    public double[] Kh={0.0005,0.0005,0.00003};
+    //35 little too low
+    public double[] Kh={0.0005,0.0005,0.00002};
+    public PIDhood hoodPID=new PIDhood(Kh[0],Kh[1],Kh[2]);
+
+    //================================  Turret  ================================
+    //Robot drivetrain object
+    MecanumDrive drive = null;
+    //Acceptable angle rotation range of turret(0=right, 90=up, 180=left, 270=down)
+    public double minTurretAngle=0;
+    public double maxTurretAngle=180;
+    //Turret autoaim epsilon
+    public double turretEpsilon=1.5;
+    //auto aim vars
+    // P, I, D
+//    public double[] Kturn={0.013,0.0002,0.02};
+    public double[] Kturn={0.013,0.01,0.0023};
+    public PID turnPID=new PID(Kturn[0],Kturn[1],Kturn[2]);
+
+    //================================  Config  ================================
+    //target april tag id
+    int targetTagID=-1;
+    //to use turret rotation limitation or not(requires initialized MecanumDrive
+    public boolean setRange=false;
+    double[] distances     = new double[]{2,3,4,5,6,7,9,11};
+    double[] hoodDegrees   = new double[]{37.19,36.69,37.34,39.71,43.14,40.01,43.2,48.75};
+    double[] flywheelSpeeds= new double[]{1800,1430,1470,1620,1660,1730,1960,2100};
+
+    /**
+     * Constructor
+     * @param hardwareMap Hardwaremap
+     * @param teamColor Team color("Red" or "Blue")
+     * @param useTag To use april tag process or not
+     * @param drive Robot drivetrain
+     */
+    public outtakeV3SimpleAutolaunch(HardwareMap hardwareMap, String teamColor, boolean useTag, MecanumDrive drive){
+        this.flywheelDriveR = hardwareMap.get(DcMotorEx.class,"flywheelR");
+        this.flywheelDrive=hardwareMap.get(DcMotorEx.class,"flywheel");
+        flywheelDrive.setDirection(DcMotorSimple.Direction.REVERSE);
+        this.drive=drive;
+        this.teamColor=teamColor;
+        this.hoodServo=hardwareMap.get(CRServo.class,"hoodServo");
+        this.turretServo =hardwareMap.get(CRServo.class,"turretServo");
+        this.hoodEncoder=hardwareMap.get(DcMotorEx.class,"leftBack");
+        this.transfer=hardwareMap.get(DcMotor.class,"par1");
+        hoodPID.maxOutput=1;
+        hoodPID.minOutput=-1;
+        //set target april tag number to aim at depending on team color.
+        if (Objects.equals(this.teamColor, "Red") && this.targetTagID!=-1){
+            this.targetTagID=24;
+        }
+        else if (Objects.equals(this.teamColor, "Blue") && this.targetTagID!=-1) {
+            this.targetTagID = 20;
+        }
+        //Init apriltag instance
+        if (useTag) {
+            this.apriltag = new aprilTagV3(hardwareMap);
+            this.apriltag.setPipeline(5);
+            this.apriltag.init();
+        }
+    }
+
+    /**
+     * Helper function to normalize angle to +-180 range
+     * @param angle
+     * @return
+     */
+    public static double normalizeAngle(double angle) {
+        angle = angle % 360.0;
+        if (angle > 180.0) {
+            angle -= 360.0;
+        } else if (angle < -180.0) {
+            angle += 360.0;
+        }
+        return angle;
+    }
+
+    /**
+     * Autoaim to april tag.
+     * Target tag set by teamColor variable in class, "Red" or "Blue"
+     * @return False if canceled or teamColor not found, True if successful
+     */
+    public boolean autoturn(){
+        setPipeLine(aprilTagPipeline);
+
+
+        this.apriltag.scanOnce();
+        if (!apriltag.hasValidTarget()){
+            turretServo.setPower(0);
+            turnPID=new PID(Kturn[0],Kturn[1],Kturn[2]);
+            if (setRange) {
+                //get current heading
+                double currentHeading = drive.localizer.getPose().heading.toDouble();
+                //Shift heading from 180 to -180 to 0 to 360
+                if (currentHeading < 0) {
+                    currentHeading += 360;
+                }
+                //get current position
+                Vector2d currentPos = drive.localizer.getPose().position;
+                // Robot position
+                double xr = currentPos.x;
+                double yr = currentPos.y;
+
+                // Target position
+                double xt = -61.5;
+                double yt = 0;
+                if (Objects.equals(this.teamColor, "Red")) {
+                    yt = 52.5;
+                } else if (Objects.equals(this.teamColor, "Blue")) {
+                    yt = -53.5;
+                }
+
+                // Robot facing angle in degrees (-180 to 180)
+                double robotAngle = currentHeading;
+
+                // Compute vector to target
+                double dx = xt - xr;
+                double dy = yt - yr;
+
+                // Target angle in world coordinates (-180 to 180)
+                double targetAngle = Math.toDegrees(Math.atan2(dy, dx));
+
+                // Angle of target relative to robot front
+                double relativeAngle = normalizeAngle(targetAngle - robotAngle);
+
+                // Attempt to move camera within range
+                if (relativeAngle > maxTurretAngle) {
+                    turretServo.setPower(0.1);
+                } else if (relativeAngle < minTurretAngle) {
+                    turretServo.setPower(-0.1);
+                }
+            }
+            return false;
+        }
+        // Determine heading, range and Yaw (tag image rotation) error so we can use them to control the robot automatically.
+        double  headingError    = apriltag.getYaw();
+
+        // Use the speed and turn "gains" to calculate how we want the robot to move.
+        double power   = turnPID.update(headingError) ;
+        turretServo.setPower(power);
+        return Math.abs(apriltag.getYaw())<=turretEpsilon;
+    }
+
+    /**
+     * Get distance to april tag using limelight
+     * @return Distance in in.
+     */
+    public double getDistance(){
+        /*
+          Formula:
+          d=(h2-h1)/tan (a1+a2)
+          h1: Height of the Limelight lens from the floor.
+          h2: Height of the target (AprilTag) from the floor.
+          a1: Mounting angle of the Limelight (degrees back from vertical).
+          a2: Vertical offset angle to the target, obtained from the Limelight's ty value.
+         */
+        return (29.5-11.4375)/Math.tan(Math.toRadians(20-apriltag.getPitch()));
+//        return (18.75-11.4375)/Math.tan(Math.toRadians(20-apriltag.getPitch()));
+    }
+
+    /**
+     * Calculates exit speed for a curved hood system.
+     * @param rpm Flywheel rotations per minute.
+     * @param wheelDiameter Diameter of the flywheel (meters).
+     * @param efficiency Realistic efficiency (0.90 to 0.98 for curved hoods).
+     * @return Realistic exit speed in meters per second.
+     */
+    public double calculateCurvedExitSpeed(double rpm, double wheelDiameter, double efficiency) {
+        // Tangential velocity: (RPM * PI * D) / 60
+        double tangentialVelocity = (rpm * Math.PI * wheelDiameter) / 60.0;
+
+        // Theoretical exit speed is exactly half of tangential velocity
+        double theoreticalSpeed = tangentialVelocity / 2.0;
+
+        // Apply hood efficiency to account for minor slip and compression losses
+        return theoreticalSpeed * efficiency;
+    }
+
+    /**
+     * Calculates the required RPM to reach a target ball exit velocity.
+     *
+     * @param targetVelocity The desired ball speed (e.g., meters per second).
+     * @param diameter The diameter of the flywheel (same units as velocity, e.g., meters).
+     * @param efficiency The slip/compression factor (0.0 to 1.0).
+     *                   Use 0.90 - 0.95 for a well-tuned curved hood.
+     * @return The required motor speed in RPM.
+     */
+    public double calculateRequiredRPM(double targetVelocity, double diameter, double efficiency) {
+        // Validation to avoid division by zero
+        if (diameter <= 0 || efficiency <= 0) return 0;
+
+        // Requirement: Wheel surface speed = 2 * Target Ball Speed
+        double requiredSurfaceVelocity = targetVelocity * 2.0;
+
+        // Convert Surface Velocity to RPM:
+        // RPM = (v_surface * 60) / (pi * diameter)
+        double theoreticalRPM = (requiredSurfaceVelocity * 60.0) / (Math.PI * diameter);
+
+        // Adjust for efficiency (lower efficiency requires higher RPM)
+        return theoreticalRPM / efficiency;
+    }
+
+    public void setPipeLine(int pipeline){
+        apriltag.setPipeline(pipeline);
+    }
+    /**
+     * Find optimal launch angle and velocity to hit a target with specific impact angle constraints.
+     *
+     * @param distance Distance to target in ft.
+     * @return Map<string,string> with keys: angle, velocity(in encoder ticks/s)
+     */
+    public Map<String,String> findOptimalLaunch(double distance) {
+        for (int i=0;i<distances.length-1;i++){
+            if (distances[i]<=distance && distance<=distances[i+1]){
+                return new HashMap<>(Map.of(
+                        "angle",Double.toString(autoCalculationFunctions.interpolate(new double[]{distance,distances[i],distances[i+1],hoodDegrees[i],hoodDegrees[i+1],flywheelSpeeds[i],flywheelSpeeds[i+1]})[0]),
+                        "velocity",Double.toString(autoCalculationFunctions.interpolate(new double[]{distance,distances[i],distances[i+1],hoodDegrees[i],hoodDegrees[i+1],flywheelSpeeds[i],flywheelSpeeds[i+1]})[1])
+                ));
+            }
+        }
+        return new HashMap<>(Map.of(
+                "angle",Double.toString(-1.0),
+                "velocity",Double.toString(-1.0)
+        ));
+    }
+
+    /**
+     * Set the hood angle to a specific degree
+     * @param degrees degrees from hood to horizontal(cnt. clockwise)
+     * @return if hood is at position
+     */
+    public boolean setHood(double degrees){
+        double epsilon=40;
+        double targetTicks=(66.81-degrees)/servoDegPerRot*ticksPerRevHood;
+        double power=hoodPID.update(targetTicks-hoodEncoder.getCurrentPosition()+encoderOffset);
+        hoodServo.setPower(-power);
+        return (hoodEncoder.getCurrentPosition()+encoderOffset >= targetTicks - epsilon) && (hoodEncoder.getCurrentPosition()+encoderOffset <= targetTicks + epsilon);
+    }
+
+    /**
+     * Auto-initializes hood(spin off highest, then reset angle counter)
+     * WARNING:Blocking
+     */
+    public void initHoodAngleBlocking(){
+        hoodEncoder.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
+        while((hoodEncoder.getCurrentPosition()+encoderOffset)> -3*ticksPerRevHood) hoodServo.setPower(1);
+        hoodServo.setPower(0);
+        hoodEncoder.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
+    }
+
+    /**
+     * Resets hood angle counter to highest(gear off)(AKA 0)
+     * Will cause left-back drivetrain motor to temporarily lose power,
+     * FOR USE IN EMERGENCIES ONLY
+     */
+    public void resetHoodAngle(){
+        hoodEncoder.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
+        encoderOffset=0;
+    }
+
+    /**
+     * Stops hood servo
+     */
+    public void stopHood(){
+        hoodServo.setPower(0);
+    }
+
+    /**
+     * Transfer artifact to flywheel(move transfer up)
+     */
+    public void transferUp(){this.transfer.setPower(transferpowers[0]);}
+    /**
+     * Lower Transfer
+     */
+    public void transferDown(){
+        this.transfer.setPower(transferpowers[1]);
+    }
+
+    /**
+     * Spin flywheel to speed
+     * @param targetSpeed Target flywheel speed in encoder ticks/sec.
+     * @param tolerance Tolerance in ticks/sec. from target speed to return true.
+     * @return If flywheel is up to speed.
+     */
+    public boolean spin_flywheel(double targetSpeed, int tolerance){
+        DcMotorEx flywheelDriveEx=this.flywheelDriveR;
+        flywheelDriveEx.setVelocity(targetSpeed);
+        flywheelDrive.setVelocity(targetSpeed);
+        return targetSpeed - tolerance <= flywheelDriveEx.getVelocity() && flywheelDriveEx.getVelocity() <= targetSpeed + tolerance;
+    }
+}

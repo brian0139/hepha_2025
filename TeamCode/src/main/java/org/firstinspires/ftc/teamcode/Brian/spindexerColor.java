@@ -13,32 +13,47 @@ import org.firstinspires.ftc.teamcode.Alvin.colorSensor;
 import org.firstinspires.ftc.teamcode.Stanley.finalizedClasses.PID;
 
 public class spindexerColor {
+    //==================== Hardware ====================
     public CRServo spindexerServo = null;
-    public DcMotor intake=null;
-    public double adjust=0.1;
-    ElapsedTime timer = new ElapsedTime();
+    public DcMotor intake = null;
+    AnalogInput spindexerSensor;
     colorSensor outtakesensor;
     public colorSensor intakesensor;
-    AnalogInput spindexerSensor;
-    public double[] kS={1.1,1.5,0.017};
-    public double[] inslotsV={0.678,1.755,2.833};
-    public double[] outslotsV={2.285,0.131,1.2};
-    int numGreen=0;
-    int numPurple=0;
 
-    public PID spindexerPID = new PID(kS[0], kS[1], kS[2]);
-    double detectedLocation = 0;
-    public double mindetectiontime=300;
-    public double maxdetectiontime=500;
-    public double spinspeed=0.35;
-    boolean lastDetected=false;
-    public int detectioncnt=-1;
+    //==================== Timers ====================
+    ElapsedTime timer = new ElapsedTime();
+    ElapsedTime intakeTimer = new ElapsedTime();
+
+    //==================== State Vars ====================
+    boolean waitingCSIntegration = false;
+    boolean lastDetected = false;
     boolean detectedLastLoop = false;
+    public boolean ballIn = false;
+
+    //==================== Detection Data ====================
+    double detectedLocation = 0;
+    public int detectioncnt = -1;
+    int numGreen = 0;
+    int numPurple = 0;
+
+    //==================== Spindexer Slot State ====================
     public int[] spindexerSlots = {0, 0, 0}; //0 none, 1 green, 2 purple
-    public int currentSlot=0;
+    public int currentSlot = 0;
     public int[] dummyMotif = {1, 2, 2};
     public int[] currentMotifPattern = null;
-    public boolean ballIn=false;
+
+    //==================== Configs ====================
+    public double adjust = 0.1;
+    public double spinspeed = 0.5;
+    public double mindetectiontime = 300;
+    public double maxdetectiontime = 500;
+    static final double CSIntegrationTimeMS = 100;
+    public double[] kS = {1.0, 0.013, 0.014};
+    public double[] inslotsV = {2.285, 0.131, 1.27};
+    public double[] outslotsV = {0.678, 1.755, 2.833};
+
+    //==================== PID ====================
+    public PID spindexerPID = new PID(kS[0], kS[1], kS[2]);
 
     public spindexerColor(CRServo spindexerServo, DcMotor intake, HardwareMap hardwareMap) {
         this.spindexerServo = spindexerServo;
@@ -93,9 +108,9 @@ public class spindexerColor {
 
     public void initSpin() {
         detectedLocation = -1;
+        detectioncnt=0;
         timer.reset();
         lastDetected=false;
-        spindexerServo.setPower(spinspeed);
     }
 
     /**
@@ -109,17 +124,24 @@ public class spindexerColor {
         if (detectioncnt==3){
             return true;
         }
-        double epsilon = 0.01;
+        double epsilon = 0.09;
         if (!((spindexerSensor.getVoltage()>=inslotsV[currentSlot]-epsilon)&&(spindexerSensor.getVoltage()<=inslotsV[currentSlot]+epsilon))){
-            spindexerServo.setPower(Math.max(spindexerPID.update(calculateError(inslotsV[currentSlot],spindexerSensor.getVoltage())),0.75));
+            spindexerServo.setPower(Math.min(spindexerPID.update(calculateError(inslotsV[currentSlot],spindexerSensor.getVoltage())),0.75));
         }else{
-            detectioncnt++;
-            currentSlot++;
-            currentSlot%=3;
-            if (intakesensor.getDetected()==0){
-                spindexerServo.setPower(0);
-                ballIn=true;
-                return true;
+            if (!waitingCSIntegration){
+                waitingCSIntegration=true;
+                intakeTimer.reset();
+            }
+            if (intakeTimer.milliseconds()>=CSIntegrationTimeMS) {
+                waitingCSIntegration=false;
+                if (intakesensor.getDetected() == 0) {
+                    spindexerServo.setPower(0);
+                    ballIn = true;
+                    return true;
+                }
+                detectioncnt++;
+                currentSlot++;
+                currentSlot %= 3;
             }
         }
         ballIn=false;
