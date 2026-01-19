@@ -126,7 +126,7 @@ public class teleOpMainNew extends OpMode {
     // ==================== TESTING ====================
     int makeBallCnt=-1;
     double maxFlywheelSpeed=0;
-    File file= AppUtil.getInstance().getSettingsFile("shootingData.csv");
+    File file= AppUtil.getInstance().getSettingsFile("./sdcard/FIRST/shootingData.csv");
     //Header
     StringBuilder data = new StringBuilder("Make Ball Cnt,Hood Encoder,Flywheel Speed, Distance, Real Max Flywheel Speed\n");
 
@@ -332,6 +332,7 @@ public class teleOpMainNew extends OpMode {
     }
 
     // ==================== DRIVETRAIN CONTROL ====================
+
     void updateDrivetrain() {
         // Base control from analog sticks
         double drive = -gamepad1.left_stick_y * DRIVE_SPEED;
