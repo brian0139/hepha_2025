@@ -82,7 +82,7 @@ public class tuningSpindexer extends LinearOpMode {
                 line1+=", ";
             }
             if (gamepad1.xWasPressed()){
-                spindexerOperator.spindexerPID=new PIDspindexer(spindexerOperator.kS[0],spindexerOperator.kS[1],spindexerOperator.kS[2]);
+                spindexerOperator.spindexerPID=new PID(spindexerOperator.kS[0],spindexerOperator.kS[1],spindexerOperator.kS[2]);
             }
 //            boolean atTarget=false;
             if (correctingtoggle){

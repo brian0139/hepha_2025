@@ -1,30 +1,25 @@
 package org.firstinspires.ftc.teamcode.Stanley.finalizedOpmodes;
 
 import com.acmerobotics.dashboard.FtcDashboard;
-import com.qualcomm.robotcore.hardware.AnalogInput;
-import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.AnalogInput;
 import com.qualcomm.robotcore.hardware.CRServo;
+import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.util.ElapsedTime;
-import com.qualcomm.robotcore.util.ReadWriteFile;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
-import org.firstinspires.ftc.robotcore.internal.system.AppUtil;
 import org.firstinspires.ftc.teamcode.Brian.spindexerColor;
 import org.firstinspires.ftc.teamcode.MecanumDrive;
 import org.firstinspires.ftc.teamcode.Stanley.finalizedClasses.opModeDataTransfer;
-import org.firstinspires.ftc.teamcode.Stanley.finalizedClasses.outtakeV3;
 import org.firstinspires.ftc.teamcode.Stanley.finalizedClasses.outtakeV3FittedAutolaunch;
 
-import java.io.File;
-import java.lang.Math;
 import java.util.Map;
 
 @TeleOp
-public class teleOpMainNew extends OpMode {
+public class teleOpMainWaitFlywheel extends OpMode {
 
     // ==================== STATE MACHINE ENUMS ====================
     enum FlywheelState {
@@ -232,7 +227,7 @@ public class teleOpMainNew extends OpMode {
             }
         }
         //TODO:Testing
-        if (flywheelState!=FlywheelState.STOPPED){
+        if (flywheelState!= FlywheelState.STOPPED){
             maxFlywheelSpeed=Math.max(maxFlywheelSpeed,flywheelR.getVelocity());
         }
     }
@@ -244,7 +239,7 @@ public class teleOpMainNew extends OpMode {
                 if (gamepad2.xWasPressed()) {
                     transfer.setPower(TRANSFER_POWERS[TRANSFER_UP]);
                     transferState = TransferState.UP;
-                    spindexerState=SpindexerState.OUTTAKE;
+                    spindexerState= SpindexerState.OUTTAKE;
                     intake.setPower(0.75);
                 }
                 break;
@@ -254,14 +249,14 @@ public class teleOpMainNew extends OpMode {
                     transfer.setPower(-1);
                     transferState = TransferState.DOWN;
                     transferTimer.reset();
-                    spindexerState=SpindexerState.STOPPED;
+                    spindexerState= SpindexerState.STOPPED;
                     intake.setPower(0);
                 }
                 break;
             case DOWN:
                 if (transferTimer.milliseconds()>=500){
                     transfer.setPower(0);
-                    transferState=TransferState.STOPPED;
+                    transferState= TransferState.STOPPED;
                     break;
                 }
         }
@@ -277,17 +272,17 @@ public class teleOpMainNew extends OpMode {
         if (gamepad1.yWasPressed()){
             switch (spindexerState){
                 case STOPPED:
-                    spindexerState=SpindexerState.INTAKE;
+                    spindexerState= SpindexerState.INTAKE;
                     spindexerOperator.initSpin();
                     break;
                 case HOLDING:
                 case INTAKE:
-                    spindexerState=SpindexerState.STOPPED;
+                    spindexerState= SpindexerState.STOPPED;
                     break;
             }
         }
         if (gamepad1.left_bumper || gamepad1.right_bumper ||gamepad2.right_bumper){
-            spindexerState=SpindexerState.MANUAL;
+            spindexerState= SpindexerState.MANUAL;
             if (gamepad1.left_bumper){
                 spindexer.setPower(-1);
             }
@@ -296,10 +291,10 @@ public class teleOpMainNew extends OpMode {
             }
         }
         if (gamepad1.leftBumperWasReleased() || gamepad1.rightBumperWasReleased() ||gamepad2.rightBumperWasReleased()){
-            spindexerState=SpindexerState.STOPPED;
+            spindexerState= SpindexerState.STOPPED;
             spindexer.setPower(0);
         }
-        if (spindexerState==SpindexerState.INTAKE){
+        if (spindexerState== SpindexerState.INTAKE){
             boolean result=spindexerOperator.spinToIntake();
             intake.setPower(0.7);
             if (result){
@@ -309,20 +304,20 @@ public class teleOpMainNew extends OpMode {
                 gamepad1.rumble(100);
             }
         }
-        else if (spindexerState==SpindexerState.STOPPED){
+        else if (spindexerState== SpindexerState.STOPPED){
             spindexer.setPower(0);
         }
-        else if (spindexerState==SpindexerState.HOLDING){
+        else if (spindexerState== SpindexerState.HOLDING){
             spindexerOperator.holdSpindexer();
             if (spindexerOperator.intakesensor.isGreen() || spindexerOperator.intakesensor.isPurple()){
-                spindexerState=SpindexerState.INTAKE;
+                spindexerState= SpindexerState.INTAKE;
                 spindexerOperator.initSpin();
             }
         }
-        else if (spindexerState==SpindexerState.OUTTAKE){
+        else if (spindexerState== SpindexerState.OUTTAKE){
             spindexer.setPower(0.7);
         }
-        else if (spindexerState==SpindexerState.OUTTAKE_SORTED){
+        else if (spindexerState== SpindexerState.OUTTAKE_SORTED){
             spindexerOperator.spinToMotif(1);
         }
     }
@@ -354,7 +349,7 @@ public class teleOpMainNew extends OpMode {
         };
 
         double max = Math.abs(speeds[0]);
-        for (int i = 0; i < speeds.length; i++) {
+        for (int i = 1; i < speeds.length; i++) {
             if (Math.abs(speeds[i]) > max) {
                 max = Math.abs(speeds[i]);
             }
@@ -380,8 +375,8 @@ public class teleOpMainNew extends OpMode {
         dashboardtelemetry.addData("Target Speed",flywheelSpeed);
         dashboardtelemetry.addData("Actual Speed",flywheel.getVelocity());
         telemetry.addLine("=== Toggles ===");
-        telemetry.addData("Auto Hood",hoodState==HoodState.AUTO);
-        telemetry.addData("Auto Turret",turretState==TurretState.AUTO);
+        telemetry.addData("Auto Hood",hoodState== HoodState.AUTO);
+        telemetry.addData("Auto Turret",turretState== TurretState.AUTO);
         telemetry.addLine("=== Spindexer ===");
         telemetry.addData("State",spindexerState);
         telemetry.addData("Hue",spindexerOperator.intakesensor.readHSV()[0]);
@@ -419,21 +414,21 @@ public class teleOpMainNew extends OpMode {
         if (gamepad2.dpadUpWasPressed()){
             switch (hoodState){
                 case MANUAL:
-                    hoodState=HoodState.AUTO;
+                    hoodState= HoodState.AUTO;
                     break;
                 case AUTO:
-                    hoodState=HoodState.MANUAL;
+                    hoodState= HoodState.MANUAL;
                     break;
             }
         }
         if (gamepad2.dpadDownWasPressed()){
             switch (turretState){
                 case MANUAL:
-                    turretState=TurretState.AUTO;
+                    turretState= TurretState.AUTO;
                     outtakeOperator.turnPID.init();
                     break;
                 case AUTO:
-                    turretState=TurretState.MANUAL;
+                    turretState= TurretState.MANUAL;
                     break;
             }
         }
@@ -465,7 +460,7 @@ public class teleOpMainNew extends OpMode {
 //        dashboardtelemetry.addData("I",outtakeOperator.hoodPID.Id);
 //        dashboardtelemetry.addData("D",outtakeOperator.hoodPID.Dd);
 //        if (hoodState==HoodState.AUTO && outtakeOperator.apriltag.hasValidTarget()){
-        if (hoodState==HoodState.AUTO){
+        if (hoodState== HoodState.AUTO){
             if (timer.milliseconds()>=1000) {
                 output = outtakeOperator.findOptimalLaunch(outtakeOperator.getDistance());
                 if (Double.parseDouble(output.get("velocity"))>=0) {
@@ -479,7 +474,7 @@ public class teleOpMainNew extends OpMode {
         }else{
             updateHoodControl();
         }
-        if (turretState==TurretState.AUTO){
+        if (turretState== TurretState.AUTO){
 //            outtakeOperator.setPipeLine(5);
             outtakeOperator.autoturn();
         }else{

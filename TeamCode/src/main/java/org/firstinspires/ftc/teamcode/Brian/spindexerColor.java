@@ -54,7 +54,7 @@ public class spindexerColor {
     public double[] outslotsV = {0.678, 1.755, 2.833};
 
     //==================== PID ====================
-    public PIDspindexer spindexerPID = new PIDspindexer(kS[0], kS[1], kS[2]);
+    public PID spindexerPID = new PID(kS[0], kS[1], kS[2]);
 
     public spindexerColor(CRServo spindexerServo, DcMotor intake, HardwareMap hardwareMap) {
         this.spindexerServo = spindexerServo;
