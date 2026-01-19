@@ -93,9 +93,7 @@ public class AutonRedPath_Far_FarShoot extends LinearOpMode {
                             .stopAndAdd(new SpinFlywheel(flywheelSpeed,50))
                             .waitSeconds(waitTime)
                             //Shooting Sequence 0
-                            .stopAndAdd(new TurretAutoAimUntilAligned())
                             .stopAndAdd(new transferUp())
-                            .stopAndAdd(new TurretAutoAimUntilAligned())
                             .stopAndAdd(new RunIntake())
                             .stopAndAdd(new TurretAutoAimUntilAligned())
                             .stopAndAdd(new startspindexer())
@@ -122,9 +120,7 @@ public class AutonRedPath_Far_FarShoot extends LinearOpMode {
                             .stopAndAdd(new SpinFlywheel(flywheelSpeed,50))
                             .strafeToLinearHeading(new Vector2d(row3XPos, intakeStarty), shootingAngle)
                             //Shoot Sequence 3
-                            .stopAndAdd(new TurretAutoAimUntilAligned())
                             .stopAndAdd(new transferUp())
-                            .stopAndAdd(new TurretAutoAimUntilAligned())
                             .stopAndAdd(new RunIntake())
                             .stopAndAdd(new TurretAutoAimUntilAligned())
                             .stopAndAdd(new startspindexer())
@@ -153,9 +149,7 @@ public class AutonRedPath_Far_FarShoot extends LinearOpMode {
                             .stopAndAdd(new SpinFlywheel(flywheelSpeed,50))
                             .strafeToLinearHeading(new Vector2d(row2XPos, intakeStarty), shootingAngle)
                             //Shoot Sequence 2
-                            .stopAndAdd(new TurretAutoAimUntilAligned())
                             .stopAndAdd(new transferUp())
-                            .stopAndAdd(new TurretAutoAimUntilAligned())
                             .stopAndAdd(new RunIntake())
                             .stopAndAdd(new TurretAutoAimUntilAligned())
                             .stopAndAdd(new startspindexer())
@@ -182,9 +176,7 @@ public class AutonRedPath_Far_FarShoot extends LinearOpMode {
                             .stopAndAdd(new SpinFlywheel(flywheelSpeed,50))
                             .strafeToLinearHeading(new Vector2d(row3XPos, intakeStarty), shootingAngle)
                             //Shoot Sequence 3
-                            .stopAndAdd(new TurretAutoAimUntilAligned())
                             .stopAndAdd(new transferUp())
-                            .stopAndAdd(new TurretAutoAimUntilAligned())
                             .stopAndAdd(new RunIntake())
                             .stopAndAdd(new TurretAutoAimUntilAligned())
                             .stopAndAdd(new startspindexer())
