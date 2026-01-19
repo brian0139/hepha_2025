@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.Stanley.autonPath;
+package org.firstinspires.ftc.teamcode.Aaron.autonPath;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
@@ -20,7 +20,6 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.Alvin.intake;
 import org.firstinspires.ftc.teamcode.Brian.spindexerColor;
 import org.firstinspires.ftc.teamcode.MecanumDrive;
-import org.firstinspires.ftc.teamcode.Stanley.finalizedClasses.outtakeV2;
 import org.firstinspires.ftc.teamcode.Stanley.finalizedClasses.outtakeV3;
 
 @Autonomous
