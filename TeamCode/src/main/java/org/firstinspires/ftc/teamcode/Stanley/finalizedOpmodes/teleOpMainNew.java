@@ -286,11 +286,12 @@ public class teleOpMainNew extends OpMode {
                     break;
             }
         }
-        if (gamepad1.leftBumperWasPressed() || gamepad1.rightBumperWasPressed() ||gamepad2.rightBumperWasPressed()){
+        if (gamepad1.left_bumper || gamepad1.right_bumper ||gamepad2.right_bumper){
             spindexerState=SpindexerState.MANUAL;
-            if (gamepad1.leftBumperWasPressed()){
+            if (gamepad1.left_bumper){
                 spindexer.setPower(-1);
-            }else if (gamepad1.rightBumperWasPressed() || gamepad2.rightBumperWasPressed()){
+            }
+            if (gamepad1.right_bumper || gamepad2.right_bumper){
                 spindexer.setPower(1);
             }
         }
