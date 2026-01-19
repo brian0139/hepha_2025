@@ -8,6 +8,7 @@ import com.qualcomm.robotcore.hardware.CRServo;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.Stanley.finalizedClasses.PID;
+import org.firstinspires.ftc.teamcode.Stanley.finalizedClasses.PIDspindexer;
 
 @TeleOp
 public class tuningSpindexer extends LinearOpMode {
@@ -81,7 +82,7 @@ public class tuningSpindexer extends LinearOpMode {
                 line1+=", ";
             }
             if (gamepad1.xWasPressed()){
-                spindexerOperator.spindexerPID=new PID(spindexerOperator.kS[0],spindexerOperator.kS[1],spindexerOperator.kS[2]);
+                spindexerOperator.spindexerPID=new PIDspindexer(spindexerOperator.kS[0],spindexerOperator.kS[1],spindexerOperator.kS[2]);
             }
 //            boolean atTarget=false;
             if (correctingtoggle){

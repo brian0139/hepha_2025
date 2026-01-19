@@ -11,6 +11,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.Alvin.colorSensor;
 import org.firstinspires.ftc.teamcode.Stanley.finalizedClasses.PID;
+import org.firstinspires.ftc.teamcode.Stanley.finalizedClasses.PIDspindexer;
 
 public class spindexerColor {
     //==================== Hardware ====================
@@ -48,12 +49,12 @@ public class spindexerColor {
     public double mindetectiontime = 300;
     public double maxdetectiontime = 500;
     static final double CSIntegrationTimeMS = 100;
-    public double[] kS = {1.1, 0.013, 0.014};
+    public double[] kS = {1.06, 0.03, 0.014};
     public double[] inslotsV = {2.285, 0.131, 1.27};
     public double[] outslotsV = {0.678, 1.755, 2.833};
 
     //==================== PID ====================
-    public PID spindexerPID = new PID(kS[0], kS[1], kS[2]);
+    public PIDspindexer spindexerPID = new PIDspindexer(kS[0], kS[1], kS[2]);
 
     public spindexerColor(CRServo spindexerServo, DcMotor intake, HardwareMap hardwareMap) {
         this.spindexerServo = spindexerServo;
