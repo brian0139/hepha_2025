@@ -42,6 +42,7 @@ public class teleOpMainNew extends OpMode {
     enum SpindexerState {
         STOPPED,
         HOLDING,
+        MANUAL,
         INTAKE,
         OUTTAKE,
         OUTTAKE_SORTED
@@ -164,6 +165,8 @@ public class teleOpMainNew extends OpMode {
         spindexerOperator=new spindexerColor(spindexer,intake,hardwareMap);
         drive=new MecanumDrive(hardwareMap, opModeDataTransfer.currentPose);
         outtakeOperator=new outtakeV3FittedAutolaunch(hardwareMap,"Red",true,drive);
+        outtakeOperator.aprilTagPipeline=0;
+        outtakeOperator.setPipeLine(0);
         outtakeOperator.encoderOffset=opModeDataTransfer.currentHood;
         outtakeOperator.apriltag.init();
 
@@ -282,6 +285,18 @@ public class teleOpMainNew extends OpMode {
                     spindexerState=SpindexerState.STOPPED;
                     break;
             }
+        }
+        if (gamepad1.leftBumperWasPressed() || gamepad1.rightBumperWasPressed() ||gamepad2.rightBumperWasPressed()){
+            spindexerState=SpindexerState.MANUAL;
+            if (gamepad1.leftBumperWasPressed()){
+                spindexer.setPower(-1);
+            }else if (gamepad1.rightBumperWasPressed() || gamepad2.rightBumperWasPressed()){
+                spindexer.setPower(1);
+            }
+        }
+        if (gamepad1.leftBumperWasReleased() || gamepad1.rightBumperWasReleased() ||gamepad2.rightBumperWasReleased()){
+            spindexerState=SpindexerState.STOPPED;
+            spindexer.setPower(0);
         }
         if (spindexerState==SpindexerState.INTAKE){
             boolean result=spindexerOperator.spinToIntake();
