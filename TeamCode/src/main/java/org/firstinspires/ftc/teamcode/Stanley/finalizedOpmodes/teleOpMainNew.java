@@ -124,11 +124,11 @@ public class teleOpMainNew extends OpMode {
     Telemetry dashboardtelemetry=dashboard.getTelemetry();
 
     // ==================== TESTING ====================
-    int makeBallCnt=-1;
+//    int makeBallCnt=-1;
     double maxFlywheelSpeed=0;
-    File file= AppUtil.getInstance().getSettingsFile("./sdcard/FIRST/shootingData.csv");
-    //Header
-    StringBuilder data = new StringBuilder("Make Ball Cnt,Hood Encoder,Flywheel Speed, Distance, Real Max Flywheel Speed\n");
+//    File file= AppUtil.getInstance().getSettingsFile("./sdcard/FIRST/shootingData.csv");
+//    //Header
+//    StringBuilder data = new StringBuilder("Make Ball Cnt,Hood Encoder,Flywheel Speed, Distance, Real Max Flywheel Speed\n");
 
     // ==================== INITIALIZATION ====================
     @Override
@@ -392,6 +392,16 @@ public class teleOpMainNew extends OpMode {
         dashboardtelemetry.addData("Has Target",outtakeOperator.apriltag.hasValidTarget());
         dashboardtelemetry.addData("Offset(Deg)",outtakeOperator.apriltag.getYaw());
         dashboardtelemetry.addData("Power",outtakeOperator.turnPID.power);
+        dashboardtelemetry.addData("Distance",outtakeOperator.getDistance());
+        telemetry.addLine("=== LOG ===");
+        telemetry.addData("Hood Encoder(LOG)",outtakeOperator.hoodEncoder.getCurrentPosition());
+        telemetry.addData("Flywheel Target Speed(LOG)",flywheelSpeed);
+        telemetry.addData("Distance(LOG)",outtakeOperator.getDistance());
+        telemetry.addData("Max Flywheel Speed(LOG)",maxFlywheelSpeed);
+        dashboardtelemetry.addData("Hood Encoder(LOG)",outtakeOperator.hoodEncoder.getCurrentPosition());
+        dashboardtelemetry.addData("Flywheel Target Speed(LOG)",flywheelSpeed);
+        dashboardtelemetry.addData("Distance(LOG)",outtakeOperator.getDistance());
+        dashboardtelemetry.addData("Max Flywheel Speed(LOG)",maxFlywheelSpeed);
 
         telemetry.update();
         dashboardtelemetry.update();
@@ -425,26 +435,22 @@ public class teleOpMainNew extends OpMode {
                     break;
             }
         }
-        if (gamepad2.rightStickButtonWasPressed()){
-            data.append(makeBallCnt).append(",")
-                    .append(outtakeOperator.hoodEncoder.getCurrentPosition()).append(",")
-                    .append(flywheelSpeed).append(",")
-                    .append(outtakeOperator.getDistance()).append(",")
-                    .append(maxFlywheelSpeed).append("\n");
+//        if (gamepad2.rightStickButtonWasPressed()){
+//            data.append(makeBallCnt).append(",")
+//                    .append(outtakeOperator.hoodEncoder.getCurrentPosition()).append(",")
+//                    .append(flywheelSpeed).append(",")
+//                    .append(outtakeOperator.getDistance()).append(",")
+//                    .append(maxFlywheelSpeed).append("\n");
 //            dashboardtelemetry.addData("Make Ball Cnt(LOG)",makeBallCnt);
-//            dashboardtelemetry.addData("Hood Encoder(LOG)",outtakeOperator.hoodEncoder.getCurrentPosition());
-//            dashboardtelemetry.addData("Flywheel Target Speed(LOG)",flywheelSpeed);
-//            dashboardtelemetry.addData("Distance(LOG)",outtakeOperator.getDistance());
-//            dashboardtelemetry.addData("Max Flywheel Speed(LOG)",maxFlywheelSpeed);
-        }
-        else if (gamepad2.dpadLeftWasPressed()){
-            makeBallCnt--;
-        }
-        else if (gamepad2.dpadRightWasPressed()){
-            makeBallCnt++;
-        }
-        telemetry.addData("Make Ball Count",makeBallCnt);
-        dashboardtelemetry.addData("Make Ball Count",makeBallCnt);
+//        }
+//        else if (gamepad2.dpadLeftWasPressed()){
+//            makeBallCnt--;
+//        }
+//        else if (gamepad2.dpadRightWasPressed()){
+//            makeBallCnt++;
+//        }
+//        telemetry.addData("Make Ball Count",makeBallCnt);
+//        dashboardtelemetry.addData("Make Ball Count",makeBallCnt);
 
 //        telemetry.addData("Angle Target",Double.parseDouble(output.get("angle")));
 //        telemetry.addData("Encoder Reading",outtakeOperator.hoodEncoder.getCurrentPosition());
@@ -481,8 +487,8 @@ public class teleOpMainNew extends OpMode {
 
     @Override
     public void stop() {
-        //Save testing logs
-        ReadWriteFile.writeFile(file, data.toString());
+//        //Save testing logs
+//        ReadWriteFile.writeFile(file, data.toString());
         // Clean shutdown
         flywheel.setVelocity(0);
         intake.setPower(0);
