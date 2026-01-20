@@ -21,10 +21,11 @@ import org.firstinspires.ftc.teamcode.Alvin.intake;
 import org.firstinspires.ftc.teamcode.Brian.spindexerColor;
 import org.firstinspires.ftc.teamcode.MecanumDrive;
 import org.firstinspires.ftc.teamcode.Stanley.finalizedClasses.outtakeV3;
+import org.firstinspires.ftc.teamcode.Stanley.finalizedClasses.outtakeV3FittedAutolaunch;
 
 @Autonomous
 public class AutonRedPathV2 extends LinearOpMode {
-    outtakeV3 outtake;
+    outtakeV3FittedAutolaunch outtake;
     intake intakeSystem;
     spindexerColor spindexer;
     CRServo spindexerServo=null;
@@ -44,7 +45,8 @@ public class AutonRedPathV2 extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
         // Initialize subsystems
-        outtake = new outtakeV3(hardwareMap,"Red",true,drive);
+        outtake = new outtakeV3FittedAutolaunch(hardwareMap,"Red",true,drive);
+        outtake.setPipeLine(0);
         intakeSystem = new intake(hardwareMap,"intake","intakeSensor");
         spindexerServo=hardwareMap.get(CRServo.class,"spindexerServo");
         spindexer=new spindexerColor(spindexerServo,intakeMotor,hardwareMap);
@@ -106,7 +108,7 @@ public class AutonRedPathV2 extends LinearOpMode {
                             .strafeToLinearHeading(new Vector2d(row1XPos, intakeStarty), Math.toRadians(360-270))
                             .stopAndAdd(new RunIntake())
                             .stopAndAdd(new startspindexer())
-                            .strafeTo(new Vector2d(row1XPos,intakeFinishy))
+                            .strafeTo(new Vector2d(row1XPos,intakeFinishy+5))
 
                             //Stop Intake 1
                             .waitSeconds(waitTime)
@@ -115,7 +117,7 @@ public class AutonRedPathV2 extends LinearOpMode {
 
                             //Start Flywheel 1
                             .stopAndAdd(new SpinFlywheel(1600,50))
-                            .strafeToLinearHeading(new Vector2d(row1XPos, intakeStarty), shootingAngle)
+                            .strafeToLinearHeading(new Vector2d(row1XPos, intakeStarty-10), shootingAngle)
                             //Shoot Sequence 1
                             .stopAndAdd(new TurretAutoAimUntilAligned())
                             .stopAndAdd(new transferUp())
@@ -128,7 +130,7 @@ public class AutonRedPathV2 extends LinearOpMode {
                             .stopAndAdd(new stopspindexer())
                             .stopAndAdd(new StopIntake())
                             //Start Intake 2
-                            .strafeToLinearHeading(new Vector2d(row2XPos, intakeStarty-7), Math.toRadians(360-270))
+                            .strafeToLinearHeading(new Vector2d(row2XPos, intakeStarty-5), Math.toRadians(360-270))
                             .stopAndAdd(new RunIntake())
                             .stopAndAdd(new startspindexer())
                             .strafeTo(new Vector2d(row2XPos, intakeFinishy+3))
@@ -139,7 +141,7 @@ public class AutonRedPathV2 extends LinearOpMode {
                             .strafeToLinearHeading(new Vector2d(row2XPos, intakeStarty-7), Math.toRadians(360-270))
                             //Start Flywheel 2
                             .stopAndAdd(new SpinFlywheel(1600,50))
-                            .strafeToLinearHeading(new Vector2d(row2XPos, intakeStarty), shootingAngle)
+                            .strafeToLinearHeading(new Vector2d(row1XPos, intakeStarty-10), shootingAngle)
                             //Shoot Sequence 2
                             .stopAndAdd(new TurretAutoAimUntilAligned())
                             .stopAndAdd(new transferUp())
@@ -155,14 +157,14 @@ public class AutonRedPathV2 extends LinearOpMode {
                             .strafeToLinearHeading(new Vector2d(row3XPos, intakeStarty-10), Math.toRadians(360-270))
                             .stopAndAdd(new RunIntake())
                             .stopAndAdd(new startspindexer())
-                            .strafeTo(new Vector2d(row3XPos, intakeFinishy+3))
+                            .strafeTo(new Vector2d(row3XPos, intakeFinishy+7))
                             //Stop Intake 3
                             .waitSeconds(waitTime)
                             .stopAndAdd(new StopIntake())
                             .stopAndAdd(new stopspindexer())
                             //Start Flywheel 3
                             .stopAndAdd(new SpinFlywheel(1600,50))
-                            .strafeToLinearHeading(new Vector2d(row3XPos, intakeStarty), shootingAngle)
+                            .strafeToLinearHeading(new Vector2d(row1XPos, intakeStarty-7), shootingAngle)
                             //Shoot Sequence 3
                             .stopAndAdd(new TurretAutoAimUntilAligned())
                             .stopAndAdd(new transferUp())
