@@ -15,9 +15,9 @@ public class splintestmeepmeep {
                 .setConstraints(50, 50, Math.PI, Math.PI, 18)
                 .build();
 
-        myBot.runAction(myBot.getDrive().actionBuilder(new Pose2d(53, 58, Math.toRadians(270)))
-                .splineTo(new Vector2d(20, 20),Math.toRadians(90))
-                .splineTo(new Vector2d(38, 50),Math.toRadians(0))
+        myBot.runAction(myBot.getDrive().actionBuilder(new Pose2d(0, 0, Math.toRadians(0)))
+                .splineTo(new Vector2d(30, 30), Math.PI / 2)
+                .splineTo(new Vector2d(0, 60), Math.PI)
                 .build());
 
         meepMeep.setBackground(MeepMeep.Background.FIELD_DECODE_OFFICIAL)
