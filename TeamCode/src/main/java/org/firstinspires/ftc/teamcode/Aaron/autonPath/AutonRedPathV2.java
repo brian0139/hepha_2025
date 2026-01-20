@@ -86,17 +86,16 @@ public class AutonRedPathV2 extends LinearOpMode {
                     drive.actionBuilder(beginPose)
                             //STARTPOSITION IS FACING THE WALL!!
                             //TODO: Add hood adjustment/auto hood adjustment
-                            .stopAndAdd(new initHood())
-                            .stopAndAdd(new SetHoodAngle(45))
+//                            .stopAndAdd(new initHood())
+//                            .stopAndAdd(new SetHoodAngle(45))
                             //Start Flywheel 0
-                            //.stopAndAdd(new SpinFlywheel(1600,50))
+                            .stopAndAdd(new SpinFlywheel(1600,50))
                             .strafeToLinearHeading(shootingPos, shootingAngle)
                             //Shooting Sequence 0
                             .stopAndAdd(new transferUp())
                             .stopAndAdd(new RunIntake())
                             .stopAndAdd(new TurretAutoAimUntilAligned())
                             .stopAndAdd(new startspindexer())
-                            .stopAndAdd(new TurretAutoAimUntilAligned())
                             .waitSeconds(shootTime)
                             //Stop Sequence 0
                             .stopAndAdd(new StopFlywheel())
@@ -120,11 +119,8 @@ public class AutonRedPathV2 extends LinearOpMode {
                             //Shoot Sequence 1
                             .stopAndAdd(new TurretAutoAimUntilAligned())
                             .stopAndAdd(new transferUp())
-                            .stopAndAdd(new TurretAutoAimUntilAligned())
                             .stopAndAdd(new RunIntake())
-                            .stopAndAdd(new TurretAutoAimUntilAligned())
                             .stopAndAdd(new startspindexer())
-                            .stopAndAdd(new TurretAutoAimUntilAligned())
                             .waitSeconds(shootTime)
                             //Stop Sequence 1
                             .stopAndAdd(new StopFlywheel())
@@ -147,11 +143,8 @@ public class AutonRedPathV2 extends LinearOpMode {
                             //Shoot Sequence 2
                             .stopAndAdd(new TurretAutoAimUntilAligned())
                             .stopAndAdd(new transferUp())
-                            .stopAndAdd(new TurretAutoAimUntilAligned())
                             .stopAndAdd(new RunIntake())
-                            .stopAndAdd(new TurretAutoAimUntilAligned())
                             .stopAndAdd(new startspindexer())
-                            .stopAndAdd(new TurretAutoAimUntilAligned())
                             .waitSeconds(shootTime)
                             //Stop Sequence 2
                             .stopAndAdd(new StopFlywheel())
@@ -173,9 +166,7 @@ public class AutonRedPathV2 extends LinearOpMode {
                             //Shoot Sequence 3
                             .stopAndAdd(new TurretAutoAimUntilAligned())
                             .stopAndAdd(new transferUp())
-                            .stopAndAdd(new TurretAutoAimUntilAligned())
                             .stopAndAdd(new RunIntake())
-                            .stopAndAdd(new TurretAutoAimUntilAligned())
                             .stopAndAdd(new startspindexer())
                             .stopAndAdd(new TurretAutoAimUntilAligned())
                             .waitSeconds(shootTime)
