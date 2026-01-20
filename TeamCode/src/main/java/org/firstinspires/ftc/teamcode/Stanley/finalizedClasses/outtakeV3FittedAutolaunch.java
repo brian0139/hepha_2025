@@ -21,8 +21,6 @@ public class outtakeV3FittedAutolaunch {
     //================================  April Tag  ================================
     //April tag processor
     public aprilTagV3 apriltag;
-    //Target Apriltag pipeline
-    public int aprilTagPipeline=5;
 
     //================================  Flywheel  ================================
     //Outtake flywheel
@@ -131,7 +129,6 @@ public class outtakeV3FittedAutolaunch {
      * @return False if canceled or teamColor not found, True if successful
      */
     public boolean autoturn(){
-        setPipeLine(aprilTagPipeline);
 
 
         this.apriltag.scanOnce();
