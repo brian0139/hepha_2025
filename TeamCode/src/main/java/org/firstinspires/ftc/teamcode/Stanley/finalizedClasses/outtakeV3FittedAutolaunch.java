@@ -308,6 +308,7 @@ public class outtakeV3FittedAutolaunch {
         while((hoodEncoder.getCurrentPosition()+encoderOffset)> -3*ticksPerRevHood) hoodServo.setPower(1);
         hoodServo.setPower(0);
         hoodEncoder.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
+        hoodEncoder.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
     }
 
     /**
@@ -317,6 +318,7 @@ public class outtakeV3FittedAutolaunch {
      */
     public void resetHoodAngle(){
         hoodEncoder.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
+        hoodEncoder.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
         encoderOffset=0;
     }
 
