@@ -35,7 +35,7 @@ public class AutonRedPathV2 extends LinearOpMode {
     DcMotorEx flywheelR=null;
     CRServo hood=null;
     AnalogInput hoodSensor=null;
-    Pose2d beginPose=new Pose2d(-57.5, 43.5, Math.toRadians(126));
+    Pose2d beginPose=new Pose2d(-57.5, 43.5, Math.toRadians(306));
     MecanumDrive drive=null;
     NormalizedColorSensor intakeSensor;
     FtcDashboard dashboard;
@@ -89,7 +89,7 @@ public class AutonRedPathV2 extends LinearOpMode {
                             .stopAndAdd(new initHood())
                             .stopAndAdd(new SetHoodAngle(45))
                             //Start Flywheel 0
-                            .stopAndAdd(new SpinFlywheel(1600,50))
+                            //.stopAndAdd(new SpinFlywheel(1600,50))
                             .strafeToLinearHeading(shootingPos, shootingAngle)
                             //Shooting Sequence 0
                             .stopAndAdd(new transferUp())
