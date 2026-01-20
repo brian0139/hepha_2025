@@ -21,8 +21,6 @@ public class outtakeV3FittedAutolaunch {
     //================================  April Tag  ================================
     //April tag processor
     public aprilTagV3 apriltag;
-    //Target Apriltag pipeline
-    public int aprilTagPipeline=5;
 
     //================================  Flywheel  ================================
     //Outtake flywheel
@@ -131,7 +129,6 @@ public class outtakeV3FittedAutolaunch {
      * @return False if canceled or teamColor not found, True if successful
      */
     public boolean autoturn(){
-        setPipeLine(aprilTagPipeline);
 
 
         this.apriltag.scanOnce();
@@ -260,8 +257,7 @@ public class outtakeV3FittedAutolaunch {
      * @return Map<string,string> with keys: angle, velocity(in encoder ticks/s)
      */
     public Map<String,String> findOptimalLaunch(double distance) {
-        distance=distance/12;
-        if (distance < 2){
+        if (distance < 25.2){
             return new HashMap<>(Map.of(
                     "angle", Double.toString(-1.0),
                     "velocity", Double.toString(-1.0)
@@ -269,15 +265,15 @@ public class outtakeV3FittedAutolaunch {
         }else{
             double velocity;
             double angle;
-            if (distance<=10){
-                velocity = (-0.026538 * Math.pow(distance, 8)) + (1.389385 * Math.pow(distance, 7)) + (-30.703869 * Math.pow(distance, 6)) + (372.125992 * Math.pow(distance, 5)) + (-2687.917411 * Math.pow(distance, 4)) + (11750.907242 * Math.pow(distance, 3)) + (-30025.995039 * Math.pow(distance, 2)) + (40413.434523 * distance) + (-20037.5);
+            if (distance<=60.2){
+                velocity = (0.001292 * Math.pow(distance, 4)) + (-0.202462 * Math.pow(distance, 3)) + (11.418102 * Math.pow(distance, 2)) + (-267.783745 * distance) + (3791.182542);
             }else{
-                velocity=autoCalculationFunctions.interpolate(new double[]{distance,10,11,0,0,2040,2100})[1];
+                velocity=(0.002871 * Math.pow(distance, 3)) + (-0.9114 * Math.pow(distance, 2)) + (98.260385 * distance) + (-1390.717691);
             }
-            if (distance<=7){
-                angle = (-0.04775 * Math.pow(distance, 5)) + (0.90375 * Math.pow(distance, 4)) + (-6.58875 * Math.pow(distance, 3)) + (23.77625 * Math.pow(distance, 2)) + (-42.8635 * distance) + (67.59);
+            if (distance<=60.2){
+                angle = (-0.002594 * Math.pow(distance, 4)) + (0.179021 * Math.pow(distance, 3)) + (7.163897 * Math.pow(distance, 2)) + (-759.400699 * distance) + (19466.886344);
             }else{
-                angle = (0.295 * Math.pow(distance, 2)) + (-3.125 * distance) + (47.43);
+                angle = (0.019954 * Math.pow(distance, 3)) + (-3.402398 * Math.pow(distance, 2)) + (101.682974 * distance) + (6552.759184);
             }
             return new HashMap<>(Map.of(
                     "angle", Double.toString(angle),
@@ -308,6 +304,7 @@ public class outtakeV3FittedAutolaunch {
         while((hoodEncoder.getCurrentPosition()+encoderOffset)> -3*ticksPerRevHood) hoodServo.setPower(1);
         hoodServo.setPower(0);
         hoodEncoder.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
+        hoodEncoder.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
     }
 
     /**
@@ -317,6 +314,7 @@ public class outtakeV3FittedAutolaunch {
      */
     public void resetHoodAngle(){
         hoodEncoder.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
+        hoodEncoder.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
         encoderOffset=0;
     }
 

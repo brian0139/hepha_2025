@@ -8,6 +8,7 @@ import com.qualcomm.robotcore.hardware.CRServo;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.Stanley.finalizedClasses.PID;
+import org.firstinspires.ftc.teamcode.Stanley.finalizedClasses.PIDspindexer;
 
 @TeleOp
 public class tuningSpindexer extends LinearOpMode {
