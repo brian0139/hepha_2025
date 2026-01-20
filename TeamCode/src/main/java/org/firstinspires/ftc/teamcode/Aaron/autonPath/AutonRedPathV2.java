@@ -35,7 +35,7 @@ public class AutonRedPathV2 extends LinearOpMode {
     DcMotorEx flywheelR=null;
     CRServo hood=null;
     AnalogInput hoodSensor=null;
-    Pose2d beginPose=new Pose2d(-57.5, 43.5, Math.toRadians(306));
+    Pose2d beginPose=new Pose2d(-57.5, 43.5, Math.toRadians(126));
     MecanumDrive drive=null;
     NormalizedColorSensor intakeSensor;
     FtcDashboard dashboard;
@@ -86,8 +86,8 @@ public class AutonRedPathV2 extends LinearOpMode {
                     drive.actionBuilder(beginPose)
                             //STARTPOSITION IS FACING THE WALL!!
                             //TODO: Add hood adjustment/auto hood adjustment
-//                            .stopAndAdd(new initHood())
-//                            .stopAndAdd(new SetHoodAngle(45))
+                            .stopAndAdd(new initHood())
+                            .stopAndAdd(new SetHoodAngle(45))
                             //Start Flywheel 0
                             .stopAndAdd(new SpinFlywheel(1600,50))
                             .strafeToLinearHeading(shootingPos, shootingAngle)
@@ -106,7 +106,7 @@ public class AutonRedPathV2 extends LinearOpMode {
                             .strafeToLinearHeading(new Vector2d(row1XPos, intakeStarty), Math.toRadians(360-270))
                             .stopAndAdd(new RunIntake())
                             .stopAndAdd(new startspindexer())
-                            .strafeTo(new Vector2d(row1XPos,intakeFinishy+13))
+                            .strafeTo(new Vector2d(row1XPos,intakeFinishy))
 
                             //Stop Intake 1
                             .waitSeconds(waitTime)
