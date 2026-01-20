@@ -37,7 +37,6 @@ public class testing {
 //                .stopAndAdd(new RunIntake())
 //                .stopAndAdd(new TurretAutoAimUntilAligned())
 //                .stopAndAdd(new startspindexer())
-//                .stopAndAdd(new TurretAutoAimUntilAligned())
                 .waitSeconds(shootTime)
                 //Stop Sequence 0
 //                .stopAndAdd(new StopFlywheel())
@@ -48,7 +47,7 @@ public class testing {
                 .strafeToLinearHeading(new Vector2d(row1XPos, intakeStarty), Math.toRadians(360-270))
 //                .stopAndAdd(new RunIntake())
 //                .stopAndAdd(new startspindexer())
-                .strafeTo(new Vector2d(row1XPos,intakeFinishy+13))
+                .strafeTo(new Vector2d(row1XPos,intakeFinishy))
 
                 //Stop Intake 1
                 .waitSeconds(waitTime)
@@ -61,11 +60,8 @@ public class testing {
                 //Shoot Sequence 1
 //                .stopAndAdd(new TurretAutoAimUntilAligned())
 //                .stopAndAdd(new transferUp())
-//                .stopAndAdd(new TurretAutoAimUntilAligned())
 //                .stopAndAdd(new RunIntake())
-//                .stopAndAdd(new TurretAutoAimUntilAligned())
 //                .stopAndAdd(new startspindexer())
-//                .stopAndAdd(new TurretAutoAimUntilAligned())
                 .waitSeconds(shootTime)
                 //Stop Sequence 1
 //                .stopAndAdd(new StopFlywheel())
@@ -88,11 +84,8 @@ public class testing {
                 //Shoot Sequence 2
 //                .stopAndAdd(new TurretAutoAimUntilAligned())
 //                .stopAndAdd(new transferUp())
-//                .stopAndAdd(new TurretAutoAimUntilAligned())
 //                .stopAndAdd(new RunIntake())
-//                .stopAndAdd(new TurretAutoAimUntilAligned())
 //                .stopAndAdd(new startspindexer())
-//                .stopAndAdd(new TurretAutoAimUntilAligned())
                 .waitSeconds(shootTime)
                 //Stop Sequence 2
 //                .stopAndAdd(new StopFlywheel())
@@ -114,9 +107,7 @@ public class testing {
                 //Shoot Sequence 3
 //                .stopAndAdd(new TurretAutoAimUntilAligned())
 //                .stopAndAdd(new transferUp())
-//                .stopAndAdd(new TurretAutoAimUntilAligned())
 //                .stopAndAdd(new RunIntake())
-//                .stopAndAdd(new TurretAutoAimUntilAligned())
 //                .stopAndAdd(new startspindexer())
 //                .stopAndAdd(new TurretAutoAimUntilAligned())
                 .waitSeconds(shootTime)
