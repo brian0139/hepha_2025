@@ -160,7 +160,6 @@ public class teleOpMainWaitFlywheel extends OpMode {
         spindexerOperator=new spindexerColor(spindexer,intake,hardwareMap);
         driveTrain=new MecanumDrive(hardwareMap, opModeDataTransfer.currentPose);
         outtakeOperator=new outtakeV3FittedAutolaunch(hardwareMap,"Red",true,driveTrain);
-        outtakeOperator.aprilTagPipeline=0;
         outtakeOperator.setPipeLine(0);
         outtakeOperator.encoderOffset=opModeDataTransfer.currentHood;
         outtakeOperator.apriltag.init();
