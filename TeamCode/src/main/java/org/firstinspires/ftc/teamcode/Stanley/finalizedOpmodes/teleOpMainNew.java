@@ -500,7 +500,7 @@ public class teleOpMainNew extends OpMode {
                 timer.reset();
             }
             if (Double.parseDouble(output.get("angle"))>=0){
-                outtakeOperator.setHood(Double.parseDouble(output.get("angle")));
+                outtakeOperator.setHoodEncoder(Double.parseDouble(output.get("angle")));
             }
         }else{
             updateHoodControl();

@@ -295,6 +295,13 @@ public class outtakeV3FittedAutolaunch {
         return (hoodEncoder.getCurrentPosition()+encoderOffset >= targetTicks - epsilon) && (hoodEncoder.getCurrentPosition()+encoderOffset <= targetTicks + epsilon);
     }
 
+    public boolean setHoodEncoder(double ticks){
+        double epsilon=40;
+        double power=hoodPID.update(ticks-hoodEncoder.getCurrentPosition()+encoderOffset);
+        hoodServo.setPower(-power);
+        return (hoodEncoder.getCurrentPosition()+encoderOffset >= ticks - epsilon) && (hoodEncoder.getCurrentPosition()+encoderOffset <= ticks + epsilon);
+    }
+
     /**
      * Auto-initializes hood(spin off highest, then reset angle counter)
      * WARNING:Blocking
