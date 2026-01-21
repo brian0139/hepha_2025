@@ -303,6 +303,18 @@ public class outtakeV3FittedAutolaunch {
     }
 
     /**
+     * Set the hood angle to a specific degree
+     * @param encoderTicks degrees from hood to horizontal(cnt. clockwise)
+     * @return if hood is at position
+     */
+    public boolean setHoodEncoder(double encoderTicks){
+        double epsilon=40;
+        double power=hoodPID.update(encoderTicks-hoodEncoder.getCurrentPosition()+encoderOffset);
+        hoodServo.setPower(-power);
+        return (hoodEncoder.getCurrentPosition()+encoderOffset >= encoderTicks - epsilon) && (hoodEncoder.getCurrentPosition()+encoderOffset <= encoderTicks + epsilon);
+    }
+
+    /**
      * Auto-initializes hood(spin off highest, then reset angle counter)
      * WARNING:Blocking
      */
