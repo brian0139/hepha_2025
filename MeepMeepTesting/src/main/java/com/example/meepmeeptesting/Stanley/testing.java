@@ -10,7 +10,7 @@ public class testing {
     public static void main(String[] args) {
         final Vector2d shootingPos=new Vector2d(-34,23);
         final double shootingAngle=Math.toRadians(155);
-        final double intakeFinishy =40;
+        final double intakeFinishy =47;
         final double intakeStarty=13;
         final double waitTime=1;
         final double shootTime=1.5;
@@ -74,7 +74,7 @@ public class testing {
                 .strafeToLinearHeading(new Vector2d(row2XPos, intakeStarty-5), Math.toRadians(360-270))
 //                .stopAndAdd(new RunIntake())
 //                .stopAndAdd(new startspindexer())
-//                .strafeTo(new Vector2d(row2XPos, intakeFinishy))
+                .strafeTo(new Vector2d(row2XPos, intakeFinishy))
                 //Stop Intake 2
                 .waitSeconds(waitTime)
 //                .stopAndAdd(new StopIntake())

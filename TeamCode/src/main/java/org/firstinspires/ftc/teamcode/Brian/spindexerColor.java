@@ -127,7 +127,7 @@ public class spindexerColor {
             return true;
         }
         double epsilon = 0.075;
-        if (Math.abs(calculateError(inslotsV[currentSlot],spindexerSensor.getVoltage()))>epsilon){
+        if (Math.abs(calculateError(inslotsV[currentSlot],spindexerSensor.getVoltage()))>epsilon && !waitingCSIntegration){
             spindexerServo.setPower(Math.min(spindexerPID.update(calculateError(inslotsV[currentSlot],spindexerSensor.getVoltage())),0.75));
         }else{
             if (!waitingCSIntegration){
