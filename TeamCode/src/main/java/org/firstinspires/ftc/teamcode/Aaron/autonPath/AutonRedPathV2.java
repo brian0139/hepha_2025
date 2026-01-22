@@ -80,7 +80,7 @@ public class AutonRedPathV2 extends LinearOpMode {
         dashboardTelemetry.update();
         telemetry.addData("Status", "Initialized");
         telemetry.update();
-        Actions.runBlocking(drive.actionBuilder(beginPose).stopAndAdd(new initHood()).build());
+        Actions.runBlocking(drive.actionBuilder(beginPose).stopAndAdd(new initHood()).stopAndAdd(new SetHoodAngle(45.2)).build());
 
         waitForStart();
 
@@ -90,9 +90,8 @@ public class AutonRedPathV2 extends LinearOpMode {
                     drive.actionBuilder(beginPose)
                             //STARTPOSITION IS FACING THE WALL!!
                             //TODO: Add hood adjustment/auto hood adjustment
-                            .stopAndAdd(new SetHoodAngle(45))
 //                            Start Flywheel 0
-                            .stopAndAdd(new SpinFlywheel(1615,50))
+                            .stopAndAdd(new SpinFlywheel(1600,50))
                             .strafeToLinearHeading(shootingPos, shootingAngle)
                             //Shooting Sequence 0
                             .stopAndAdd(new TurretAutoAimUntilAligned())
@@ -125,7 +124,7 @@ public class AutonRedPathV2 extends LinearOpMode {
                     .stopAndAdd(new stopspindexer())
 
                     //Start Flywheel 1
-                            .stopAndAdd(new SetHoodEncoder(6020))
+                    .stopAndAdd(new SetHoodEncoder(4020))
                     .stopAndAdd(new SpinFlywheel(1833,50))
                     .strafeToLinearHeading(new Vector2d(row1XPos, intakeStarty-10), shootingAngle)
                     //Shoot Sequence 1

@@ -48,7 +48,7 @@ public class outtakeV3FittedAutolaunch {
     //PID instance for hood
 //    public double[] Kh={0.0005,0.0005,0.00003};
     //35 little too low
-    public double[] Kh={0.0005,0.0005,0.00002};
+    public double[] Kh={0.0004,0.0005,0.00001};
     public PIDhood hoodPID=new PIDhood(Kh[0],Kh[1],Kh[2]);
 
     //================================  Turret  ================================
