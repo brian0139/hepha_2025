@@ -80,6 +80,7 @@ public class AutonRedPathV2 extends LinearOpMode {
         dashboardTelemetry.update();
         telemetry.addData("Status", "Initialized");
         telemetry.update();
+        Actions.runBlocking(drive.actionBuilder(beginPose).stopAndAdd(new initHood()).build());
 
         waitForStart();
 
@@ -89,8 +90,7 @@ public class AutonRedPathV2 extends LinearOpMode {
                     drive.actionBuilder(beginPose)
                             //STARTPOSITION IS FACING THE WALL!!
                             //TODO: Add hood adjustment/auto hood adjustment
-//                            .stopAndAdd(new initHood())
-//                            .stopAndAdd(new SetHoodAngle(45))
+                            .stopAndAdd(new SetHoodAngle(45))
 //                            Start Flywheel 0
                             .stopAndAdd(new SpinFlywheel(1615,50))
                             .strafeToLinearHeading(shootingPos, shootingAngle)
@@ -105,6 +105,7 @@ public class AutonRedPathV2 extends LinearOpMode {
                             .stopAndAdd(new transferOff())
                             .stopAndAdd(new stopspindexer())
                             .stopAndAdd(new StopIntake())
+                            .stopAndAdd(new ToggleSpindexer(false))
                             .build());
             //First intake
             Actions.runBlocking(new ParallelAction(drive.actionBuilder(new Pose2d(shootingPos,shootingAngle))
@@ -112,17 +113,20 @@ public class AutonRedPathV2 extends LinearOpMode {
                     .strafeToLinearHeading(new Vector2d(row1XPos, intakeStarty), Math.toRadians(360-270))
                     .stopAndAdd(new RunIntake())
                     .strafeTo(new Vector2d(row1XPos,intakeFinishy))
+                    .stopAndAdd(new ToggleSpindexer(true))
                     .build()
             ,new SpinToIntake()));
             //After first intake
             Actions.runBlocking(drive.actionBuilder(new Pose2d(new Vector2d(row1XPos,intakeFinishy),Math.toRadians(360-270)))
+                    .stopAndAdd(new ToggleSpindexer(false))
                     //Stop Intake 1
                     .waitSeconds(waitTime)
                     .stopAndAdd(new StopIntake())
                     .stopAndAdd(new stopspindexer())
 
                     //Start Flywheel 1
-                    .stopAndAdd(new SpinFlywheel(1875,50))
+                            .stopAndAdd(new SetHoodEncoder(6020))
+                    .stopAndAdd(new SpinFlywheel(1833,50))
                     .strafeToLinearHeading(new Vector2d(row1XPos, intakeStarty-10), shootingAngle)
                     //Shoot Sequence 1
                     .stopAndAdd(new TurretAutoAimUntilAligned())
@@ -144,10 +148,12 @@ public class AutonRedPathV2 extends LinearOpMode {
                     .stopAndAdd(new StopIntake())
                     .stopAndAdd(new RunIntake())
                     .strafeTo(new Vector2d(row2XPos, intakeFinishy))
+                    .stopAndAdd(new ToggleSpindexer(true))
                     .build()
                     ,new SpinToIntake()));
             //After second intake
             Actions.runBlocking(drive.actionBuilder(new Pose2d(new Vector2d(row1XPos,intakeFinishy),Math.toRadians(360-270)))
+                    .stopAndAdd(new ToggleSpindexer(false))
                     //Stop Intake 2
                     .waitSeconds(waitTime)
                     .stopAndAdd(new StopIntake())
@@ -155,7 +161,7 @@ public class AutonRedPathV2 extends LinearOpMode {
 //                            .strafeToLinearHeading(new Vector2d(row2XPos, intakeStarty-7), Math.toRadians(360-270))
                     //Start Flywheel 2
                     .stopAndAdd(new SetIntakePower(-1))
-                    .stopAndAdd(new SpinFlywheel(1875,50))
+                    .stopAndAdd(new SpinFlywheel(1833,50))
                     .setReversed(true)
                     .splineToLinearHeading(new Pose2d(new Vector2d(row1XPos, intakeStarty-10),shootingAngle),shootingAngle+Math.toRadians(90))
                     .stopAndAdd(new StopIntake())
@@ -179,10 +185,12 @@ public class AutonRedPathV2 extends LinearOpMode {
                     .stopAndAdd(new StopIntake())
                     .stopAndAdd(new RunIntake())
                     .strafeTo(new Vector2d(row3XPos, intakeFinishy))
+                    .stopAndAdd(new ToggleSpindexer(true))
                     .build()
                     ,new SpinToIntake()));
             //After third intake
             Actions.runBlocking(drive.actionBuilder(new Pose2d(new Vector2d(row1XPos,intakeFinishy),Math.toRadians(360-270)))
+                    .stopAndAdd(new ToggleSpindexer(false))
                     //Stop Intake 3
                     .waitSeconds(waitTime)
                     .stopAndAdd(new StopIntake())
@@ -190,7 +198,7 @@ public class AutonRedPathV2 extends LinearOpMode {
                     //Start Flywheel 3
                     .stopAndAdd(new SetIntakePower(-1))
                     .stopAndAdd(new StopIntake())
-                    .stopAndAdd(new SpinFlywheel(1875,50))
+                    .stopAndAdd(new SpinFlywheel(1833,50))
                     .strafeToLinearHeading(new Vector2d(row1XPos, intakeStarty-10), shootingAngle)
                     //Shoot Sequence 3
                     .stopAndAdd(new TurretAutoAimUntilAligned())
@@ -348,6 +356,45 @@ public class AutonRedPathV2 extends LinearOpMode {
             dashboardTelemetry.update();
             telemetry.addData("Hood: At Position", atPosition);
             telemetry.update();
+
+            // Return false when at position (action complete)
+            return !(atPosition);
+        }
+    }
+
+    /**
+     * Sets hood to specific encoder and waits until reached
+     */
+    public class SetHoodEncoder implements Action {
+        private final double targetAngle;
+        private boolean started = false;
+
+        public SetHoodEncoder(double angleDegrees) {
+            this.targetAngle = angleDegrees;
+        }
+
+        @Override
+        public boolean run(TelemetryPacket packet) {
+            if (!started) {
+                started = true;
+//                telemetry.addData("Hood: Target Angle", targetAngle);
+//                telemetry.update();
+//                outtake.initHoodAngleBlocking();
+//                outtake.hoodEncoder.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
+//                while(outtake.hoodEncoder.getCurrentPosition()>=-3*outtake.ticksPerRevHood){
+//                    telemetry.addData("position",outtake.hoodEncoder.getCurrentPosition());
+//                    telemetry.update();
+//                    outtake.hoodServo.setPower(1);
+//                }
+//                outtake.hoodServo.setPower(0);
+//                outtake.hoodEncoder.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
+                outtake.hoodPID.init();
+//                telemetry.update();
+//                outtake.updateHoodAngle();
+            }
+
+            // Update hood position
+            boolean atPosition = outtake.setHoodEncoder(targetAngle);
 
             // Return false when at position (action complete)
             return !(atPosition);
@@ -537,12 +584,12 @@ public class AutonRedPathV2 extends LinearOpMode {
 
             boolean complete = spindexer.spinToIntake();
 
-            return true; // Return false when complete
+            return pauseSpindexer; // Return false when complete
         }
     }
 
     public class ToggleSpindexer implements Action {
-        private boolean onOff=false;
+        private boolean onOff;
 
         public ToggleSpindexer(boolean onOff){
             this.onOff=onOff;
