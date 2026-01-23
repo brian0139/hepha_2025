@@ -111,7 +111,7 @@ public class AutonRedPathV2 extends LinearOpMode {
                     //Start Intake Code 1
                     .strafeToLinearHeading(new Vector2d(row1XPos, intakeStarty), Math.toRadians(360-270))
                     .stopAndAdd(new RunIntake())
-                    .strafeTo(new Vector2d(row1XPos,intakeFinishy))
+                    .strafeTo(new Vector2d(row1XPos,intakeFinishy+4))
                     .stopAndAdd(new ToggleSpindexer(true))
                     .build()
                     ,new SpinToIntake()));
@@ -146,7 +146,7 @@ public class AutonRedPathV2 extends LinearOpMode {
                     .strafeToLinearHeading(new Vector2d(row2XPos, intakeStarty-5), Math.toRadians(360-270))
                     .stopAndAdd(new StopIntake())
                     .stopAndAdd(new RunIntake())
-                    .strafeTo(new Vector2d(row2XPos, intakeFinishy))
+                    .strafeTo(new Vector2d(row2XPos, intakeFinishy+5))
                     .stopAndAdd(new ToggleSpindexer(true))
                     .build()
                     ,new SpinToIntake()));
@@ -183,7 +183,7 @@ public class AutonRedPathV2 extends LinearOpMode {
                     .strafeToLinearHeading(new Vector2d(row3XPos, intakeStarty-10), Math.toRadians(360-270))
                     .stopAndAdd(new StopIntake())
                     .stopAndAdd(new RunIntake())
-                    .strafeTo(new Vector2d(row3XPos, intakeFinishy))
+                    .strafeTo(new Vector2d(row3XPos, intakeFinishy+5))
                     .stopAndAdd(new ToggleSpindexer(true))
                     .build()
                     ,new SpinToIntake()));
