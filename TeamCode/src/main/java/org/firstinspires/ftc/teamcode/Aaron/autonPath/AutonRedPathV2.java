@@ -91,8 +91,8 @@ public class AutonRedPathV2 extends LinearOpMode {
                             .stopAndAdd(new initHood())
                             .stopAndAdd(new SetHoodAngle(44))
 //                            Start Flywheel 0
-                            .stopAndAdd(new SpinFlywheel(1640,50))
-                            .strafeToLinearHeading(shootingPos, shootingAngle+Math.toRadians(2))
+                            .stopAndAdd(new SpinFlywheel(1620,50))
+                            .strafeToLinearHeading(shootingPos, shootingAngle)
                             //Shooting Sequence 0
                             .stopAndAdd(new TurretAutoAimUntilAligned())
                             .stopAndAdd(new transferUp())
@@ -109,7 +109,7 @@ public class AutonRedPathV2 extends LinearOpMode {
                             .stopAndAdd(new RunIntake())
                             .waitSeconds(0.1)
                             .stopAndAdd(new startspindexer())
-                            .strafeTo(new Vector2d(row1XPos,intakeFinishy+7))
+                            .strafeTo(new Vector2d(row1XPos,intakeFinishy+9))
                             //Stop Intake 1
                             .waitSeconds(waitTime)
                             .stopAndAdd(new StopIntake())
@@ -132,7 +132,7 @@ public class AutonRedPathV2 extends LinearOpMode {
                             .strafeToLinearHeading(new Vector2d(row2XPos, intakeStarty-5), Math.toRadians(360-270))
                             .stopAndAdd(new RunIntake())
                             .stopAndAdd(new startspindexer())
-                            .strafeTo(new Vector2d(row2XPos, intakeFinishy+3))
+                            .strafeTo(new Vector2d(row2XPos, intakeFinishy+11))
                             //Stop Intake 2
                             .waitSeconds(waitTime)
                             .stopAndAdd(new StopIntake())
