@@ -44,7 +44,6 @@ public class AutonBluePathV2 extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
         // Initialize subsystems
-        outtake.setPipeLine(2);
         spindexerServo=hardwareMap.get(CRServo.class,"spindexerServo");
         intakeMotor=hardwareMap.dcMotor.get("intake");
         transfer=(DcMotorEx) hardwareMap.dcMotor.get("par1");
@@ -54,6 +53,7 @@ public class AutonBluePathV2 extends LinearOpMode {
         drive=new MecanumDrive(hardwareMap,beginPose);
         intakeSensor=hardwareMap.get(NormalizedColorSensor.class,"intakeSensor");
         outtake = new outtakeV3FittedAutolaunch(hardwareMap,"Red",true,drive);
+        outtake.setPipeLine(2);
         intakeSystem = new intake(hardwareMap,"intake","intakeSensor");
         spindexer=new spindexerColor(spindexerServo,intakeMotor,hardwareMap);
 

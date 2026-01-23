@@ -495,7 +495,9 @@ public class teleOpMainNewRed extends OpMode {
                 timer.reset();
             }
             if (Double.parseDouble(output.get("angle"))>=0){
-                outtakeOperator.setHoodEncoder(Double.parseDouble(output.get("angle"))+2000);
+                //9000 max
+                //0 min
+                outtakeOperator.setHoodEncoder(Math.min(Math.max(Double.parseDouble(output.get("angle"))+3000,0),9000));
             }
         }else{
             updateHoodControl();
