@@ -42,6 +42,7 @@ public class AutonRedPath_Far_FarShoot extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
+        //TODO: working at 12.86V
         // Initialize subsystems
         outtake = new outtakeV3FittedAutolaunch(hardwareMap,"Red",true,drive);
         outtake.setPipeLine(0);
@@ -108,7 +109,6 @@ public class AutonRedPath_Far_FarShoot extends LinearOpMode {
                             .stopAndAdd(new transferOff())
                             .stopAndAdd(new stopspindexer())
                             .stopAndAdd(new StopIntake())
-//
 ////                            // ========== INTAKE CYCLE 1 (ROW 3 - CLOSEST) ==========
 //                            // Move to Row 3: (38, 3) facing 270°
 //                            .strafeToLinearHeading(new Vector2d(row3XPos, intakeStarty-10), straightIntakeAngle)
