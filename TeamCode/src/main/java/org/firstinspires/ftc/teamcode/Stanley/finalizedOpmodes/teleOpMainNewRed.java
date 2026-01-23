@@ -497,7 +497,7 @@ public class teleOpMainNewRed extends OpMode {
             if (Double.parseDouble(output.get("angle"))>=0){
                 //9000 max
                 //0 min
-                outtakeOperator.setHoodEncoder(Math.min(Math.max(Double.parseDouble(output.get("angle"))+3000,0),9000));
+                outtakeOperator.setHoodEncoder(Math.min(Math.max(Double.parseDouble(output.get("angle"))+2600,0),9000));
             }
         }else{
             updateHoodControl();
@@ -506,7 +506,7 @@ public class teleOpMainNewRed extends OpMode {
 //            outtakeOperator.setPipeLine(5);
             outtakeOperator.autoturn();
         }else{
-            outtakeOperator.turretServo.setPower(gamepad2.right_trigger-gamepad2.left_trigger);
+            outtakeOperator.turretServo.setPower(gamepad2.left_trigger-gamepad2.right_trigger);
         }
     }
 
