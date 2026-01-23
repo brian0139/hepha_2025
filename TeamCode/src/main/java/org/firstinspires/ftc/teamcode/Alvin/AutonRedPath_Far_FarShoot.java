@@ -69,7 +69,7 @@ public class AutonRedPath_Far_FarShoot extends LinearOpMode {
         final double row2XPos=17;
         final double row3XPos=38;
         final double ballfallPos=59;
-        final double flywheelSpeed=2208;
+        final double flywheelSpeed=2200;
 
         // Straight intake angle - pointing straight down the field
         final double straightIntakeAngle=Math.toRadians(270);
@@ -84,7 +84,7 @@ public class AutonRedPath_Far_FarShoot extends LinearOpMode {
         telemetry.update();
         drive.actionBuilder(beginPose)
             .stopAndAdd(new initHood())
-            .stopAndAdd(new SetHoodAngle(3053.58100770156));
+            .stopAndAdd(new SetHoodAngle(5950));
 
         waitForStart();
 
@@ -242,13 +242,13 @@ public class AutonRedPath_Far_FarShoot extends LinearOpMode {
         @Override
         public boolean run(TelemetryPacket telemetryPacket) {
             if (isComplete) return false;
-            if (timer.milliseconds()>=1000){
+            if (timer.milliseconds()>=3000){
                 outtake.turretServo.setPower(0);
                 return false;
             }
             if (!initialized){
                 initialized=true;
-                outtake.turretEpsilon=1.5;
+                outtake.turretEpsilon=2.5;
                 outtake.turnPID.init();
             }
 
