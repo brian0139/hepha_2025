@@ -58,7 +58,7 @@ public class outtakeV3FittedAutolaunch {
     public double minTurretAngle=0;
     public double maxTurretAngle=180;
     //Turret autoaim epsilon
-    public double turretEpsilon=2.5;
+    public double turretEpsilon=2.3;
     //auto aim vars
     // P, I, D
 //    public double[] Kturn={0.013,0.0002,0.02};
