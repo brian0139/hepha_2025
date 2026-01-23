@@ -124,7 +124,7 @@ public class AutonRedPathV2 extends LinearOpMode {
                     .stopAndAdd(new stopspindexer())
 
                     //Start Flywheel 1
-                    .stopAndAdd(new SetHoodEncoder(4020))
+                    .stopAndAdd(new SetHoodEncoder(8020))
                     .stopAndAdd(new SpinFlywheel(1833,50))
                     .strafeToLinearHeading(new Vector2d(row1XPos, intakeStarty-10), shootingAngle)
                     //Shoot Sequence 1
@@ -141,7 +141,7 @@ public class AutonRedPathV2 extends LinearOpMode {
                     .stopAndAdd(new SetIntakePower(-1))
                     .build());
             //Second intake
-            Actions.runBlocking(new ParallelAction(drive.actionBuilder(new Pose2d(shootingPos,shootingAngle))
+            Actions.runBlocking(new ParallelAction(drive.actionBuilder(new Pose2d(new Vector2d(row1XPos,intakeFinishy-10),shootingAngle))
                     //Start Intake 2
                     .strafeToLinearHeading(new Vector2d(row2XPos, intakeStarty-5), Math.toRadians(360-270))
                     .stopAndAdd(new StopIntake())
@@ -151,7 +151,7 @@ public class AutonRedPathV2 extends LinearOpMode {
                     .build()
                     ,new SpinToIntake()));
             //After second intake
-            Actions.runBlocking(drive.actionBuilder(new Pose2d(new Vector2d(row1XPos,intakeFinishy),Math.toRadians(360-270)))
+            Actions.runBlocking(drive.actionBuilder(new Pose2d(new Vector2d(row2XPos,intakeFinishy),Math.toRadians(360-270)))
                     .stopAndAdd(new ToggleSpindexer(false))
                     //Stop Intake 2
                     .waitSeconds(waitTime)
@@ -178,7 +178,7 @@ public class AutonRedPathV2 extends LinearOpMode {
                     .stopAndAdd(new StopIntake())
                     .build());
             //Third intake
-            Actions.runBlocking(new ParallelAction(drive.actionBuilder(new Pose2d(shootingPos,shootingAngle))
+            Actions.runBlocking(new ParallelAction(drive.actionBuilder(new Pose2d(new Vector2d(row1XPos, intakeStarty-10),shootingAngle))
                     //Start Intake 3
                     .strafeToLinearHeading(new Vector2d(row3XPos, intakeStarty-10), Math.toRadians(360-270))
                     .stopAndAdd(new StopIntake())
@@ -188,7 +188,7 @@ public class AutonRedPathV2 extends LinearOpMode {
                     .build()
                     ,new SpinToIntake()));
             //After third intake
-            Actions.runBlocking(drive.actionBuilder(new Pose2d(new Vector2d(row1XPos,intakeFinishy),Math.toRadians(360-270)))
+            Actions.runBlocking(drive.actionBuilder(new Pose2d(new Vector2d(row3XPos,intakeFinishy),Math.toRadians(360-270)))
                     .stopAndAdd(new ToggleSpindexer(false))
                     //Stop Intake 3
                     .waitSeconds(waitTime)
@@ -554,7 +554,7 @@ public class AutonRedPathV2 extends LinearOpMode {
     public class startspindexer implements Action {
         @Override
         public boolean run(TelemetryPacket packet) {
-            spindexerServo.setPower(1);
+            spindexerServo.setPower(0.7);
             return false;
         }
     }
