@@ -129,8 +129,6 @@ public class outtakeV3FittedAutolaunch {
      * @return False if canceled or teamColor not found, True if successful
      */
     public boolean autoturn(){
-
-
         this.apriltag.scanOnce();
         if (!apriltag.hasValidTarget()){
             turretServo.setPower(0);
