@@ -492,7 +492,7 @@ public class teleOpMainNew extends OpMode {
 //        dashboardtelemetry.addData("D",outtakeOperator.hoodPID.Dd);
 //        if (hoodState==HoodState.AUTO && outtakeOperator.apriltag.hasValidTarget()){
         if (hoodState==HoodState.AUTO){
-            if (timer.milliseconds()>=1000) {
+            if (timer.milliseconds()>=200) {
                 output = outtakeOperator.findOptimalLaunch(outtakeOperator.getDistance());
                 if (Double.parseDouble(output.get("velocity"))>=0) {
                     flywheelSpeed = Double.parseDouble(output.get("velocity"));
@@ -500,7 +500,7 @@ public class teleOpMainNew extends OpMode {
                 timer.reset();
             }
             if (Double.parseDouble(output.get("angle"))>=0){
-                outtakeOperator.setHood(Double.parseDouble(output.get("angle")));
+                outtakeOperator.setHoodEncoder(Double.parseDouble(output.get("angle"))+2000);
             }
         }else{
             updateHoodControl();

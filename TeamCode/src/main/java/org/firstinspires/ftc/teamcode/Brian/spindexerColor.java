@@ -49,7 +49,8 @@ public class spindexerColor {
     public double mindetectiontime = 300;
     public double maxdetectiontime = 500;
     static final double CSIntegrationTimeMS = 100;
-    public double[] kS = {1.06, 0.03, 0.014};
+    public double[] kS = {1.06, 0.1, 0};
+//    public double[] kS = {1.06, 0.1, 0.014};
     public double[] inslotsV = {2.285, 0.131, 1.27};
     public double[] outslotsV = {0.678, 1.755, 2.833};
 
@@ -125,14 +126,15 @@ public class spindexerColor {
         if (detectioncnt==3){
             return true;
         }
-        double epsilon = 0.2;
-        if (!((spindexerSensor.getVoltage()>=inslotsV[currentSlot]-epsilon)&&(spindexerSensor.getVoltage()<=inslotsV[currentSlot]+epsilon))){
+        double epsilon = 0.075;
+        if (Math.abs(calculateError(inslotsV[currentSlot],spindexerSensor.getVoltage()))>epsilon && !waitingCSIntegration){
             spindexerServo.setPower(Math.min(spindexerPID.update(calculateError(inslotsV[currentSlot],spindexerSensor.getVoltage())),0.75));
         }else{
             if (!waitingCSIntegration){
                 waitingCSIntegration=true;
                 intakeTimer.reset();
             }
+            holdSpindexer();
             if (intakeTimer.milliseconds()>=CSIntegrationTimeMS) {
                 waitingCSIntegration=false;
                 if (intakesensor.getDetected() == 0) {

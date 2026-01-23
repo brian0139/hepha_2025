@@ -48,7 +48,7 @@ public class outtakeV3FittedAutolaunch {
     //PID instance for hood
 //    public double[] Kh={0.0005,0.0005,0.00003};
     //35 little too low
-    public double[] Kh={0.0005,0.0005,0.00002};
+    public double[] Kh={0.0004,0.0005,0.00001};
     public PIDhood hoodPID=new PIDhood(Kh[0],Kh[1],Kh[2]);
 
     //================================  Turret  ================================
@@ -293,6 +293,25 @@ public class outtakeV3FittedAutolaunch {
         double power=hoodPID.update(targetTicks-hoodEncoder.getCurrentPosition()+encoderOffset);
         hoodServo.setPower(-power);
         return (hoodEncoder.getCurrentPosition()+encoderOffset >= targetTicks - epsilon) && (hoodEncoder.getCurrentPosition()+encoderOffset <= targetTicks + epsilon);
+    }
+
+//    public boolean setHoodEncoder(double ticks){
+//        double epsilon=40;
+//        double power=hoodPID.update(ticks-hoodEncoder.getCurrentPosition()+encoderOffset);
+//        hoodServo.setPower(-power);
+//        return (hoodEncoder.getCurrentPosition()+encoderOffset >= ticks - epsilon) && (hoodEncoder.getCurrentPosition()+encoderOffset <= ticks + epsilon);
+//    }
+
+    /**
+     * Set the hood angle to a specific degree
+     * @param encoderTicks degrees from hood to horizontal(cnt. clockwise)
+     * @return if hood is at position
+     */
+    public boolean setHoodEncoder(double encoderTicks){
+        double epsilon=40;
+        double power=hoodPID.update(encoderTicks-hoodEncoder.getCurrentPosition()+encoderOffset);
+        hoodServo.setPower(-power);
+        return (hoodEncoder.getCurrentPosition()+encoderOffset >= encoderTicks - epsilon) && (hoodEncoder.getCurrentPosition()+encoderOffset <= encoderTicks + epsilon);
     }
 
     /**
