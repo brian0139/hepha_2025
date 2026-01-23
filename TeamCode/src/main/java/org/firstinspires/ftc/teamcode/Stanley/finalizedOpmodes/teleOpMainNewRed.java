@@ -9,22 +9,18 @@ import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.util.ElapsedTime;
-import com.qualcomm.robotcore.util.ReadWriteFile;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
-import org.firstinspires.ftc.robotcore.internal.system.AppUtil;
 import org.firstinspires.ftc.teamcode.Brian.spindexerColor;
 import org.firstinspires.ftc.teamcode.MecanumDrive;
 import org.firstinspires.ftc.teamcode.Stanley.finalizedClasses.opModeDataTransfer;
-import org.firstinspires.ftc.teamcode.Stanley.finalizedClasses.outtakeV3;
 import org.firstinspires.ftc.teamcode.Stanley.finalizedClasses.outtakeV3FittedAutolaunch;
 
-import java.io.File;
 import java.lang.Math;
 import java.util.Map;
 
 @TeleOp
-public class teleOpMainNew extends OpMode {
+public class teleOpMainNewRed extends OpMode {
 
     // ==================== STATE MACHINE ENUMS ====================
     enum FlywheelState {
@@ -94,8 +90,7 @@ public class teleOpMainNew extends OpMode {
     static final double FLYWHEEL_SENSITIVITY = 5;
     static final double FLYWHEEL_EPSILON = 10;
     static final double FLYWHEEL_EXIT_EPSILON = 35;
-    static final double FLYWHEEL_DIAMETER = 2.8346456692913386;
-    static final double FLYWHEEL_EFFICIENCY = 0.95;
+    static final double SPINDEXER_MANUAL_SPEED=0.6;
     static final double DRIVE_SPEED = 0.7;
     static final double STRAFE_SPEED = 1;
     static final double TWIST_SPEED = 0.5;
@@ -303,10 +298,10 @@ public class teleOpMainNew extends OpMode {
         if (gamepad1.left_bumper || gamepad1.right_bumper ||gamepad2.right_bumper){
             spindexerState=SpindexerState.MANUAL;
             if (gamepad1.left_bumper){
-                spindexer.setPower(-1);
+                spindexer.setPower(-SPINDEXER_MANUAL_SPEED);
             }
             if (gamepad1.right_bumper || gamepad2.right_bumper){
-                spindexer.setPower(1);
+                spindexer.setPower(SPINDEXER_MANUAL_SPEED);
             }
         }
         if (gamepad1.leftBumperWasReleased() || gamepad1.rightBumperWasReleased() ||gamepad2.rightBumperWasReleased()){
@@ -438,7 +433,7 @@ public class teleOpMainNew extends OpMode {
     // ==================== Manual Override/Misc ====================
     void updateManual(){
         if (gamepad2.leftBumperWasPressed()){
-            outtakeOperator.initHoodAngleBlocking();
+            outtakeOperator.resetHoodAngle();
             gamepad2.rumbleBlips(2);
             gamepad2.rumble(50);
         }
