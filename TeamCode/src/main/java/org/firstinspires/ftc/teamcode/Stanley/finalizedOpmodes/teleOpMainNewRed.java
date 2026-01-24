@@ -120,11 +120,11 @@ public class teleOpMainNewRed extends OpMode {
 
     // ==================== TESTING ====================
 //    int makeBallCnt=-1;
-    int ballcnt=0;
-    double[] launchVelocities=new double[]{0,0,0};
-    double previousRateofChange=0;
-    double previousSpeed=0;
-    ElapsedTime flywheelDeltaTimer=new ElapsedTime();
+//    int ballcnt=0;
+//    double[] launchVelocities=new double[]{0,0,0};
+//    double previousRateofChange=0;
+//    double previousSpeed=0;
+//    ElapsedTime flywheelDeltaTimer=new ElapsedTime();
 //    File file= AppUtil.getInstance().getSettingsFile("./sdcard/FIRST/shootingData.csv");
 //    //Header
 //    StringBuilder data = new StringBuilder("Make Ball Cnt,Hood Encoder,Flywheel Speed, Distance, Real Max Flywheel Speed\n");
@@ -224,26 +224,26 @@ public class teleOpMainNewRed extends OpMode {
                     flywheelState = FlywheelState.STOPPED;
                     targetSpeed = 0;
                     flywheel.setVelocity(0);
-                    //TODO:Testing
-                    ballcnt=0;
-                    previousRateofChange=0;
+//                    //TODO:Testing
+//                    ballcnt=0;
+//                    previousRateofChange=0;
                     break;
             }
         }
-        //TODO:Testing
-        if (gamepad2.dpadLeftWasPressed()){
-            launchVelocities=new double[]{0,0,0};
-        }
-        if (flywheelState!=FlywheelState.STOPPED){
-//            maxFlywheelSpeed=Math.max(maxFlywheelSpeed,flywheelR.getVelocity());
-            double rateofchange=(flywheelR.getVelocity()-previousSpeed)/flywheelDeltaTimer.milliseconds();
-            if (rateofchange<0 && previousRateofChange>0){
-                launchVelocities[ballcnt%3]=previousSpeed;
-                ballcnt++;
-            }
-            previousSpeed=flywheelR.getVelocity();
-            previousRateofChange=rateofchange;
-        }
+//        //TODO:Testing
+//        if (gamepad2.dpadLeftWasPressed()){
+//            launchVelocities=new double[]{0,0,0};
+//        }
+//        if (flywheelState!=FlywheelState.STOPPED){
+////            maxFlywheelSpeed=Math.max(maxFlywheelSpeed,flywheelR.getVelocity());
+//            double rateofchange=(flywheelR.getVelocity()-previousSpeed)/flywheelDeltaTimer.milliseconds();
+//            if (rateofchange<0 && previousRateofChange>0){
+//                launchVelocities[ballcnt%3]=previousSpeed;
+//                ballcnt++;
+//            }
+//            previousSpeed=flywheelR.getVelocity();
+//            previousRateofChange=rateofchange;
+//        }
     }
 
     // ==================== TRANSFER STATE MACHINE ====================
@@ -401,10 +401,10 @@ public class teleOpMainNewRed extends OpMode {
         telemetry.addData("Offset(Deg)",outtakeOperator.apriltag.getYaw());
         telemetry.addData("Power",outtakeOperator.turnPID.power);
         telemetry.addData("Distance",outtakeOperator.getDistance());
-        dashboardtelemetry.addData("Has Target",outtakeOperator.apriltag.hasValidTarget());
-        dashboardtelemetry.addData("Offset(Deg)",outtakeOperator.apriltag.getYaw());
-        dashboardtelemetry.addData("Power",outtakeOperator.turnPID.power);
-        dashboardtelemetry.addData("Distance",outtakeOperator.getDistance());
+//        dashboardtelemetry.addData("Has Target",outtakeOperator.apriltag.hasValidTarget());
+//        dashboardtelemetry.addData("Offset(Deg)",outtakeOperator.apriltag.getYaw());
+//        dashboardtelemetry.addData("Power",outtakeOperator.turnPID.power);
+//        dashboardtelemetry.addData("Distance",outtakeOperator.getDistance());
         telemetry.addLine("=== Drivetrain ===");
         telemetry.addData("Left Front",leftFront.getPower());
         telemetry.addData("Right Front",rightFront.getPower());
@@ -414,17 +414,17 @@ public class teleOpMainNewRed extends OpMode {
         telemetry.addData("Hood Encoder(LOG)",outtakeOperator.hoodEncoder.getCurrentPosition());
         telemetry.addData("Flywheel Target Speed(LOG)",flywheelSpeed);
         telemetry.addData("Distance(LOG)",outtakeOperator.getDistance());
-        for (int i=0;i<3;i++){
-            telemetry.addData("Ball "+(i+1),launchVelocities[i]);
-        }
+//        for (int i=0;i<3;i++){
+//            telemetry.addData("Ball "+(i+1),launchVelocities[i]);
+//        }
 //        telemetry.addData("Max Flywheel Speed(LOG)",maxFlywheelSpeed);
         dashboardtelemetry.addData("Hood Encoder(LOG)",outtakeOperator.hoodEncoder.getCurrentPosition());
         dashboardtelemetry.addData("Flywheel Target Speed(LOG)",flywheelSpeed);
         dashboardtelemetry.addData("Distance(LOG)",outtakeOperator.getDistance());
 //        dashboardtelemetry.addData("Max Flywheel Speed(LOG)",maxFlywheelSpeed);
-        for (int i=0;i<3;i++){
-            dashboardtelemetry.addData("Ball "+(i+1),launchVelocities[i]);
-        }
+//        for (int i=0;i<3;i++){
+//            dashboardtelemetry.addData("Ball "+(i+1),launchVelocities[i]);
+//        }
 
         telemetry.update();
         dashboardtelemetry.update();
