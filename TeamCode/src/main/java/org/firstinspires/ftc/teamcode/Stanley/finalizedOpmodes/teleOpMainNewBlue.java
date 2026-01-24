@@ -498,6 +498,9 @@ public class teleOpMainNewBlue extends OpMode {
                 //0 min
                 outtakeOperator.setHoodEncoder(Math.min(Math.max(Double.parseDouble(output.get("angle"))+2600,0),9000));
             }
+            if (outtakeOperator.hoodEncoder.getCurrentPosition()>=9400){
+                hoodServo.setPower(0);
+            }
         }else{
             updateHoodControl();
         }
