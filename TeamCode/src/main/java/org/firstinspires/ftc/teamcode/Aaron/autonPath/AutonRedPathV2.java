@@ -63,7 +63,7 @@ public class AutonRedPathV2 extends LinearOpMode {
 
         final Vector2d shootingPos=new Vector2d(-34,23);
         final double shootingAngle=Math.toRadians(140);
-        final double intakeFinishy =47;
+        final double intakeFinishy = 50;
         final double intakeStarty=13;
         final double waitTime=1;
         final double shootTime=3;
