@@ -174,16 +174,23 @@ public class teleOpMainNewBlue extends OpMode {
     // ==================== MAIN LOOP ====================
     @Override
     public void loop() {
-        // Update all state machines
-        updateFlywheelStateMachine();
-        updateTransferStateMachine();
-        updateIntakeStateMachine();
-        updateSpindexerStateMachine();
-        updateDrivetrain();
-        updateManual();
+        try {
+            // Update all state machines
+            updateFlywheelStateMachine();
+            updateTransferStateMachine();
+            updateIntakeStateMachine();
+            updateSpindexerStateMachine();
+            updateDrivetrain();
+            updateManual();
 
-        // Update telemetry
-        updateTelemetry();
+            // Update telemetry
+            updateTelemetry();
+        } catch (Exception e) {
+            telemetry.addData("ERROR", e.getClass().getSimpleName());
+            telemetry.addData("Message", e.getMessage());
+            telemetry.update();
+            // Robot keeps running, just skips this loop iteration
+        }
     }
 
     // ==================== FLYWHEEL STATE MACHINE ====================
@@ -488,6 +495,12 @@ public class teleOpMainNewBlue extends OpMode {
         if (hoodState== HoodState.AUTO){
             if (timer.milliseconds()>=200) {
                 output = outtakeOperator.findOptimalLaunch(outtakeOperator.getDistance());
+                if (output != null) {
+                    output.putIfAbsent("velocity", "0.0");
+                    output.putIfAbsent("angle", "0.0");
+                } else {
+                    output = Map.of("velocity", "0.0", "angle", "0.0");
+                }
                 if (Double.parseDouble(output.get("velocity"))>=0) {
                     flywheelSpeed = Double.parseDouble(output.get("velocity"));
                 }
