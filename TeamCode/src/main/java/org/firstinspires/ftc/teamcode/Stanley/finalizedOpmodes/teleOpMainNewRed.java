@@ -190,7 +190,7 @@ public class teleOpMainNewRed extends OpMode {
             telemetry.addData("ERROR", e.getClass().getSimpleName());
             telemetry.addData("Message", e.getMessage());
             telemetry.update();
-            // Robot keeps running, just skips this loop iteration
+            // Skips this loop iteration on exception
         }
     }
 
