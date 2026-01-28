@@ -17,7 +17,7 @@ public class encoderTest extends LinearOpMode {
         encoder=hardwareMap.get(DcMotorEx.class,"leftBack");
         encoder.setDirection(DcMotorSimple.Direction.REVERSE);
         servo=hardwareMap.get(CRServo.class,"hoodServo");
-        encoder.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        //encoder.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         waitForStart();
         while (opModeIsActive()){
             if (gamepad1.yWasPressed()) {
@@ -30,7 +30,7 @@ public class encoderTest extends LinearOpMode {
                 }
                 servo.setPower(0);
             }
-            encoder.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
+//            encoder.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
             telemetry.addData("Encoder",encoder.getCurrentPosition());
             telemetry.update();
 //            servo.setPower(1);

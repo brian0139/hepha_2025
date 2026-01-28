@@ -61,7 +61,7 @@ public class AutonBluePathV2 extends LinearOpMode {
 
         final Vector2d shootingPos=new Vector2d(-34,-23);
         final double shootingAngle=Math.toRadians(-140);
-        final double intakeFinishy =-47;
+        final double intakeFinishy =-50;
         final double intakeStarty=-13;
         final double waitTime=1;
         final double shootTime=3;
@@ -77,6 +77,7 @@ public class AutonBluePathV2 extends LinearOpMode {
         dashboardTelemetry.update();
         telemetry.addData("Status", "Initialized");
         telemetry.update();
+//        outtake.resetHoodAngle();
         Actions.runBlocking(drive.actionBuilder(beginPose).stopAndAdd(new initHood()).stopAndAdd(new SetHoodAngle(45.2)).build());
 
         waitForStart();
@@ -88,6 +89,7 @@ public class AutonBluePathV2 extends LinearOpMode {
                             //STARTPOSITION IS FACING THE WALL!!
                             //TODO: Add hood adjustment/auto hood adjustment
 //                            Start Flywheel 0
+//                            .stopAndAdd(new SetHoodAngle(45.2))
                             .stopAndAdd(new SpinFlywheel(1600,50))
                             .strafeToLinearHeading(shootingPos, shootingAngle)
                             //Shooting Sequence 0
@@ -156,23 +158,21 @@ public class AutonBluePathV2 extends LinearOpMode {
                     .stopAndAdd(new stopspindexer())
 //                            .strafeToLinearHeading(new Vector2d(row2XPos, intakeStarty+7), Math.toRadians(-90))
                     //Start Flywheel 2
-                    .stopAndAdd(new SetIntakePower(-1))
                     .stopAndAdd(new SpinFlywheel(1833,50))
                     .setReversed(true)
                     .splineToLinearHeading(new Pose2d(new Vector2d(row1XPos, intakeStarty+10),shootingAngle),shootingAngle+Math.toRadians(-90))
-                    .stopAndAdd(new StopIntake())
                     //Shoot Sequence 2
                     .stopAndAdd(new TurretAutoAimUntilAligned())
                     .stopAndAdd(new transferUp())
                     .stopAndAdd(new RunIntake())
                     .stopAndAdd(new startspindexer())
                     .waitSeconds(shootTime)
-                    .stopAndAdd(new SetIntakePower(-1))
                     //Stop Sequence 2
                     .stopAndAdd(new StopFlywheel())
                     .stopAndAdd(new transferOff())
                     .stopAndAdd(new stopspindexer())
                     .stopAndAdd(new StopIntake())
+                    .stopAndAdd(new SetIntakePower(-1))
                     .build());
             //Third intake
             Actions.runBlocking(new ParallelAction(drive.actionBuilder(drive.localizer.getPose())
@@ -192,8 +192,6 @@ public class AutonBluePathV2 extends LinearOpMode {
                     .stopAndAdd(new StopIntake())
                     .stopAndAdd(new stopspindexer())
                     //Start Flywheel 3
-                    .stopAndAdd(new SetIntakePower(-1))
-                    .stopAndAdd(new StopIntake())
                     .stopAndAdd(new SpinFlywheel(1833,50))
                     .strafeToLinearHeading(new Vector2d(row1XPos, intakeStarty+10), shootingAngle)
                     //Shoot Sequence 3
@@ -267,7 +265,7 @@ public class AutonBluePathV2 extends LinearOpMode {
         @Override
         public boolean run(TelemetryPacket telemetryPacket) {
             if (isComplete) return false;
-            if (timer.milliseconds()>=1000){
+            if (timer.milliseconds()>=3500){
                 outtake.turretServo.setPower(0);
                 return false;
             }

@@ -22,7 +22,7 @@ import org.firstinspires.ftc.teamcode.MecanumDrive;
 import org.firstinspires.ftc.teamcode.Stanley.finalizedClasses.outtakeV3FittedAutolaunch;
 
 @Autonomous
-public class AutonRedPath_Far_FarShoot extends LinearOpMode {
+public class AutonBluePath_Far_FarShoot extends LinearOpMode {
     outtakeV3FittedAutolaunch outtake;
     intake intakeSystem;
     spindexerColor spindexer;
@@ -34,7 +34,7 @@ public class AutonRedPath_Far_FarShoot extends LinearOpMode {
     DcMotorEx flywheelR=null;
     CRServo hood=null;
     AnalogInput hoodSensor=null;
-    Pose2d beginPose=new Pose2d(63, 9, Math.toRadians(180));
+    Pose2d beginPose=new Pose2d(60.5, -9, Math.toRadians(180));
     MecanumDrive drive=null;
     NormalizedColorSensor intakeSensor;
     FtcDashboard dashboard;
@@ -108,94 +108,97 @@ public class AutonRedPath_Far_FarShoot extends LinearOpMode {
                             .stopAndAdd(new transferOff())
                             .stopAndAdd(new stopspindexer())
                             .stopAndAdd(new StopIntake())
+
+                            //Move out of way
+                            .strafeTo(new Vector2d(60.5,-35))
 //
-//                            // ========== INTAKE CYCLE 1 (ROW 3 - CLOSEST) ==========
-                            // Move to Row 3: (38, 3) facing 270°
-                            .strafeToLinearHeading(new Vector2d(row3XPos, intakeStarty-10), straightIntakeAngle)
-                            .stopAndAdd(new RunIntake())
-                            .stopAndAdd(new startspindexer())
-
-                            // Drive STRAIGHT forward from y=3 to y=39
-                            .lineToY(intakeFinishy+3)
-                            .waitSeconds(waitTime)
-                            .stopAndAdd(new StopIntake())
-                            .stopAndAdd(new stopspindexer())
-
-                            // Back up STRAIGHT to y=3
-                            .lineToY(intakeStarty-10)
-
-                            // Rotate to shooting angle 180° and shoot
-                            .stopAndAdd(new SpinFlywheel(flywheelSpeed,2208))
-                            .turnTo(shootingAngle)
-                            .stopAndAdd(new transferUp())
-                            .stopAndAdd(new RunIntake())
-                            .stopAndAdd(new TurretAutoAimUntilAligned())
-                            .stopAndAdd(new startspindexer())
-                            .stopAndAdd(new TurretAutoAimUntilAligned())
-                            .waitSeconds(shootTime)
-                            .stopAndAdd(new StopFlywheel())
-                            .stopAndAdd(new transferOff())
-                            .stopAndAdd(new stopspindexer())
-                            .stopAndAdd(new StopIntake())
-
-                            // ========== INTAKE CYCLE 2 (ROW 2) ==========
-                            // Move to Row 2: (17, 6) facing 270°
-                            .strafeToLinearHeading(new Vector2d(row2XPos, intakeStarty-7), straightIntakeAngle)
-                            .stopAndAdd(new RunIntake())
-                            .stopAndAdd(new startspindexer())
-
-                            // Drive STRAIGHT forward from y=6 to y=39
-                            .lineToY(intakeFinishy+3)
-                            .waitSeconds(waitTime)
-                            .stopAndAdd(new StopIntake())
-                            .stopAndAdd(new stopspindexer())
-
-                            // Back up STRAIGHT to y=6
-                            .lineToY(intakeStarty-7)
-
-                            // Rotate to shooting angle 180° and shoot
-                            .stopAndAdd(new SpinFlywheel(flywheelSpeed,2208))
-                            .turnTo(shootingAngle)
-                            .stopAndAdd(new transferUp())
-                            .stopAndAdd(new RunIntake())
-                            .stopAndAdd(new TurretAutoAimUntilAligned())
-                            .stopAndAdd(new startspindexer())
-                            .stopAndAdd(new TurretAutoAimUntilAligned())
-                            .waitSeconds(shootTime)
-                            .stopAndAdd(new StopFlywheel())
-                            .stopAndAdd(new transferOff())
-                            .stopAndAdd(new stopspindexer())
-                            .stopAndAdd(new StopIntake())
-
-                            // ========== INTAKE CYCLE 3 (BALL FALL ZONE) ==========
-                            // Move to ball fall position: (59, 3) facing 270°
-                            .strafeToLinearHeading(new Vector2d(ballfallPos, intakeStarty-10), straightIntakeAngle)
-                            .stopAndAdd(new RunIntake())
-                            .stopAndAdd(new startspindexer())
-
-                            // Drive STRAIGHT forward from y=3 to y=39
-                            .lineToY(intakeFinishy+3)
-                            .waitSeconds(waitTime)
-                            .stopAndAdd(new StopIntake())
-                            .stopAndAdd(new stopspindexer())
-
-                            // Back up STRAIGHT and move to shooting position
-                            .lineToY(intakeStarty-10)
-
-                            // Move to better shooting position if needed, then rotate and shoot
-                            .strafeToLinearHeading(new Vector2d(row3XPos, intakeStarty-10), straightIntakeAngle)
-                            .stopAndAdd(new SpinFlywheel(flywheelSpeed,2208))
-                            .turnTo(shootingAngle)
-                            .stopAndAdd(new transferUp())
-                            .stopAndAdd(new RunIntake())
-                            .stopAndAdd(new TurretAutoAimUntilAligned())
-                            .stopAndAdd(new startspindexer())
-                            .stopAndAdd(new TurretAutoAimUntilAligned())
-                            .waitSeconds(shootTime)
-                            .stopAndAdd(new StopFlywheel())
-                            .stopAndAdd(new transferOff())
-                            .stopAndAdd(new stopspindexer())
-                            .stopAndAdd(new StopIntake())
+                            // ========== INTAKE CYCLE 1 (ROW 3 - CLOSEST) ==========
+//                            // Move to Row 3: (38, 3) facing 270°
+//                            .strafeToLinearHeading(new Vector2d(row3XPos, intakeStarty-10), straightIntakeAngle)
+//                            .stopAndAdd(new RunIntake())
+//                            .stopAndAdd(new startspindexer())
+//
+//                            // Drive STRAIGHT forward from y=3 to y=39
+//                            .lineToY(intakeFinishy+3)
+//                            .waitSeconds(waitTime)
+//                            .stopAndAdd(new StopIntake())
+//                            .stopAndAdd(new stopspindexer())
+//
+//                            // Back up STRAIGHT to y=3
+//                            .lineToY(intakeStarty-10)
+//
+//                            // Rotate to shooting angle 180° and shoot
+//                            .stopAndAdd(new SpinFlywheel(flywheelSpeed,2208))
+//                            .turnTo(shootingAngle)
+//                            .stopAndAdd(new transferUp())
+//                            .stopAndAdd(new RunIntake())
+//                            .stopAndAdd(new TurretAutoAimUntilAligned())
+//                            .stopAndAdd(new startspindexer())
+//                            .stopAndAdd(new TurretAutoAimUntilAligned())
+//                            .waitSeconds(shootTime)
+//                            .stopAndAdd(new StopFlywheel())
+//                            .stopAndAdd(new transferOff())
+//                            .stopAndAdd(new stopspindexer())
+//                            .stopAndAdd(new StopIntake())
+//
+//                            // ========== INTAKE CYCLE 2 (ROW 2) ==========
+//                            // Move to Row 2: (17, 6) facing 270°
+//                            .strafeToLinearHeading(new Vector2d(row2XPos, intakeStarty-7), straightIntakeAngle)
+//                            .stopAndAdd(new RunIntake())
+//                            .stopAndAdd(new startspindexer())
+//
+//                            // Drive STRAIGHT forward from y=6 to y=39
+//                            .lineToY(intakeFinishy+3)
+//                            .waitSeconds(waitTime)
+//                            .stopAndAdd(new StopIntake())
+//                            .stopAndAdd(new stopspindexer())
+//
+//                            // Back up STRAIGHT to y=6
+//                            .lineToY(intakeStarty-7)
+//
+//                            // Rotate to shooting angle 180° and shoot
+//                            .stopAndAdd(new SpinFlywheel(flywheelSpeed,2208))
+//                            .turnTo(shootingAngle)
+//                            .stopAndAdd(new transferUp())
+//                            .stopAndAdd(new RunIntake())
+//                            .stopAndAdd(new TurretAutoAimUntilAligned())
+//                            .stopAndAdd(new startspindexer())
+//                            .stopAndAdd(new TurretAutoAimUntilAligned())
+//                            .waitSeconds(shootTime)
+//                            .stopAndAdd(new StopFlywheel())
+//                            .stopAndAdd(new transferOff())
+//                            .stopAndAdd(new stopspindexer())
+//                            .stopAndAdd(new StopIntake())
+//
+//                            // ========== INTAKE CYCLE 3 (BALL FALL ZONE) ==========
+//                            // Move to ball fall position: (59, 3) facing 270°
+//                            .strafeToLinearHeading(new Vector2d(ballfallPos, intakeStarty-10), straightIntakeAngle)
+//                            .stopAndAdd(new RunIntake())
+//                            .stopAndAdd(new startspindexer())
+//
+//                            // Drive STRAIGHT forward from y=3 to y=39
+//                            .lineToY(intakeFinishy+3)
+//                            .waitSeconds(waitTime)
+//                            .stopAndAdd(new StopIntake())
+//                            .stopAndAdd(new stopspindexer())
+//
+//                            // Back up STRAIGHT and move to shooting position
+//                            .lineToY(intakeStarty-10)
+//
+//                            // Move to better shooting position if needed, then rotate and shoot
+//                            .strafeToLinearHeading(new Vector2d(row3XPos, intakeStarty-10), straightIntakeAngle)
+//                            .stopAndAdd(new SpinFlywheel(flywheelSpeed,2208))
+//                            .turnTo(shootingAngle)
+//                            .stopAndAdd(new transferUp())
+//                            .stopAndAdd(new RunIntake())
+//                            .stopAndAdd(new TurretAutoAimUntilAligned())
+//                            .stopAndAdd(new startspindexer())
+//                            .stopAndAdd(new TurretAutoAimUntilAligned())
+//                            .waitSeconds(shootTime)
+//                            .stopAndAdd(new StopFlywheel())
+//                            .stopAndAdd(new transferOff())
+//                            .stopAndAdd(new stopspindexer())
+//                            .stopAndAdd(new StopIntake())
 
                             .build());
             break;

@@ -22,7 +22,6 @@ import org.firstinspires.ftc.teamcode.Alvin.intake;
 import org.firstinspires.ftc.teamcode.Brian.spindexerColor;
 import org.firstinspires.ftc.teamcode.MecanumDrive;
 import org.firstinspires.ftc.teamcode.Stanley.finalizedClasses.opModeDataTransfer;
-import org.firstinspires.ftc.teamcode.Stanley.finalizedClasses.outtakeV3;
 import org.firstinspires.ftc.teamcode.Stanley.finalizedClasses.outtakeV3FittedAutolaunch;
 
 @Autonomous
@@ -64,7 +63,7 @@ public class AutonRedPathV2 extends LinearOpMode {
 
         final Vector2d shootingPos=new Vector2d(-34,23);
         final double shootingAngle=Math.toRadians(140);
-        final double intakeFinishy =47;
+        final double intakeFinishy = 50;
         final double intakeStarty=13;
         final double waitTime=1;
         final double shootTime=3;
@@ -159,23 +158,21 @@ public class AutonRedPathV2 extends LinearOpMode {
                     .stopAndAdd(new stopspindexer())
 //                            .strafeToLinearHeading(new Vector2d(row2XPos, intakeStarty-7), Math.toRadians(360-270))
                     //Start Flywheel 2
-                    .stopAndAdd(new SetIntakePower(-1))
                     .stopAndAdd(new SpinFlywheel(1833,50))
                     .setReversed(true)
                     .splineToLinearHeading(new Pose2d(new Vector2d(row1XPos, intakeStarty-10),shootingAngle),shootingAngle+Math.toRadians(90))
-                    .stopAndAdd(new StopIntake())
                     //Shoot Sequence 2
                     .stopAndAdd(new TurretAutoAimUntilAligned())
                     .stopAndAdd(new transferUp())
                     .stopAndAdd(new RunIntake())
                     .stopAndAdd(new startspindexer())
                     .waitSeconds(shootTime)
-                    .stopAndAdd(new SetIntakePower(-1))
                     //Stop Sequence 2
                     .stopAndAdd(new StopFlywheel())
+                    .stopAndAdd(new StopIntake())
                     .stopAndAdd(new transferOff())
                     .stopAndAdd(new stopspindexer())
-                    .stopAndAdd(new StopIntake())
+                    .stopAndAdd(new SetIntakePower(-1))
                     .build());
             //Third intake
             Actions.runBlocking(new ParallelAction(drive.actionBuilder(drive.localizer.getPose())
@@ -270,7 +267,7 @@ public class AutonRedPathV2 extends LinearOpMode {
         @Override
         public boolean run(TelemetryPacket telemetryPacket) {
             if (isComplete) return false;
-            if (timer.milliseconds()>=1000){
+            if (timer.milliseconds()>=3500){
                 outtake.turretServo.setPower(0);
                 return false;
             }
