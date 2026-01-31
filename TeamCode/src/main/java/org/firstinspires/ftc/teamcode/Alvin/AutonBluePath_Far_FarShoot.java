@@ -111,6 +111,9 @@ public class AutonBluePath_Far_FarShoot extends LinearOpMode {
 
                             //Move out of way
                             .strafeTo(new Vector2d(60.5,-35))
+                            .waitSeconds(0.5)
+                            .stopAndAdd(new initHood())
+                            .stopAndAdd(new SetHoodAngle(50))
 //
                             // ========== INTAKE CYCLE 1 (ROW 3 - CLOSEST) ==========
 //                            // Move to Row 3: (38, 3) facing 270°

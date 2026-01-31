@@ -88,8 +88,8 @@ public class teleOpMainNewRed extends OpMode {
 
     // ==================== CONFIGURATION ====================
     static final double FLYWHEEL_SENSITIVITY = 5;
-    static final double FLYWHEEL_EPSILON = 10;
-    static final double FLYWHEEL_EXIT_EPSILON = 35;
+    static final double FLYWHEEL_EPSILON = 75;
+    static final double FLYWHEEL_EXIT_EPSILON = 125;
     static final double SPINDEXER_MANUAL_SPEED=0.6;
     static final double DRIVE_SPEED = 0.7;
     static final double STRAFE_SPEED = 1;
@@ -165,7 +165,6 @@ public class teleOpMainNewRed extends OpMode {
         driveTrain=new MecanumDrive(hardwareMap, opModeDataTransfer.currentPose);
         outtakeOperator=new outtakeV3FittedAutolaunch(hardwareMap,"Red",true,driveTrain);
         outtakeOperator.setPipeLine(0);
-        outtakeOperator.encoderOffset=opModeDataTransfer.currentHood;
         outtakeOperator.apriltag.init();
 
         telemetry.addLine("Robot Initialized and Ready");
