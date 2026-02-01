@@ -94,7 +94,7 @@ public class teleOpMainNewRed extends OpMode {
     static final double DRIVE_SPEED = 0.7;
     static final double STRAFE_SPEED = 1;
     static final double TWIST_SPEED = 0.5;
-    static final double SECONDARY_DILATION = 0.25;
+    static final double FLYWHEEL_IDLE_SPEED = 600;
 
     static final double[] TRANSFER_POWERS = {1, 0};
     static final int TRANSFER_DOWN = 1;
@@ -228,8 +228,8 @@ public class teleOpMainNewRed extends OpMode {
                     break;
                 case SPINNING:
                     flywheelState = FlywheelState.STOPPED;
-                    targetSpeed = 0;
-                    flywheel.setVelocity(0);
+                    targetSpeed = FLYWHEEL_IDLE_SPEED;
+                    flywheel.setVelocity(FLYWHEEL_IDLE_SPEED);
 //                    //TODO:Testing
 //                    ballcnt=0;
 //                    previousRateofChange=0;
