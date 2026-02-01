@@ -12,7 +12,6 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.Brian.spindexerColor;
 import org.firstinspires.ftc.teamcode.Stanley.finalizedClasses.PID;
-import org.firstinspires.ftc.teamcode.Stanley.finalizedClasses.outtakeV3;
 
 @TeleOp
 public class spindexerpausetuning extends LinearOpMode {

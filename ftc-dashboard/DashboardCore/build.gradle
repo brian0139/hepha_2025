@@ -16,7 +16,10 @@ repositories {
 }
 
 dependencies {
-    implementation "com.google.code.gson:gson:2.8.6"
+    // FTC's RobotCore already ships Gson; keeping this as `compileOnly` avoids duplicate-class errors
+    // when DashboardCore is pulled into an Android build (e.g., via composite build substitution).
+    compileOnly "com.google.code.gson:gson:2.8.6"
+    testImplementation "com.google.code.gson:gson:2.8.6"
 
     testImplementation "org.junit.jupiter:junit-jupiter:5.9.1"
 

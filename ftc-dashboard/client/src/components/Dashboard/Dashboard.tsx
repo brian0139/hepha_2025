@@ -37,7 +37,7 @@ export default function Dashboard() {
       style={{ width: '100vw', height: '100vh' }}
     >
       <header className="flex items-center justify-between bg-primary-600 px-3 py-1 text-white">
-        <h1 className="text-2xl font-medium">hepha ftc dashboard</h1>
+        <h1 className="text-2xl font-medium">hepha 26401 ftc dashboard</h1>
         <div className="flex-center">
           <select
             className="mx-2 rounded border-primary-300 bg-primary-100 py-1 text-sm text-black focus:border-primary-100 focus:ring-2 focus:ring-white focus:ring-opacity-40"
