@@ -24,6 +24,10 @@ import java.util.concurrent.Executors;
  * Main class for interacting with the instance.
  */
 public class DashboardCore {
+    public interface TelemetryPacketListener {
+        void onTelemetryBatch(List<TelemetryPacket> packets);
+    }
+
     /*
      * Telemetry packets are batched for transmission and sent at this interval.
      */
@@ -39,6 +43,8 @@ public class DashboardCore {
     private volatile int telemetryTransmissionInterval = DEFAULT_TELEMETRY_TRANSMISSION_INTERVAL;
 
     private final Mutex<CustomVariable> configRoot = new Mutex<>(new CustomVariable());
+
+    private volatile TelemetryPacketListener telemetryPacketListener;
 
     // NOTE: Helps to have this here for testing
     public static final Gson GSON = new GsonBuilder()
@@ -82,6 +88,15 @@ public class DashboardCore {
                         }
                     }
 
+                    TelemetryPacketListener listener = telemetryPacketListener;
+                    if (listener != null) {
+                        try {
+                            listener.onTelemetryBatch(Collections.unmodifiableList(telemetryToSend));
+                        } catch (RuntimeException ignored) {
+                            // ignore logger failures
+                        }
+                    }
+
                     sendAll(new ReceiveTelemetry(telemetryToSend));
 
                     Thread.sleep(telemetryTransmissionInterval);
@@ -96,6 +111,10 @@ public class DashboardCore {
         telemetryExecutorService =
             Executors.newSingleThreadExecutor(r -> new Thread(r, "dash telemetry"));
         telemetryExecutorService.submit(new TelemetryUpdateRunnable());
+    }
+
+    public void setTelemetryPacketListener(TelemetryPacketListener telemetryPacketListener) {
+        this.telemetryPacketListener = telemetryPacketListener;
     }
 
     public SocketHandler newSocket(final SendFun sendFun) {

@@ -52,11 +52,15 @@ import dalvik.system.DexFile;
 import fi.iki.elonen.NanoHTTPD;
 import fi.iki.elonen.NanoWSD;
 import java.io.BufferedInputStream;
+import java.io.BufferedWriter;
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStreamWriter;
 import java.io.StringWriter;
 import java.io.InputStreamReader;
 import java.lang.reflect.Field;
@@ -66,6 +70,7 @@ import java.net.HttpURLConnection;
 import java.net.InetAddress;
 import java.net.URL;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -104,6 +109,11 @@ import org.xmlpull.v1.XmlSerializer;
  */
 public class FtcDashboard implements OpModeManagerImpl.Notifications {
     private static final String TAG = "FtcDashboard";
+
+    private static final String HEPHA_TELEMETRY_LOG_FILENAME = "hephatelemetry.log";
+    private static final String HEPHA_TELEMETRY_LOG_DOWNLOAD_PATH = "/dash/hephatelemetry.log";
+    private static final long HEPHA_TELEMETRY_LOG_MAX_BYTES = 5L * 1024 * 1024;
+    private static final int HEPHA_TELEMETRY_LOG_ROTATION_COUNT = 3;
 
     private static final int DEFAULT_IMAGE_QUALITY = 50; // 0-100
     private static final int GAMEPAD_WATCHDOG_INTERVAL = 500; // ms
@@ -218,6 +228,10 @@ public class FtcDashboard implements OpModeManagerImpl.Notifications {
     private final List<MenuItem> disableMenuItems;
 
     private Telemetry telemetry = new TelemetryAdapter();
+
+    private ExecutorService telemetryLogExecutor;
+    private File telemetryLogFile;
+    private BufferedWriter telemetryLogWriter;
 
     private ExecutorService cameraStreamExecutor;
     private int imageQuality = DEFAULT_IMAGE_QUALITY;
@@ -1176,6 +1190,8 @@ public class FtcDashboard implements OpModeManagerImpl.Notifications {
             }
         });
 
+        initTelemetryLogging();
+
         try {
             server.start();
         } catch (IOException e) {
@@ -1391,9 +1407,120 @@ public class FtcDashboard implements OpModeManagerImpl.Notifications {
 
         addAssetWebHandlers(webHandlerManager, assetManager, "images");
 
+        webHandlerManager.register(HEPHA_TELEMETRY_LOG_DOWNLOAD_PATH,
+            newTelemetryLogDownloadHandler());
+
         webServerAttached = true;
 
         updateStatusView();
+    }
+
+    private WebHandler newTelemetryLogDownloadHandler() {
+        return new WebHandler() {
+            @Override
+            public NanoHTTPD.Response getResponse(NanoHTTPD.IHTTPSession session)
+                throws IOException {
+                if (session.getMethod() != NanoHTTPD.Method.GET) {
+                    return NanoHTTPD.newFixedLengthResponse(NanoHTTPD.Response.Status.NOT_FOUND,
+                        NanoHTTPD.MIME_PLAINTEXT, "");
+                }
+
+                File file = AppUtil.getInstance().getSettingsFile(HEPHA_TELEMETRY_LOG_FILENAME);
+                if (!file.exists()) {
+                    return NanoHTTPD.newFixedLengthResponse(NanoHTTPD.Response.Status.NOT_FOUND,
+                        NanoHTTPD.MIME_PLAINTEXT, "Telemetry log not found.");
+                }
+
+                NanoHTTPD.Response response = NanoHTTPD.newChunkedResponse(
+                    NanoHTTPD.Response.Status.OK,
+                    "text/plain; charset=utf-8",
+                    new BufferedInputStream(new FileInputStream(file))
+                );
+                response.addHeader("Content-Disposition",
+                    "attachment; filename=\"" + HEPHA_TELEMETRY_LOG_FILENAME + "\"");
+                response.addHeader("Cache-Control", "no-store");
+                return response;
+            }
+        };
+    }
+
+    private void initTelemetryLogging() {
+        telemetryLogFile = AppUtil.getInstance().getSettingsFile(HEPHA_TELEMETRY_LOG_FILENAME);
+        telemetryLogExecutor = ThreadPool.newSingleThreadExecutor("hepha telemetry log");
+
+        core.setTelemetryPacketListener(packets -> {
+            ExecutorService executor = telemetryLogExecutor;
+            if (executor == null) {
+                return;
+            }
+
+            List<TelemetryPacket> batch = new ArrayList<>(packets);
+            executor.submit(() -> appendTelemetryBatch(batch));
+        });
+    }
+
+    private void appendTelemetryBatch(List<TelemetryPacket> packets) {
+        try {
+            if (telemetryLogWriter == null) {
+                telemetryLogWriter = new BufferedWriter(new OutputStreamWriter(
+                    new FileOutputStream(telemetryLogFile, true),
+                    StandardCharsets.UTF_8
+                ));
+            }
+
+            for (TelemetryPacket packet : packets) {
+                telemetryLogWriter.write(DashboardCore.GSON.toJson(packet));
+                telemetryLogWriter.newLine();
+            }
+            telemetryLogWriter.flush();
+
+            rotateTelemetryLogIfNeeded();
+        } catch (IOException e) {
+            RobotLog.logStackTrace(e);
+        }
+    }
+
+    private void rotateTelemetryLogIfNeeded() throws IOException {
+        if (telemetryLogFile.length() <= HEPHA_TELEMETRY_LOG_MAX_BYTES) {
+            return;
+        }
+
+        if (telemetryLogWriter != null) {
+            telemetryLogWriter.close();
+            telemetryLogWriter = null;
+        }
+
+        File oldest = AppUtil.getInstance().getSettingsFile(
+            HEPHA_TELEMETRY_LOG_FILENAME + "." + HEPHA_TELEMETRY_LOG_ROTATION_COUNT);
+        if (oldest.exists()) {
+            //noinspection ResultOfMethodCallIgnored
+            oldest.delete();
+        }
+
+        for (int i = HEPHA_TELEMETRY_LOG_ROTATION_COUNT - 1; i >= 1; i--) {
+            File src = AppUtil.getInstance().getSettingsFile(
+                HEPHA_TELEMETRY_LOG_FILENAME + "." + i);
+            if (!src.exists()) {
+                continue;
+            }
+
+            File dst = AppUtil.getInstance().getSettingsFile(
+                HEPHA_TELEMETRY_LOG_FILENAME + "." + (i + 1));
+            if (dst.exists()) {
+                //noinspection ResultOfMethodCallIgnored
+                dst.delete();
+            }
+            //noinspection ResultOfMethodCallIgnored
+            src.renameTo(dst);
+        }
+
+        File first = AppUtil.getInstance().getSettingsFile(HEPHA_TELEMETRY_LOG_FILENAME + ".1");
+        if (first.exists()) {
+            //noinspection ResultOfMethodCallIgnored
+            first.delete();
+        }
+        //noinspection ResultOfMethodCallIgnored
+        telemetryLogFile.renameTo(first);
     }
 
     private void internalAttachEventLoop(FtcEventLoop eventLoop) {
@@ -1817,6 +1944,18 @@ public class FtcDashboard implements OpModeManagerImpl.Notifications {
             opModeManager.unregisterListener(this);
         }
         disable();
+
+        if (telemetryLogExecutor != null) {
+            telemetryLogExecutor.shutdownNow();
+            telemetryLogExecutor = null;
+        }
+        if (telemetryLogWriter != null) {
+            try {
+                telemetryLogWriter.close();
+            } catch (IOException ignored) {
+            }
+            telemetryLogWriter = null;
+        }
 
         removeStatusView();
     }

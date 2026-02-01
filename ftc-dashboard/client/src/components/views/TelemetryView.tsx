@@ -58,7 +58,19 @@ const TelemetryView = ({
 
   return (
     <BaseView isUnlocked={isUnlocked}>
-      <BaseViewHeading isDraggable={isDraggable}>Telemetry</BaseViewHeading>
+      <BaseViewHeading
+        isDraggable={isDraggable}
+        className="flex items-center justify-between"
+      >
+        <span>Telemetry</span>
+        <a
+          className="rounded bg-slate-100 px-2 py-1 text-sm text-slate-900 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-100 dark:hover:bg-slate-700"
+          href="/dash/hephatelemetry.log"
+          download="hephatelemetry.log"
+        >
+          Download Log
+        </a>
+      </BaseViewHeading>
       <BaseViewBody>
         <p>{telemetryLines}</p>
         <p>{telemetryLog}</p>
