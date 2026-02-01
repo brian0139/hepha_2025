@@ -16,7 +16,6 @@ import org.firstinspires.ftc.teamcode.MecanumDrive;
 import org.firstinspires.ftc.teamcode.Stanley.finalizedClasses.opModeDataTransfer;
 import org.firstinspires.ftc.teamcode.Stanley.finalizedClasses.outtakeV3FittedAutolaunch;
 
-import java.lang.Math;
 import java.util.Map;
 
 @TeleOp
@@ -164,7 +163,8 @@ public class teleOpMainNewRed extends OpMode {
         spindexerOperator=new spindexerColor(spindexer,intake,hardwareMap);
         driveTrain=new MecanumDrive(hardwareMap, opModeDataTransfer.currentPose);
         outtakeOperator=new outtakeV3FittedAutolaunch(hardwareMap,"Red",true,driveTrain);
-        outtakeOperator.setPipeLine(0);
+        //TODO:change back to 0 after testing
+        outtakeOperator.setPipeLine(5);
         outtakeOperator.apriltag.init();
 
         telemetry.addLine("Robot Initialized and Ready");
@@ -235,6 +235,10 @@ public class teleOpMainNewRed extends OpMode {
 //                    previousRateofChange=0;
                     break;
             }
+        }
+        if (flywheelState == FlywheelState.STOPPED){
+            targetSpeed = FLYWHEEL_IDLE_SPEED;
+            flywheel.setVelocity(FLYWHEEL_IDLE_SPEED);
         }
 //        //TODO:Testing
 //        if (gamepad2.dpadLeftWasPressed()){
