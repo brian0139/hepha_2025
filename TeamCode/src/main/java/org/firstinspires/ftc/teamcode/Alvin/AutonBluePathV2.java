@@ -64,8 +64,8 @@ public class AutonBluePathV2 extends LinearOpMode {
         final double intakeFinishy =-50;
         final double intakeStarty=-13;
         final double waitTime=1;
-        final double shootTime=3;
-        final double row1XPos=-11;
+        final double shootTime=1.5;
+        final double row1XPos=-9;
         final double row2XPos=16;
         final double row3XPos=38;
 
@@ -108,7 +108,7 @@ public class AutonBluePathV2 extends LinearOpMode {
             //First intake
             Actions.runBlocking(new ParallelAction(drive.actionBuilder(drive.localizer.getPose())
                     //Start Intake Code 1
-                    .strafeToLinearHeading(new Vector2d(row1XPos, intakeStarty), Math.toRadians(-90))
+                    .strafeToLinearHeading(new Vector2d(row1XPos, intakeStarty), Math.toRadians(-80))
                     .stopAndAdd(new RunIntake())
                     .strafeTo(new Vector2d(row1XPos,intakeFinishy))
                     .stopAndAdd(new ToggleSpindexer(true))
