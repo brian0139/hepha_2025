@@ -8,6 +8,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.VoltageSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
@@ -116,8 +117,9 @@ public class teleOpMainNewRed extends OpMode {
     // ==================== TELEMETRY ====================
     FtcDashboard dashboard=FtcDashboard.getInstance();
     Telemetry dashboardtelemetry=dashboard.getTelemetry();
-
     // ==================== TESTING ====================
+    double minVoltage=20.0;
+    VoltageSensor batteryVoltageSensor = hardwareMap.get(VoltageSensor .class, "Control Hub");
 //    int makeBallCnt=-1;
 //    int ballcnt=0;
 //    double[] launchVelocities=new double[]{0,0,0};
@@ -431,6 +433,11 @@ public class teleOpMainNewRed extends OpMode {
         dashboardtelemetry.addData("Hood Encoder(LOG)",outtakeOperator.hoodEncoder.getCurrentPosition());
         dashboardtelemetry.addData("Flywheel Target Speed(LOG)",flywheelSpeed);
         dashboardtelemetry.addData("Distance(LOG)",outtakeOperator.getDistance());
+        minVoltage=Math.min(minVoltage,batteryVoltageSensor.getVoltage());
+        telemetry.addLine("=== Voltage ===");
+        telemetry.addData("MinVoltage",minVoltage);
+        dashboardtelemetry.addLine("=== Voltage ===");
+        dashboardtelemetry.addData("MinVoltage",minVoltage);
 //        dashboardtelemetry.addData("Max Flywheel Speed(LOG)",maxFlywheelSpeed);
 //        for (int i=0;i<3;i++){
 //            dashboardtelemetry.addData("Ball "+(i+1),launchVelocities[i]);

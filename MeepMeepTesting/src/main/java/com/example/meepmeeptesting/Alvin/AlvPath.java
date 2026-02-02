@@ -12,7 +12,7 @@ public class AlvPath {
 
         // Set bot constraints (adjust max velocity and acceleration as necessary)
         RoadRunnerBotEntity myBot = new DefaultBotBuilder(meepMeep)
-                .setConstraints(50, 50, Math.PI, Math.PI, 18)
+                .setConstraints(80, 70, Math.toRadians(180), Math.toRadians(180), 15)
                 .build();
 
         // Define shooting position and angle
@@ -22,29 +22,28 @@ public class AlvPath {
         // Define classifier area where balls are collected
         final Vector2d classifierArea = new Vector2d(-12, -25);  // Adjust position of classifier
         final double intakeFinishy = -45;  // Position where balls are collected
-        final double intakeStarty = -25;  // Position for approaching the balls
+        final double intakeStarty = -25.1;  // Position for approaching the balls
 
         // Define the number of balls to collect (15 balls)
         int numBalls = 15;
 
         // Main action sequence for ball collection and shooting
         myBot.runAction(myBot.getDrive().actionBuilder(new Pose2d(-54, -23, Math.toRadians(90)))
-                .strafeToLinearHeading(classifierArea, Math.toRadians(90))  // Move to classifier area
                 .strafeToLinearHeading(new Vector2d(-12, intakeStarty), Math.toRadians(270))  // Move to first ball in classifier
                 .strafeTo(new Vector2d(-12, intakeFinishy))  // Collect first ball
-//                .waitSeconds(1)  // Wait for collection
+                .waitSeconds(1)  // Wait for collection
                 .strafeToLinearHeading(shootingPos, shootingAngle)  // Move to shooting position
-//                .waitSeconds(1)  // Shoot first ball
+                .waitSeconds(1)  // Shoot first ball
                 .strafeToLinearHeading(new Vector2d(12, intakeStarty), Math.toRadians(270))  // Move to second ball
                 .strafeTo(new Vector2d(12, intakeFinishy))  // Collect second ball
-//                .waitSeconds(1)  // Wait for collection
+                .waitSeconds(1)  // Wait for collection
                 .strafeToLinearHeading(shootingPos, shootingAngle)  // Move to shooting position
-//                .waitSeconds(1)  // Shoot second ball
+                .waitSeconds(1)  // Shoot second ball
                 .strafeToLinearHeading(new Vector2d(35, intakeStarty), Math.toRadians(270))  // Move to third ball
                 .strafeTo(new Vector2d(35, intakeFinishy))  // Collect third ball
-//                .waitSeconds(1)  // Wait for collection
+                .waitSeconds(1)  // Wait for collection
                 .strafeToLinearHeading(shootingPos, shootingAngle)  // Move to shooting position
-//                .waitSeconds(1)  // Shoot third ball
+                .waitSeconds(1)  // Shoot third ball
                 .splineToSplineHeading(new Pose2d(-60, -36, Math.toRadians(180)), Math.toRadians(180))  // Move to next ball area
                 .build());
 
