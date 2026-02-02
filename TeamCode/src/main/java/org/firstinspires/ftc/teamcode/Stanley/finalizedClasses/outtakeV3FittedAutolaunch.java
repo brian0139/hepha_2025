@@ -41,8 +41,6 @@ public class outtakeV3FittedAutolaunch {
     public CRServo turretServo;
     //Degrees changed for every servo rotation
     public double servoDegPerRot =24.18;
-    //Encoder tick offset for encoder
-    public int encoderOffset=0;
     //Ticks/revolution for encoder
     public int ticksPerRevHood=8192;
     //PID instance for hood
@@ -288,17 +286,10 @@ public class outtakeV3FittedAutolaunch {
     public boolean setHood(double degrees){
         double epsilon=40;
         double targetTicks=(66.81-degrees)/servoDegPerRot*ticksPerRevHood;
-        double power=hoodPID.update(targetTicks-hoodEncoder.getCurrentPosition()+encoderOffset);
+        double power=hoodPID.update(targetTicks-hoodEncoder.getCurrentPosition());
         hoodServo.setPower(-power);
-        return (hoodEncoder.getCurrentPosition()+encoderOffset >= targetTicks - epsilon) && (hoodEncoder.getCurrentPosition()+encoderOffset <= targetTicks + epsilon);
+        return (hoodEncoder.getCurrentPosition() >= targetTicks - epsilon) && (hoodEncoder.getCurrentPosition() <= targetTicks + epsilon);
     }
-
-//    public boolean setHoodEncoder(double ticks){
-//        double epsilon=40;
-//        double power=hoodPID.update(ticks-hoodEncoder.getCurrentPosition()+encoderOffset);
-//        hoodServo.setPower(-power);
-//        return (hoodEncoder.getCurrentPosition()+encoderOffset >= ticks - epsilon) && (hoodEncoder.getCurrentPosition()+encoderOffset <= ticks + epsilon);
-//    }
 
     /**
      * Set the hood angle to a specific degree
@@ -307,9 +298,9 @@ public class outtakeV3FittedAutolaunch {
      */
     public boolean setHoodEncoder(double encoderTicks){
         double epsilon=40;
-        double power=hoodPID.update(encoderTicks-hoodEncoder.getCurrentPosition()+encoderOffset);
+        double power=hoodPID.update(encoderTicks-hoodEncoder.getCurrentPosition());
         hoodServo.setPower(-power);
-        return (hoodEncoder.getCurrentPosition()+encoderOffset >= encoderTicks - epsilon) && (hoodEncoder.getCurrentPosition()+encoderOffset <= encoderTicks + epsilon);
+        return (hoodEncoder.getCurrentPosition() >= encoderTicks - epsilon) && (hoodEncoder.getCurrentPosition() <= encoderTicks + epsilon);
     }
 
     /**
@@ -318,7 +309,7 @@ public class outtakeV3FittedAutolaunch {
      */
     public void initHoodAngleBlocking(){
         hoodEncoder.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
-        while((hoodEncoder.getCurrentPosition()+encoderOffset)> -3*ticksPerRevHood) hoodServo.setPower(1);
+        while((hoodEncoder.getCurrentPosition())> -3*ticksPerRevHood) hoodServo.setPower(1);
         hoodServo.setPower(0);
         hoodEncoder.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
         hoodEncoder.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
@@ -332,7 +323,6 @@ public class outtakeV3FittedAutolaunch {
     public void resetHoodAngle(){
         hoodEncoder.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
         hoodEncoder.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
-        encoderOffset=0;
     }
 
     /**

@@ -161,7 +161,6 @@ public class teleOpMainWaitFlywheel extends OpMode {
         driveTrain=new MecanumDrive(hardwareMap, opModeDataTransfer.currentPose);
         outtakeOperator=new outtakeV3FittedAutolaunch(hardwareMap,"Red",true,driveTrain);
         outtakeOperator.setPipeLine(0);
-        outtakeOperator.encoderOffset=opModeDataTransfer.currentHood;
         outtakeOperator.apriltag.init();
 
         telemetry.addLine("Robot Initialized and Ready");

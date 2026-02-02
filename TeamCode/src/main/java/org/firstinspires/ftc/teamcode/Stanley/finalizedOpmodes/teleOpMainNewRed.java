@@ -16,7 +16,6 @@ import org.firstinspires.ftc.teamcode.MecanumDrive;
 import org.firstinspires.ftc.teamcode.Stanley.finalizedClasses.opModeDataTransfer;
 import org.firstinspires.ftc.teamcode.Stanley.finalizedClasses.outtakeV3FittedAutolaunch;
 
-import java.lang.Math;
 import java.util.Map;
 
 @TeleOp
@@ -88,13 +87,13 @@ public class teleOpMainNewRed extends OpMode {
 
     // ==================== CONFIGURATION ====================
     static final double FLYWHEEL_SENSITIVITY = 5;
-    static final double FLYWHEEL_EPSILON = 10;
-    static final double FLYWHEEL_EXIT_EPSILON = 35;
+    static final double FLYWHEEL_EPSILON = 75;
+    static final double FLYWHEEL_EXIT_EPSILON = 125;
     static final double SPINDEXER_MANUAL_SPEED=0.6;
     static final double DRIVE_SPEED = 0.7;
     static final double STRAFE_SPEED = 1;
     static final double TWIST_SPEED = 0.5;
-    static final double SECONDARY_DILATION = 0.25;
+    static final double FLYWHEEL_IDLE_SPEED = 600;
 
     static final double[] TRANSFER_POWERS = {1, 0};
     static final int TRANSFER_DOWN = 1;
@@ -164,8 +163,8 @@ public class teleOpMainNewRed extends OpMode {
         spindexerOperator=new spindexerColor(spindexer,intake,hardwareMap);
         driveTrain=new MecanumDrive(hardwareMap, opModeDataTransfer.currentPose);
         outtakeOperator=new outtakeV3FittedAutolaunch(hardwareMap,"Red",true,driveTrain);
-        outtakeOperator.setPipeLine(0);
-        outtakeOperator.encoderOffset=opModeDataTransfer.currentHood;
+        //TODO:change back to 0 after testing
+        outtakeOperator.setPipeLine(5);
         outtakeOperator.apriltag.init();
 
         telemetry.addLine("Robot Initialized and Ready");
@@ -229,13 +228,17 @@ public class teleOpMainNewRed extends OpMode {
                     break;
                 case SPINNING:
                     flywheelState = FlywheelState.STOPPED;
-                    targetSpeed = 0;
-                    flywheel.setVelocity(0);
+                    targetSpeed = FLYWHEEL_IDLE_SPEED;
+                    flywheel.setVelocity(FLYWHEEL_IDLE_SPEED);
 //                    //TODO:Testing
 //                    ballcnt=0;
 //                    previousRateofChange=0;
                     break;
             }
+        }
+        if (flywheelState == FlywheelState.STOPPED){
+            targetSpeed = FLYWHEEL_IDLE_SPEED;
+            flywheel.setVelocity(FLYWHEEL_IDLE_SPEED);
         }
 //        //TODO:Testing
 //        if (gamepad2.dpadLeftWasPressed()){
