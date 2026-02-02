@@ -16,6 +16,7 @@ public class tuningFlywheel extends LinearOpMode {
     int x=0;
     boolean correctingtoggle=false;
     int targetSpeed=2100;
+    double targetPower=0;
     //FTC dashboard telemetry
     FtcDashboard dashboard=null;
     Telemetry dashboardTelemetry=null;
@@ -40,7 +41,7 @@ public class tuningFlywheel extends LinearOpMode {
             }else if (gamepad1.leftBumperWasPressed()){
                 change/=10;
             }
-            telemetry.addData("Change",change);
+            telemetry.addData("Change",String.format("%e", change));
             //selection
             if (gamepad1.dpadLeftWasPressed()){
                 x--;
@@ -77,8 +78,10 @@ public class tuningFlywheel extends LinearOpMode {
             }
             boolean atTarget=false;
             if (correctingtoggle){
-                flywheel.setPower(flywheelPIDF.update(targetSpeed,flywheel.getVelocity()));
+                targetPower+=flywheelPIDF.update(targetSpeed,flywheel.getVelocity());
+                flywheel.setPower(targetPower);
             }else{
+                targetPower=0;
                 flywheel.setPower(0);
             }
             telemetry.addLine(line1);
