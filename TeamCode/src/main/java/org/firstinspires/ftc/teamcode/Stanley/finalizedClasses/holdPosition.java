@@ -1,0 +1,118 @@
+package org.firstinspires.ftc.teamcode.Stanley.finalizedClasses;
+
+import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
+import com.acmerobotics.roadrunner.Pose2d;
+import com.acmerobotics.roadrunner.PoseVelocity2d;
+import com.acmerobotics.roadrunner.Vector2d;
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.util.ElapsedTime;
+
+import org.firstinspires.ftc.teamcode.MecanumDrive;
+
+public class holdPosition {
+    MecanumDrive drive;
+    // Drivetrain motors
+    private DcMotor leftFront = null;
+    private DcMotor leftBack = null;
+    private DcMotor rightFront = null;
+    private DcMotor rightBack = null;
+    public Pose2d initialPosition;
+    public Pose2d currentPosition;
+    //PID variables {Kp,Ki,Kd}
+    public double[] Kx={0.7,2,0.05};
+    public double[] Ky={0.3,2,0.05};
+    public double[] Kt={2,0.3,0};
+    PID xPID=new PID(Kx[0],Kx[1],Kx[2]);
+    PID yPID=new PID(Ky[0],Ky[1],Ky[2]);
+    PID tPID=new PID(Kt[0],Kt[1],Kt[2]);
+    public double powerX;
+    public double powerY;
+    public double powerT;
+
+    /**
+     * Constructor
+     * @param drive MecanumDrive object for robot
+     */
+    public holdPosition(MecanumDrive drive, DcMotor leftFront,DcMotor leftBack,DcMotor rightFront,DcMotor rightBack){
+        this.leftFront=leftFront;
+        this.leftBack=leftBack;
+        this.rightFront=rightFront;
+        this.rightBack=rightBack;
+        this.drive=drive;
+        drive.updatePoseEstimate();
+        this.initialPosition=this.drive.localizer.getPose();
+        this.currentPosition=this.drive.localizer.getPose();
+    }
+
+    public void updatePID(){
+        this.xPID=new PID(Kx[0],Kx[1],Kx[2]);
+        this.yPID=new PID(Ky[0],Ky[1],Ky[2]);
+        this.tPID=new PID(Kt[0],Kt[1],Kt[2]);
+        xPID.init();
+        yPID.init();
+        tPID.init();
+    }
+
+    public void stop(){
+            drive.setDrivePowers(new PoseVelocity2d(new Vector2d(0,0),0));
+    }
+
+    public double hold(){
+        updateCurrentPosition();
+        powerX=-xPID.update(initialPosition.position.x,currentPosition.position.x);
+        powerY=yPID.update(initialPosition.position.y,currentPosition.position.y);
+        double errorT= initialPosition.heading.imag * currentPosition.heading.real - initialPosition.heading.real * currentPosition.heading.imag;
+        powerT=tPID.update(errorT);
+        // Calculate mecanum wheel speeds
+        double[] speeds = {
+                (powerY - powerX - powerT), // leftFront
+                (powerY + powerX + powerT), // rightFront
+                (powerY + powerX - powerT), // leftBack
+                (powerY - powerX + powerT)  // rightBack
+        };
+
+        // Normalize speeds if any exceed 1.0
+        double max = Math.abs(speeds[0]);
+        for (int i = 1; i < speeds.length; i++) {
+            if (Math.abs(speeds[i]) > max) {
+                max = Math.abs(speeds[i]);
+            }
+        }
+
+        if (max > 1.0) {
+            for (int i = 0; i < speeds.length; i++) {
+                speeds[i] /= max;
+            }
+        }
+
+        // Apply speeds to motors
+        leftFront.setPower(speeds[0]);
+        rightFront.setPower(speeds[1]);
+        leftBack.setPower(speeds[2]);
+        rightBack.setPower(speeds[3]);
+        return Math.sqrt((initialPosition.position.x-currentPosition.position.x)*(initialPosition.position.x-currentPosition.position.x)+(initialPosition.position.y-currentPosition.position.y)*(initialPosition.position.y-currentPosition.position.y));
+    }
+
+    /**
+     * Set initial position to robot current position
+     * @return Pose2d value initialPosition has been set to
+     */
+    public Pose2d setInitialPosition(){
+        drive.updatePoseEstimate();
+        initialPosition=drive.localizer.getPose();
+        xPID.init();
+        yPID.init();
+        tPID.init();
+        return initialPosition;
+    }
+
+    /**
+     * Update stored current position of robot
+     * @return Pose2d of Current position
+     */
+    public Pose2d updateCurrentPosition(){
+        drive.updatePoseEstimate();
+        currentPosition=drive.localizer.getPose();
+        return currentPosition;
+    }
+}
