@@ -5,6 +5,8 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.Stanley.finalizedClasses.PIDF;
@@ -16,22 +18,22 @@ public class tuningFlywheel extends LinearOpMode {
     int x=0;
     boolean correctingtoggle=false;
     int targetSpeed=2100;
-    double targetPower=0;
     //FTC dashboard telemetry
     FtcDashboard dashboard=null;
     Telemetry dashboardTelemetry=null;
-    PIDF flywheelPIDF =new PIDF(0,0,0,0);
+    PIDFCoefficients flywheelCoefficients=new PIDFCoefficients(0,0,0,0);
 
     @Override
     public void runOpMode(){
         flywheel=hardwareMap.get(DcMotorEx.class,"flywheel");
-        flywheel.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        flywheel.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        flywheel.setDirection(DcMotorSimple.Direction.REVERSE);
         dashboard = FtcDashboard.getInstance();
         dashboardTelemetry = dashboard.getTelemetry();
         double[] Kf={0,0,0,0};
         waitForStart();
         while (opModeIsActive()){
-            targetSpeed+=(int)gamepad1.left_stick_y;
+            targetSpeed+=(int)-gamepad1.left_stick_y*3;
             if (gamepad1.yWasPressed()){
                 correctingtoggle=!correctingtoggle;
             }
@@ -66,7 +68,7 @@ public class tuningFlywheel extends LinearOpMode {
                 if (i==x){
                     line1+="{";
                 }
-                Kf[i]=(double) Math.round(Kf[i] * Math.pow(10, 20)) / Math.pow(10, 20);
+                Kf[i]=(double) Math.round(Kf[i] * Math.pow(10, 5)) / Math.pow(10, 5);
                 line1+=Kf[i];
                 if (i==x){
                     line1+="}";
@@ -74,25 +76,19 @@ public class tuningFlywheel extends LinearOpMode {
                 line1+=", ";
             }
             if (gamepad1.xWasPressed()){
-                flywheelPIDF =new PIDF(Kf[0],Kf[1],Kf[2],Kf[3]);
+                flywheelCoefficients=new PIDFCoefficients(Kf[0],Kf[1],Kf[2],Kf[3]);
+                flywheel.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER,flywheelCoefficients);
             }
             boolean atTarget=false;
             if (correctingtoggle){
-                targetPower+=flywheelPIDF.update(targetSpeed,flywheel.getVelocity());
-                flywheel.setPower(targetPower);
+                flywheel.setVelocity(targetSpeed);
             }else{
-                targetPower=0;
-                flywheel.setPower(0);
+                flywheel.setVelocity(0);
             }
             telemetry.addLine(line1);
             telemetry.addData("Holding",correctingtoggle);
             telemetry.addData("Target",targetSpeed);
             telemetry.addData("Current",flywheel.getVelocity());
-            telemetry.addData("Power",flywheelPIDF.power);
-            telemetry.addData("P",flywheelPIDF.P);
-            telemetry.addData("I",flywheelPIDF.I);
-            telemetry.addData("D",flywheelPIDF.D);
-            telemetry.addData("F",flywheelPIDF.F);
             telemetry.addData("Offset(ticks)",targetSpeed-flywheel.getVelocity());
             telemetry.addData("AtTarget",atTarget);
             telemetry.update();
@@ -100,11 +96,6 @@ public class tuningFlywheel extends LinearOpMode {
             dashboardTelemetry.addData("Holding",correctingtoggle);
             dashboardTelemetry.addData("Target",targetSpeed);
             dashboardTelemetry.addData("Current",flywheel.getVelocity());
-            dashboardTelemetry.addData("Power",flywheelPIDF.power);
-            dashboardTelemetry.addData("P",flywheelPIDF.P);
-            dashboardTelemetry.addData("I",flywheelPIDF.I);
-            dashboardTelemetry.addData("D",flywheelPIDF.D);
-            dashboardTelemetry.addData("F",flywheelPIDF.F);
             dashboardTelemetry.addData("Offset(ticks)",targetSpeed-flywheel.getVelocity());
             dashboardTelemetry.addData("AtTarget",atTarget);
             dashboardTelemetry.update();
