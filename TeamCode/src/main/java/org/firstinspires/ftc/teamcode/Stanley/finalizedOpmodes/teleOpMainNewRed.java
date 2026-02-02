@@ -119,7 +119,7 @@ public class teleOpMainNewRed extends OpMode {
     Telemetry dashboardtelemetry=dashboard.getTelemetry();
     // ==================== TESTING ====================
     double minVoltage=20.0;
-    VoltageSensor batteryVoltageSensor = hardwareMap.get(VoltageSensor .class, "Control Hub");
+    VoltageSensor batteryVoltageSensor = null;
 //    int makeBallCnt=-1;
 //    int ballcnt=0;
 //    double[] launchVelocities=new double[]{0,0,0};
@@ -165,6 +165,8 @@ public class teleOpMainNewRed extends OpMode {
         spindexerOperator=new spindexerColor(spindexer,intake,hardwareMap);
         driveTrain=new MecanumDrive(hardwareMap, opModeDataTransfer.currentPose);
         outtakeOperator=new outtakeV3FittedAutolaunch(hardwareMap,"Red",true,driveTrain);
+        //TODO:delete after testing voltage
+        batteryVoltageSensor = hardwareMap.get(VoltageSensor .class, "Control Hub");
         //TODO:change back to 0 after testing
         outtakeOperator.setPipeLine(5);
         outtakeOperator.apriltag.init();
