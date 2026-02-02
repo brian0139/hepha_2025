@@ -10,31 +10,46 @@ public class AlvPath {
     public static void main(String[] args) {
         MeepMeep meepMeep = new MeepMeep(750);
 
+        // Set bot constraints (adjust max velocity and acceleration as necessary)
         RoadRunnerBotEntity myBot = new DefaultBotBuilder(meepMeep)
-                // Set bot constraints: maxVel, maxAccel, maxAngVel, maxAngAccel, track width
-                .setConstraints(60, 60, Math.toRadians(180), Math.toRadians(180), 15)
+                .setConstraints(50, 50, Math.PI, Math.PI, 18)
                 .build();
 
-        myBot.runAction(myBot.getDrive().actionBuilder(new Pose2d(-48.5, 48.9, 120))
-                .strafeToLinearHeading(new Vector2d(-40,37.6),Math.toRadians(135))
-                .waitSeconds(1.5)
-                .strafeToLinearHeading(new Vector2d(-12,30),Math.toRadians(180))
-                .waitSeconds(.5)
-                .strafeToLinearHeading(new Vector2d(-40,37.6),Math.toRadians(135))
-                .waitSeconds(1.5)
-                .strafeToLinearHeading(new Vector2d(10,30),Math.toRadians(180))
-                .waitSeconds(.5)
-                .strafeToLinearHeading(new Vector2d(-40,37.6),Math.toRadians(135))
-                .waitSeconds(1.5)
-                .strafeToLinearHeading(new Vector2d(34.6,30),Math.toRadians(180))
-                .waitSeconds(.5)
-                .strafeToLinearHeading(new Vector2d(-40,37.6),Math.toRadians(135))
-                .waitSeconds(1.5)
-                .strafeToLinearHeading(new Vector2d(37,-33),Math.toRadians(270))
+        // Define shooting position and angle
+        final Vector2d shootingPos = new Vector2d(-32, -32);  // Set the shooting position
+        final double shootingAngle = Math.toRadians(220);      // Set shooting angle
 
+        // Define classifier area where balls are collected
+        final Vector2d classifierArea = new Vector2d(-12, -25);  // Adjust position of classifier
+        final double intakeFinishy = -45;  // Position where balls are collected
+        final double intakeStarty = -25;  // Position for approaching the balls
+
+        // Define the number of balls to collect (15 balls)
+        int numBalls = 15;
+
+        // Main action sequence for ball collection and shooting
+        myBot.runAction(myBot.getDrive().actionBuilder(new Pose2d(-54, -23, Math.toRadians(90)))
+                .strafeToLinearHeading(classifierArea, Math.toRadians(90))  // Move to classifier area
+                .strafeToLinearHeading(new Vector2d(-12, intakeStarty), Math.toRadians(270))  // Move to first ball in classifier
+                .strafeTo(new Vector2d(-12, intakeFinishy))  // Collect first ball
+//                .waitSeconds(1)  // Wait for collection
+                .strafeToLinearHeading(shootingPos, shootingAngle)  // Move to shooting position
+//                .waitSeconds(1)  // Shoot first ball
+                .strafeToLinearHeading(new Vector2d(12, intakeStarty), Math.toRadians(270))  // Move to second ball
+                .strafeTo(new Vector2d(12, intakeFinishy))  // Collect second ball
+//                .waitSeconds(1)  // Wait for collection
+                .strafeToLinearHeading(shootingPos, shootingAngle)  // Move to shooting position
+//                .waitSeconds(1)  // Shoot second ball
+                .strafeToLinearHeading(new Vector2d(35, intakeStarty), Math.toRadians(270))  // Move to third ball
+                .strafeTo(new Vector2d(35, intakeFinishy))  // Collect third ball
+//                .waitSeconds(1)  // Wait for collection
+                .strafeToLinearHeading(shootingPos, shootingAngle)  // Move to shooting position
+//                .waitSeconds(1)  // Shoot third ball
+                .splineToSplineHeading(new Pose2d(-60, -36, Math.toRadians(180)), Math.toRadians(180))  // Move to next ball area
                 .build());
 
-        meepMeep.setBackground(MeepMeep.Background.FIELD_DECODE_OFFICIAL)
+        // Set up the MeepMeep simulation with background and entities
+        meepMeep.setBackground(MeepMeep.Background.FIELD_DECODE_JUICE_DARK)
                 .setDarkMode(true)
                 .setBackgroundAlpha(0.95f)
                 .addEntity(myBot)
