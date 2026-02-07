@@ -5,6 +5,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.AnalogInput;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
 
 import org.firstinspires.ftc.teamcode.Alvin.colorSensor;
 import java.util.Vector;
@@ -16,7 +17,7 @@ public class spindexerColorTest extends LinearOpMode{
     CRServo spindexer;
     colorSensor colorsensoroperator;
     spindexerColor spindexercolor;
-    AnalogInput spindexerAnalog;
+    DcMotorEx spindexerAnalog;
     DcMotor intake;
     int motifIndex=0;
 
@@ -26,7 +27,7 @@ public class spindexerColorTest extends LinearOpMode{
         //initiate drivetrain motors
         spindexer=hardwareMap.get(CRServo.class,"spindexerServo");
         colorsensoroperator=new colorSensor(hardwareMap,"outtakeSensor");
-        spindexerAnalog=hardwareMap.get(AnalogInput.class,"spindexerAnalog");
+        spindexerAnalog=hardwareMap.get(DcMotorEx.class,"spindexerAnalog");
         intake=hardwareMap.get(DcMotor.class, "intake");
 
 
@@ -110,10 +111,10 @@ public class spindexerColorTest extends LinearOpMode{
             telemetry.addData("Detected", result);
 
 
-            telemetry.addData("voltage", spindexerAnalog.getVoltage());
+            telemetry.addData("voltage", spindexerAnalog.getCurrentPosition());
             telemetry.addData("Power",spindexercolor.spindexerPID.power);
             telemetry.addData("target voltage",spindexercolor.inslotsV[spindexercolor.currentSlot]);
-            telemetry.addData("triggered",!((spindexercolor.spindexerSensor.getVoltage()>=spindexercolor.inslotsV[spindexercolor.currentSlot]-0.05)&&(spindexercolor.spindexerSensor.getVoltage()<=spindexercolor.inslotsV[spindexercolor.currentSlot]+0.05)));
+            telemetry.addData("triggered",!((spindexercolor.spindexerSensor.getCurrentPosition()>=spindexercolor.inslotsV[spindexercolor.currentSlot]-0.05)&&(spindexercolor.spindexerSensor.getCurrentPosition()<=spindexercolor.inslotsV[spindexercolor.currentSlot]+0.05)));
             telemetry.addData("detectioncnt",spindexercolor.detectioncnt);
             telemetry.addData("current slot",spindexercolor.currentSlot);
             telemetry.update();

@@ -1,23 +1,19 @@
 package org.firstinspires.ftc.teamcode.Brian;
 
-import android.text.method.Touch;
-
-import com.qualcomm.robotcore.hardware.AnalogInput;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
-import com.qualcomm.robotcore.hardware.TouchSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.Alvin.colorSensor;
 import org.firstinspires.ftc.teamcode.Stanley.finalizedClasses.PID;
-import org.firstinspires.ftc.teamcode.Stanley.finalizedClasses.PIDspindexer;
 
 public class spindexerColor {
     //==================== Hardware ====================
     public CRServo spindexerServo = null;
     public DcMotor intake = null;
-    AnalogInput spindexerSensor;
+    DcMotorEx spindexerSensor;
     colorSensor outtakesensor;
     public colorSensor intakesensor;
 
@@ -49,7 +45,7 @@ public class spindexerColor {
     public double mindetectiontime = 300;
     public double maxdetectiontime = 500;
     static final double CSIntegrationTimeMS = 100;
-    public double[] kS = {1.06, 0.1, 0};
+    public double[] kS = {0.0012, 0.001, 0.00003};
 //    public double[] kS = {1.06, 0.1, 0.014};
     public double[] inslotsV = {2.285, 0.131, 1.27};
     public double[] outslotsV = {0.678, 1.755, 2.833};
@@ -60,7 +56,7 @@ public class spindexerColor {
     public spindexerColor(CRServo spindexerServo, DcMotor intake, HardwareMap hardwareMap) {
         this.spindexerServo = spindexerServo;
         this.intake = intake;
-        spindexerSensor=hardwareMap.get(AnalogInput.class,"spindexerAnalog");
+        spindexerSensor=hardwareMap.get(DcMotorEx.class,"intake");
         outtakesensor = new colorSensor(hardwareMap, "outtakeSensor");
         intakesensor = new colorSensor(hardwareMap, "intakeSensor");
     }
@@ -75,7 +71,7 @@ public class spindexerColor {
 
 
     public boolean spinToMotif(int motifIndex) {
-        double epsilon = 0.01;
+        double epsilon = 10;
         int nextmotif = dummyMotif[motifIndex];
         if (outtakesensor.getDetected() != nextmotif && !lastDetected) {
             spindexerServo.setPower(0.75);
@@ -84,23 +80,23 @@ public class spindexerColor {
         } else if (detectedLocation==-1){
             /*TODO:Adjust for color sensor offset
             If adjust is negative,
-               detectedLocation = Math.abs(spindexerSensor.getVoltage()-adjust);
+               detectedLocation = Math.abs(spindexerSensor.getCurrentPosition()-adjust);
             If adjust is positive,
-               detectedLocation = (spindexerSensor.getVoltage()+adjust)%3.3;
+               detectedLocation = (spindexerSensor.getCurrentPosition()+adjust)%3.3;
             */
-            detectedLocation = Math.abs(spindexerSensor.getVoltage()-adjust);
+            detectedLocation = Math.abs(spindexerSensor.getCurrentPosition()-adjust);
             lastDetected=true;
             spindexerPID.init();
         }
         if (detectedLocation != -1) {
-            spindexerServo.setPower(spindexerPID.update(calculateError(detectedLocation,spindexerSensor.getVoltage())));
-            return (spindexerSensor.getVoltage() >= detectedLocation - epsilon && spindexerSensor.getVoltage() <= detectedLocation + epsilon);
+            spindexerServo.setPower(spindexerPID.update(calculateError(detectedLocation,spindexerSensor.getCurrentPosition())));
+            return (spindexerSensor.getCurrentPosition() >= detectedLocation - epsilon && spindexerSensor.getCurrentPosition() <= detectedLocation + epsilon);
         }
         return false;
     }
     public double calculateError(double setpoint, double currentpoint){
-        double range=3.3;
-        double error=setpoint-currentpoint;
+        double range=8192;
+        double error=(setpoint%8192)-currentpoint;
 
         while (error>range/2) error-=range;
         while (error<-range/2) error+=range;
@@ -127,8 +123,8 @@ public class spindexerColor {
             return true;
         }
         double epsilon = 0.075;
-        if (Math.abs(calculateError(inslotsV[currentSlot],spindexerSensor.getVoltage()))>epsilon && !waitingCSIntegration){
-            spindexerServo.setPower(Math.min(spindexerPID.update(calculateError(inslotsV[currentSlot],spindexerSensor.getVoltage())),0.75));
+        if (Math.abs(calculateError(inslotsV[currentSlot],spindexerSensor.getCurrentPosition()))>epsilon && !waitingCSIntegration){
+            spindexerServo.setPower(Math.min(spindexerPID.update(calculateError(inslotsV[currentSlot],spindexerSensor.getCurrentPosition())),0.75));
         }else{
             if (!waitingCSIntegration){
                 waitingCSIntegration=true;
@@ -158,7 +154,7 @@ public class spindexerColor {
                 if (spindexerSlots[i]!=0){
                     numBalls++;
                 }
-                if (spindexerSlots[i]==spindexerSensor.getVoltage()){
+                if (spindexerSlots[i]==spindexerSensor.getCurrentPosition()){
                     spindexerSlots[i]=1;
                 }
             }
@@ -168,7 +164,7 @@ public class spindexerColor {
     }
 
     public void holdSpindexer(){
-        spindexerServo.setPower(Math.min(spindexerPID.update(calculateError(inslotsV[currentSlot],spindexerSensor.getVoltage())),0.75));
+        spindexerServo.setPower(Math.min(spindexerPID.update(calculateError(inslotsV[currentSlot],spindexerSensor.getCurrentPosition())),0.75));
     }
 
     public boolean spinAfterIntake(boolean intakesuccess){
@@ -176,12 +172,12 @@ public class spindexerColor {
         if (intakesuccess){
             spindexerServo.setPower(0.75);
         }else{
-            detectedLocation=spindexerSensor.getVoltage();
+            detectedLocation=spindexerSensor.getCurrentPosition();
             spindexerPID.init();
         }
         if (detectedLocation!=-1){
-            spindexerServo.setPower(spindexerPID.update(detectedLocation-spindexerSensor.getVoltage()));
-            return (spindexerSensor.getVoltage()>=detectedLocation-epsilon&&spindexerSensor.getVoltage()<=detectedLocation+epsilon);
+            spindexerServo.setPower(spindexerPID.update(detectedLocation-spindexerSensor.getCurrentPosition()));
+            return (spindexerSensor.getCurrentPosition()>=detectedLocation-epsilon&&spindexerSensor.getCurrentPosition()<=detectedLocation+epsilon);
         }
         return false;
     }

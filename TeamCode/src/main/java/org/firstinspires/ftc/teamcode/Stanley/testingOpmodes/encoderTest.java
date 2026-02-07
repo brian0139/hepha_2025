@@ -14,7 +14,7 @@ public class encoderTest extends LinearOpMode {
     CRServo servo=null;
     @Override
     public void runOpMode() throws InterruptedException{
-        encoder=hardwareMap.get(DcMotorEx.class,"leftBack");
+        encoder=hardwareMap.get(DcMotorEx.class,"intake");
         encoder.setDirection(DcMotorSimple.Direction.REVERSE);
         servo=hardwareMap.get(CRServo.class,"hoodServo");
         //encoder.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
