@@ -47,8 +47,8 @@ public class spindexerColor {
     static final double CSIntegrationTimeMS = 100;
     public double[] kS = {0.0012, 0.001, 0.00003};
 //    public double[] kS = {1.06, 0.1, 0.014};
-    public double[] inslotsV = {2.285, 0.131, 1.27};
-    public double[] outslotsV = {0.678, 1.755, 2.833};
+    public double[] inslotsV = {0, -2691, -5470};
+    public double[] outslotsV = {-6796, -1423, -4087};
 
     //==================== PID ====================
     public PID spindexerPID = new PID(kS[0], kS[1], kS[2]);
