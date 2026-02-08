@@ -5,23 +5,20 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.AnalogInput;
 import com.qualcomm.robotcore.hardware.CRServo;
-import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorEx;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.Stanley.finalizedClasses.PID;
-import org.firstinspires.ftc.teamcode.Stanley.finalizedClasses.PIDspindexer;
 
 @TeleOp
 public class tuningSpindexer extends LinearOpMode {
     CRServo spindexer=null;
-    DcMotorEx spindexerSensor =null;
+    AnalogInput spindexerAnalog = null;
     spindexerColor spindexerOperator=null;
     double change=0.1;
     int x=0;
     //TODO:Get real value+sync with outtakeV2 value
     //test
-    double angle=0.131;
+    double targetVoltage = 0.131;
     boolean correctingtoggle=false;
     //FTC dashboard telemetry
     FtcDashboard dashboard=null;
@@ -30,17 +27,16 @@ public class tuningSpindexer extends LinearOpMode {
     @Override
     public void runOpMode(){
         spindexer=hardwareMap.get(CRServo.class,"spindexerServo");
-        spindexerSensor =hardwareMap.get(DcMotorEx.class,"intake");
+        spindexerAnalog = hardwareMap.get(AnalogInput.class, "spindexerAnalog");
         spindexerOperator=new spindexerColor(spindexer,null,hardwareMap);
         dashboard = FtcDashboard.getInstance();
         dashboardTelemetry = dashboard.getTelemetry();
         waitForStart();
         while (opModeIsActive()){
             if (gamepad1.yWasPressed()) correctingtoggle=!correctingtoggle;
-            angle+=-gamepad1.left_stick_y*5;
+            targetVoltage += -gamepad1.left_stick_y * 0.05;
             if (gamepad1.rightStickButtonWasPressed()){
-                spindexerSensor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-                spindexerSensor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+                spindexerColor.ENCODER_ZERO_TICKS = spindexerOperator.getSpindexerTicks();
             }
             //shift speed
             if (gamepad1.rightBumperWasPressed()){
@@ -68,8 +64,8 @@ public class tuningSpindexer extends LinearOpMode {
             if (gamepad1.dpadDownWasPressed()){
                 spindexerOperator.kS[x]-=change;
             }
-            if (angle>3.3) angle-=3.3;
-            if (angle<0) angle+=3.3;
+            if (targetVoltage>spindexerColor.ENCODER_MAX_VOLTAGE) targetVoltage-=spindexerColor.ENCODER_MAX_VOLTAGE;
+            if (targetVoltage<0) targetVoltage+=spindexerColor.ENCODER_MAX_VOLTAGE;
             String line1="Kh: ";
             for (int i=0;i<=2;i++){
                 if (i==x){
@@ -87,7 +83,10 @@ public class tuningSpindexer extends LinearOpMode {
             }
 //            boolean atTarget=false;
             if (correctingtoggle){
-                spindexerOperator.spindexerServo.setPower(spindexerOperator.spindexerPID.update(spindexerOperator.calculateError(angle,spindexerOperator.spindexerSensor.getCurrentPosition())));
+                double targetTicks = (targetVoltage / spindexerColor.ENCODER_MAX_VOLTAGE) * spindexerColor.ENCODER_TICKS_PER_REV;
+                double currentTicks = spindexerOperator.getSpindexerTicks();
+                spindexerOperator.spindexerServo.setPower(
+                        spindexerOperator.spindexerPID.update(spindexerOperator.calculateError(targetTicks, currentTicks)));
             }else{
                 spindexerOperator.spindexerServo.setPower(0);
             }
@@ -95,20 +94,28 @@ public class tuningSpindexer extends LinearOpMode {
 
             telemetry.addLine(line1);
             telemetry.addData("Holding",correctingtoggle);
-            telemetry.addData("Target",angle);
+            telemetry.addData("TargetVoltage",targetVoltage);
+            telemetry.addData("TargetTicks",(targetVoltage / spindexerColor.ENCODER_MAX_VOLTAGE) * spindexerColor.ENCODER_TICKS_PER_REV);
 //            telemetry.addData("Current",spindexerOperator.hoodAngle*spindexerOperator.servoDegPerRot);
-            telemetry.addData("CurrentEncoder",spindexerOperator.spindexerSensor.getCurrentPosition()%8192);
-            telemetry.addData("Error",spindexerOperator.calculateError(angle,spindexerOperator.spindexerSensor.getCurrentPosition()));
+            telemetry.addData("EncoderVoltage",spindexerAnalog.getVoltage());
+            telemetry.addData("CurrentTicks",spindexerOperator.getSpindexerTicks());
+            telemetry.addData("Error",spindexerOperator.calculateError(
+                    (targetVoltage / spindexerColor.ENCODER_MAX_VOLTAGE) * spindexerColor.ENCODER_TICKS_PER_REV,
+                    spindexerOperator.getSpindexerTicks()));
             telemetry.addData("Power",spindexerOperator.spindexerPID.power);
 //            telemetry.addData("Offset(rotations)",angle/spindexerOperator.servoDegPerRot-spindexerOperator.hoodAngle);
 //            telemetry.addData("AtTarget",atTarget);
             telemetry.update();
             dashboardTelemetry.addLine(line1);
             dashboardTelemetry.addData("Holding",correctingtoggle);
-            dashboardTelemetry.addData("Target",angle);
+            dashboardTelemetry.addData("TargetVoltage",targetVoltage);
+            dashboardTelemetry.addData("TargetTicks",(targetVoltage / spindexerColor.ENCODER_MAX_VOLTAGE) * spindexerColor.ENCODER_TICKS_PER_REV);
 //            dashboardTelemetry.addData("Current",spindexerOperator.hoodAngle);
-            dashboardTelemetry.addData("CurrentEncoder",spindexerOperator.spindexerSensor.getCurrentPosition()%8192);
-            dashboardTelemetry.addData("Error",spindexerOperator.calculateError(angle,spindexerOperator.spindexerSensor.getCurrentPosition()));
+            dashboardTelemetry.addData("EncoderVoltage",spindexerAnalog.getVoltage());
+            dashboardTelemetry.addData("CurrentTicks",spindexerOperator.getSpindexerTicks());
+            dashboardTelemetry.addData("Error",spindexerOperator.calculateError(
+                    (targetVoltage / spindexerColor.ENCODER_MAX_VOLTAGE) * spindexerColor.ENCODER_TICKS_PER_REV,
+                    spindexerOperator.getSpindexerTicks()));
             dashboardTelemetry.addData("Power",spindexerOperator.spindexerPID.power);
 //            dashboardTelemetry.addData("Offset(rotations)",angle/spindexerOperator.servoDegPerRot-spindexerOperator.hoodAngle);
 //            dashboardTelemetry.addData("AtTarget",atTarget);
