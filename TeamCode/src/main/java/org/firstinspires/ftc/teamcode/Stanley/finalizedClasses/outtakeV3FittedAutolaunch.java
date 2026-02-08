@@ -59,8 +59,8 @@ public class outtakeV3FittedAutolaunch {
     public double turretEpsilon=2.5;
     //auto aim vars
     // P, I, D
-//    public double[] Kturn={0.013,0.0002,0.02};
-    public double[] Kturn={0.013,0.01,0.0023};
+//    public double[] Kturn={0.013,0.01,0.0023};
+    public double[] Kturn={0.0072,0.004,0.0023};
     public PID turnPID=new PID(Kturn[0],Kturn[1],Kturn[2]);
 
     //================================  Config  ================================
