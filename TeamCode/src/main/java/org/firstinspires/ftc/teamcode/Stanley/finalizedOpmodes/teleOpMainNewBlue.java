@@ -95,7 +95,7 @@ public class teleOpMainNewBlue extends OpMode {
     static final double TWIST_SPEED = 0.5;
     static final double FLYWHEEL_IDLE_SPEED = 600;
 
-    static final double[] TRANSFER_POWERS = {1, 0};
+    static final double[] TRANSFER_POWERS = {-1, 0};
     static final int TRANSFER_DOWN = 1;
     static final int TRANSFER_UP = 0;
 
@@ -143,8 +143,8 @@ public class teleOpMainNewBlue extends OpMode {
 
         // Initialize other motors
         flywheel = hardwareMap.get(DcMotorEx.class, "flywheel");
+        flywheel.setDirection(DcMotorSimple.Direction.REVERSE);
         flywheelR = hardwareMap.get(DcMotorEx.class,"flywheelR");
-        flywheelR.setDirection(DcMotorSimple.Direction.REVERSE);
         intake = hardwareMap.get(DcMotor.class, "intake");
         transfer = hardwareMap.get(DcMotor.class, "par1");
 
@@ -223,12 +223,12 @@ public class teleOpMainNewBlue extends OpMode {
                 case IDLE:
                     flywheelState = FlywheelState.SPINNING;
                     targetSpeed = flywheelSpeed;
-                    flywheel.setVelocity(targetSpeed);
+                    flywheel.setVelocity(-targetSpeed);
                     break;
                 case SPINNING:
                     flywheelState = FlywheelState.STOPPED;
                     targetSpeed = FLYWHEEL_IDLE_SPEED;
-                    flywheel.setVelocity(FLYWHEEL_IDLE_SPEED);
+                    flywheel.setVelocity(-FLYWHEEL_IDLE_SPEED);
 //                    //TODO:Testing
 //                    ballcnt=0;
 //                    previousRateofChange=0;
@@ -237,7 +237,7 @@ public class teleOpMainNewBlue extends OpMode {
         }
         if (flywheelState == FlywheelState.STOPPED){
             targetSpeed = FLYWHEEL_IDLE_SPEED;
-            flywheel.setVelocity(FLYWHEEL_IDLE_SPEED);
+            flywheel.setVelocity(-FLYWHEEL_IDLE_SPEED);
         }
 //        //TODO:Testing
 //        if (gamepad2.dpadLeftWasPressed()){
@@ -269,7 +269,7 @@ public class teleOpMainNewBlue extends OpMode {
 
             case UP:
                 if (gamepad2.xWasPressed()) {
-                    transfer.setPower(-1);
+                    transfer.setPower(1);
                     transferState = TransferState.DOWN;
                     transferTimer.reset();
                     spindexerState=SpindexerState.STOPPED;
@@ -395,7 +395,7 @@ public class teleOpMainNewBlue extends OpMode {
     void updateTelemetry() {
         telemetry.addLine("=== Flywheel ===");
         telemetry.addData("Target Speed",flywheelSpeed);
-        telemetry.addData("Actual Speed",flywheel.getVelocity());
+        telemetry.addData("Actual Speed",-flywheel.getVelocity());
         dashboardtelemetry.addData("Target Speed",flywheelSpeed);
         dashboardtelemetry.addData("Actual Speed",flywheel.getVelocity());
         telemetry.addLine("=== Toggles ===");
