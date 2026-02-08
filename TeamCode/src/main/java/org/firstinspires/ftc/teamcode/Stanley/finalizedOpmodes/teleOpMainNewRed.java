@@ -145,8 +145,8 @@ public class teleOpMainNewRed extends OpMode {
 
         // Initialize other motors
         flywheel = hardwareMap.get(DcMotorEx.class, "flywheel");
-        flywheel.setDirection(DcMotorSimple.Direction.REVERSE);
         flywheelR = hardwareMap.get(DcMotorEx.class,"flywheelR");
+        flywheelR.setDirection(DcMotorSimple.Direction.REVERSE);
         intake = hardwareMap.get(DcMotor.class, "intake");
         transfer = hardwareMap.get(DcMotor.class, "par1");
 

@@ -45,7 +45,7 @@ public class spindexerColor {
     public double mindetectiontime = 300;
     public double maxdetectiontime = 500;
     static final double CSIntegrationTimeMS = 100;
-    public double autoSpinEpsilon=100;
+    public double autoSpinEpsilon=150;
     public double[] kS = {0.0007, 0.0005, 0.00003};
 //    public double[] kS = {1.06, 0.1, 0.014};
     public double[] inslotsV = {0, -2691, -5470};
@@ -70,7 +70,28 @@ public class spindexerColor {
         }
     }
 
+    /**
+     * Calculates absolute distance of spindexer rotation
+     * @param setpoint Target value
+     * @param currentpoint Current value
+     * @return Absolute distance (double)
+     */
+    public double calculateError(double setpoint, double currentpoint){
+        double range=8192;
+        double error=(setpoint%8192)-currentpoint;
 
+        while (error>range/2) error-=range;
+        while (error<-range/2) error+=range;
+
+        return error;
+    }
+
+    public void initSpin() {
+        detectedLocation = -1;
+        detectioncnt=0;
+        timer.reset();
+        lastDetected=false;
+    }
 
     public boolean spinToMotif(int motifIndex) {
         int nextmotif = dummyMotif[motifIndex];
@@ -95,21 +116,31 @@ public class spindexerColor {
         }
         return false;
     }
-    public double calculateError(double setpoint, double currentpoint){
-        double range=8192;
-        double error=(setpoint%8192)-currentpoint;
 
-        while (error>range/2) error-=range;
-        while (error<-range/2) error+=range;
-
-        return error;
-    }
-
-    public void initSpin() {
-        detectedLocation = -1;
-        detectioncnt=0;
-        timer.reset();
-        lastDetected=false;
+    public boolean spinToMotifV2(int motifIndex) {
+        if (detectioncnt==-1) detectioncnt=0;
+        if (detectioncnt==3) return false;
+        int nextmotif = dummyMotif[motifIndex];
+        if (Math.abs(calculateError(outslotsV[currentSlot],spindexerSensor.getCurrentPosition()))>autoSpinEpsilon && !waitingCSIntegration){
+            spindexerServo.setPower(spindexerPID.update(calculateError(outslotsV[currentSlot],spindexerSensor.getCurrentPosition())));
+        }else{
+            if (!waitingCSIntegration){
+                waitingCSIntegration=true;
+                intakeTimer.reset();
+            }
+            holdSpindexer();
+            if (intakeTimer.milliseconds()>=CSIntegrationTimeMS) {
+                waitingCSIntegration=false;
+                if (intakesensor.getDetected() == nextmotif) {
+                    spindexerServo.setPower(0);
+                    return true;
+                }
+                detectioncnt++;
+                currentSlot++;
+                currentSlot %= 3;
+            }
+        }
+        return false;
     }
 
     /**

@@ -48,7 +48,6 @@ public class spindexerColorTest extends LinearOpMode{
             if (gamepad1.yWasPressed()) {
                 motifIndex++;
                 motifIndex %= 3;
-                spindexercolor.initSpin();
             }
             if (gamepad1.xWasPressed()){
                 spintointaketoggle=!spintointaketoggle;
@@ -58,43 +57,7 @@ public class spindexerColorTest extends LinearOpMode{
             }else{
                 spindexercolor.spindexerServo.setPower(0);
             }
-//            boolean intakeTrue = false;
-//            if (gamepad1.xWasPressed()) spintointaketoggle=!spintointaketoggle;
-//            if (spintointaketoggle && !intakeTrue) {
-//                while(!intakeTrue){
-//                    intakeTrue=spindexercolor.spinToIntake();
-//                    int detected = colorsensoroperator.getDetected();
-//            }
-//
-//                    String result;
-//                    if (detected == 1) {
-//                        result = "GREEN";
-//                    } else if (detected == 2) {
-//                        result = "PURPLE";
-//                    } else {
-//                        result = "NONE";
-//                    }
-//
-//                    telemetry.addData("Detected", result);
-//                    float[] hsv = colorsensoroperator.readHSV();
-//                    telemetry.addData("Hue", hsv[0]);
-//                    telemetry.addData("Sat", hsv[1]);
-//                    telemetry.addData("Val", hsv[2]);
-//                    telemetry.update();
-//                }
-//            }else{
-//                spindexercolor.spindexerServo.setPower(0);
-//                intakeTrue=false;
-//                spindexercolor.detectioncnt=0;
-//            }
-//            telemetry.addData("spin to intake activated", intakeTrue);
-//
-////            intake.setPower(0.75);
-////            if (gamepad1.yWasPressed()) spindexercolor.spinToMotif();
-////            if (gamepad1.yWasPressed()) spindexercolor.spinToIntake();
             telemetry.addData("spindexer slots", Arrays.toString(spindexercolor.dummyMotif));
-////            telemetry.addData("time elapsed", spindexercolor.nonetimer);
-////            telemetry.addData("timeout",spindexercolor.timeout);
             telemetry.addData("current motif index", motifIndex);
             telemetry.addData("current motif color", spindexercolor.dummyMotif[motifIndex]);
             int detected = colorsensoroperator.getDetected();
