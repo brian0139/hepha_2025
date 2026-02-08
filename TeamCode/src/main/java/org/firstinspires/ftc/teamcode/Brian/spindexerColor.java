@@ -45,7 +45,8 @@ public class spindexerColor {
     public double mindetectiontime = 300;
     public double maxdetectiontime = 500;
     static final double CSIntegrationTimeMS = 100;
-    public double[] kS = {0.0012, 0.001, 0.00003};
+    public double autoSpinEpsilon=100;
+    public double[] kS = {0.0007, 0.0005, 0.00003};
 //    public double[] kS = {1.06, 0.1, 0.014};
     public double[] inslotsV = {0, -2691, -5470};
     public double[] outslotsV = {-6796, -1423, -4087};
@@ -70,8 +71,8 @@ public class spindexerColor {
     }
 
 
+
     public boolean spinToMotif(int motifIndex) {
-        double epsilon = 10;
         int nextmotif = dummyMotif[motifIndex];
         if (outtakesensor.getDetected() != nextmotif && !lastDetected) {
             spindexerServo.setPower(0.75);
@@ -90,7 +91,7 @@ public class spindexerColor {
         }
         if (detectedLocation != -1) {
             spindexerServo.setPower(spindexerPID.update(calculateError(detectedLocation,spindexerSensor.getCurrentPosition())));
-            return (spindexerSensor.getCurrentPosition() >= detectedLocation - epsilon && spindexerSensor.getCurrentPosition() <= detectedLocation + epsilon);
+            return (spindexerSensor.getCurrentPosition() >= detectedLocation - autoSpinEpsilon && spindexerSensor.getCurrentPosition() <= detectedLocation + autoSpinEpsilon);
         }
         return false;
     }
@@ -122,8 +123,7 @@ public class spindexerColor {
         if (detectioncnt==3){
             return true;
         }
-        double epsilon = 0.075;
-        if (Math.abs(calculateError(inslotsV[currentSlot],spindexerSensor.getCurrentPosition()))>epsilon && !waitingCSIntegration){
+        if (Math.abs(calculateError(inslotsV[currentSlot],spindexerSensor.getCurrentPosition()))>autoSpinEpsilon && !waitingCSIntegration){
             spindexerServo.setPower(Math.min(spindexerPID.update(calculateError(inslotsV[currentSlot],spindexerSensor.getCurrentPosition())),0.75));
         }else{
             if (!waitingCSIntegration){
