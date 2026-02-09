@@ -4,14 +4,15 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
+import com.qualcomm.robotcore.hardware.TouchSensor;
 
 @TeleOp
 public class spindexerTouchTest extends LinearOpMode {
-    DigitalChannel input=null;
+    TouchSensor input=null;
     CRServo servo=null;
     @Override
     public void runOpMode(){
-        input=hardwareMap.get(DigitalChannel.class,"intakeTouch");
+        input=hardwareMap.get(TouchSensor.class,"touch");
         servo=hardwareMap.get(CRServo.class,"spindexerServo");
         double change=0.1;
         double targetSpeed=0;
@@ -27,7 +28,7 @@ public class spindexerTouchTest extends LinearOpMode {
             }else if (gamepad1.leftBumperWasPressed()){
                 change/=10;
             }
-            telemetry.addData("Change",String.format("%e", change));
+            telemetry.addData("Change",change);
             if (gamepad1.dpadUpWasPressed()){
                 targetSpeed+=change;
             }
@@ -39,13 +40,13 @@ public class spindexerTouchTest extends LinearOpMode {
             }else{
                 servo.setPower(0);
             }
-            if (input.getState()){
+            if (input.isPressed()){
                 correctingtoggle=false;
                 servo.setPower(0);
             }
             telemetry.addData("Holding",correctingtoggle);
             telemetry.addData("Target",targetSpeed);
-            telemetry.addData("Pressed",input.getState());
+            telemetry.addData("Pressed",input.isPressed());
             telemetry.update();
         }
     }
