@@ -72,7 +72,7 @@ public class teleOpMainNewBlue extends OpMode {
     CRServo spindexer = null;
 
     //Spindexer Encoder
-    OverflowEncoder spindexerEncoder = null;
+    DcMotorEx spindexerEncoder = null;
 
     // ==================== Classes ====================
     spindexerColor spindexerOperator=null;
@@ -153,8 +153,8 @@ public class teleOpMainNewBlue extends OpMode {
         hoodServo = hardwareMap.get(CRServo.class, "hoodServo");
         spindexer = hardwareMap.get(CRServo.class, "spindexerServo");
 
-        // Initialize analog input
-        spindexerEncoder = hardwareMap.get(OverflowEncoder.class,"intake");
+        // Initialize Encoder
+        spindexerEncoder = hardwareMap.get(DcMotorEx.class,"intake");
 
         // Set initial positions
         transfer.setPower(TRANSFER_POWERS[TRANSFER_DOWN]);
@@ -294,8 +294,8 @@ public class teleOpMainNewBlue extends OpMode {
     // ==================== SPINDEXER STATE MACHINE ====================
     void updateSpindexerStateMachine(){
         if (gamepad1.aWasPressed()){
-            spindexerEncoder.encoder.getMotor().setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            spindexerEncoder.encoder.getMotor().setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+            spindexerEncoder.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            spindexerEncoder.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         }
         if (gamepad1.yWasPressed()){
             switch (spindexerState){
