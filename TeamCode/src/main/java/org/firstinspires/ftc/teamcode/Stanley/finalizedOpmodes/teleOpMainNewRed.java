@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.Stanley.finalizedOpmodes;
 
 import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.roadrunner.ftc.OverflowEncoder;
 import com.qualcomm.robotcore.hardware.AnalogInput;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
@@ -71,8 +72,8 @@ public class teleOpMainNewRed extends OpMode {
     CRServo hoodServo = null;
     CRServo spindexer = null;
 
-    //Analog Input
-    AnalogInput spindexerAnalog = null;
+    //Spindexer Encoder
+    OverflowEncoder spindexerEncoder = null;
 
     // ==================== Classes ====================
     spindexerColor spindexerOperator=null;
@@ -155,7 +156,7 @@ public class teleOpMainNewRed extends OpMode {
         spindexer = hardwareMap.get(CRServo.class, "spindexerServo");
 
         // Initialize analog input
-        spindexerAnalog = hardwareMap.get(AnalogInput.class,"spindexerAnalog");
+        spindexerEncoder = hardwareMap.get(OverflowEncoder.class,"intake");
 
         // Set initial positions
         transfer.setPower(TRANSFER_POWERS[TRANSFER_DOWN]);
@@ -297,6 +298,10 @@ public class teleOpMainNewRed extends OpMode {
 
     // ==================== SPINDEXER STATE MACHINE ====================
     void updateSpindexerStateMachine(){
+        if (gamepad1.aWasPressed()){
+            spindexerEncoder.encoder.getMotor().setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            spindexerEncoder.encoder.getMotor().setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        }
         if (gamepad1.yWasPressed()){
             switch (spindexerState){
                 case STOPPED:
@@ -327,7 +332,7 @@ public class teleOpMainNewRed extends OpMode {
             intake.setPower(0.7);
             if (result){
                 spindexerState= SpindexerState.HOLDING;
-            }else if (!result && spindexerOperator.detectioncnt==3){
+            }else if (spindexerOperator.detectioncnt==3){
                 spindexerState= SpindexerState.STOPPED;
                 gamepad1.rumble(100);
             }
