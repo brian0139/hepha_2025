@@ -13,6 +13,7 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 
 import java.text.DecimalFormat;
 
+//TODO:IMPORTANT:CURRENT PIDF PARAMETERS([P,I,D,F]):[9.7,0.7,1.3,3.8]
 @TeleOp
 public class tuningFlywheel extends LinearOpMode {
     DcMotorEx flywheel=null;
