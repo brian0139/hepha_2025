@@ -9,6 +9,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
@@ -145,7 +146,11 @@ public class teleOpMainNewBlue extends OpMode {
         // Initialize other motors
         flywheel = hardwareMap.get(DcMotorEx.class, "flywheel");
         flywheel.setDirection(DcMotorSimple.Direction.REVERSE);
+        flywheel.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        flywheel.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER,new PIDFCoefficients(9.7,0.7,1.3,3.8));
         flywheelR = hardwareMap.get(DcMotorEx.class,"flywheelR");
+        flywheelR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        flywheelR.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER,new PIDFCoefficients(9.7,0.7,1.3,3.8));
         intake = hardwareMap.get(DcMotor.class, "intake");
         transfer = hardwareMap.get(DcMotor.class, "par1");
 
@@ -225,11 +230,13 @@ public class teleOpMainNewBlue extends OpMode {
                     flywheelState = FlywheelState.SPINNING;
                     targetSpeed = flywheelSpeed;
                     flywheel.setVelocity(-targetSpeed);
+                    flywheelR.setVelocity(-targetSpeed);
                     break;
                 case SPINNING:
                     flywheelState = FlywheelState.STOPPED;
                     targetSpeed = FLYWHEEL_IDLE_SPEED;
                     flywheel.setVelocity(-FLYWHEEL_IDLE_SPEED);
+                    flywheelR.setVelocity(-FLYWHEEL_IDLE_SPEED);
 //                    //TODO:Testing
 //                    ballcnt=0;
 //                    previousRateofChange=0;
@@ -239,6 +246,7 @@ public class teleOpMainNewBlue extends OpMode {
         if (flywheelState == FlywheelState.STOPPED){
             targetSpeed = FLYWHEEL_IDLE_SPEED;
             flywheel.setVelocity(-FLYWHEEL_IDLE_SPEED);
+            flywheelR.setVelocity(-FLYWHEEL_IDLE_SPEED);
         }
 //        //TODO:Testing
 //        if (gamepad2.dpadLeftWasPressed()){
@@ -539,6 +547,7 @@ public class teleOpMainNewBlue extends OpMode {
 //        ReadWriteFile.writeFile(file, data.toString());
         // Clean shutdown
         flywheel.setVelocity(0);
+        flywheelR.setVelocity(0);
         intake.setPower(0);
         hoodServo.setPower(0);
     }

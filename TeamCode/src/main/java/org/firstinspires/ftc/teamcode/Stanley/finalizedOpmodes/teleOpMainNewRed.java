@@ -9,6 +9,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
@@ -146,8 +147,12 @@ public class teleOpMainNewRed extends OpMode {
 
         // Initialize other motors
         flywheel = hardwareMap.get(DcMotorEx.class, "flywheel");
+        flywheel.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         flywheel.setDirection(DcMotorSimple.Direction.REVERSE);
+        flywheel.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER,new PIDFCoefficients(9.7,0.7,1.3,3.8));
         flywheelR = hardwareMap.get(DcMotorEx.class,"flywheelR");
+        flywheelR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        flywheelR.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER,new PIDFCoefficients(9.7,0.7,1.3,3.8));
         intake = hardwareMap.get(DcMotor.class, "intake");
         transfer = hardwareMap.get(DcMotor.class, "par1");
 
@@ -168,8 +173,7 @@ public class teleOpMainNewRed extends OpMode {
         outtakeOperator=new outtakeV3FittedAutolaunch(hardwareMap,"Red",true,driveTrain);
         //TODO:delete after testing voltage
         batteryVoltageSensor = hardwareMap.get(VoltageSensor .class, "Control Hub");
-        //TODO:change back to 0 after testing
-        outtakeOperator.setPipeLine(5);
+        outtakeOperator.setPipeLine(0);
         outtakeOperator.apriltag.init();
 
         telemetry.addLine("Robot Initialized and Ready");
@@ -230,11 +234,13 @@ public class teleOpMainNewRed extends OpMode {
                     flywheelState = FlywheelState.SPINNING;
                     targetSpeed = flywheelSpeed;
                     flywheel.setVelocity(-targetSpeed);
+                    flywheelR.setVelocity(-targetSpeed);
                     break;
                 case SPINNING:
                     flywheelState = FlywheelState.STOPPED;
                     targetSpeed = FLYWHEEL_IDLE_SPEED;
                     flywheel.setVelocity(-FLYWHEEL_IDLE_SPEED);
+                    flywheelR.setVelocity(-FLYWHEEL_IDLE_SPEED);
 //                    //TODO:Testing
 //                    ballcnt=0;
 //                    previousRateofChange=0;
@@ -244,6 +250,7 @@ public class teleOpMainNewRed extends OpMode {
         if (flywheelState == FlywheelState.STOPPED){
             targetSpeed = FLYWHEEL_IDLE_SPEED;
             flywheel.setVelocity(-FLYWHEEL_IDLE_SPEED);
+            flywheelR.setVelocity(-FLYWHEEL_IDLE_SPEED);
         }
 //        //TODO:Testing
 //        if (gamepad2.dpadLeftWasPressed()){
@@ -429,6 +436,11 @@ public class teleOpMainNewRed extends OpMode {
         telemetry.addData("Right Front",rightFront.getPower());
         telemetry.addData("Left Back",leftBack.getPower());
         telemetry.addData("Right Back",rightBack.getPower());
+        dashboardtelemetry.addLine("=== Drivetrain ===");
+        dashboardtelemetry.addData("Left Front",leftFront.getPower());
+        dashboardtelemetry.addData("Right Front",rightFront.getPower());
+        dashboardtelemetry.addData("Left Back",leftBack.getPower());
+        dashboardtelemetry.addData("Right Back",rightBack.getPower());
         telemetry.addLine("=== LOG ===");
         telemetry.addData("Hood Encoder(LOG)",outtakeOperator.hoodEncoder.getCurrentPosition());
         telemetry.addData("Flywheel Target Speed(LOG)",flywheelSpeed);
@@ -549,6 +561,7 @@ public class teleOpMainNewRed extends OpMode {
 //        ReadWriteFile.writeFile(file, data.toString());
         // Clean shutdown
         flywheel.setVelocity(0);
+        flywheelR.setVelocity(0);
         intake.setPower(0);
         hoodServo.setPower(0);
     }
