@@ -64,7 +64,7 @@ public final class MecanumDrive {
 
         // drive model parameters
         public double inPerTick = 0.001965537575;
-        public double lateralInPerTick = 0.0008786398643791251;
+        public double lateralInPerTick = 0;
         public double trackWidthTicks = 6448.047944646423;
 
         // feedforward parameters (in tick units)
@@ -328,7 +328,7 @@ public final class MecanumDrive {
                     PARAMS.kV / PARAMS.inPerTick, PARAMS.kA / PARAMS.inPerTick);
             double leftFrontPower = feedforward.compute(wheelVels.leftFront) / voltage;
             double leftBackPower = feedforward.compute(wheelVels.leftBack) / voltage;
-            double rightBackPower = feedforward.compute(wheelVels.rightBack) / voltage;
+            double rightBackPower = (feedforward.compute(wheelVels.rightBack) / voltage) * 2;
             double rightFrontPower = feedforward.compute(wheelVels.rightFront) / voltage;
             mecanumCommandWriter.write(new MecanumCommandMessage(
                     voltage, leftFrontPower, leftBackPower, rightBackPower, rightFrontPower
