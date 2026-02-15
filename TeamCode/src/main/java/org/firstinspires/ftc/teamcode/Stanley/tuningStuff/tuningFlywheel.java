@@ -17,10 +17,13 @@ import java.text.DecimalFormat;
 public class tuningFlywheel extends LinearOpMode {
     DcMotorEx flywheel=null;
     DcMotorEx flywheelR=null;
+    DcMotor transfer=null;
+    DcMotor intake=null;
     CRServo spindexer=null;
     double change=0.1;
     int x=0;
     boolean correctingtoggle=false;
+    boolean transferToggle=false;
     int targetSpeed=2100;
     //FTC dashboard telemetry
     FtcDashboard dashboard=null;
@@ -37,13 +40,20 @@ public class tuningFlywheel extends LinearOpMode {
         flywheel.setDirection(DcMotorEx.Direction.REVERSE);
         flywheelR=hardwareMap.get(DcMotorEx.class,"flywheelR");
         flywheelR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        intake=hardwareMap.get(DcMotor.class,"intake");
+        transfer=hardwareMap.get(DcMotor.class,"par1");
         spindexer=hardwareMap.get(CRServo.class,"spindexerServo");
         dashboard = FtcDashboard.getInstance();
         dashboardTelemetry = dashboard.getTelemetry();
         double[] Kf={0,0,0,0};
         waitForStart();
         while (opModeIsActive()){
-            spindexer.setPower(-gamepad1.right_stick_x);
+            intake.setPower(gamepad1.right_trigger-gamepad1.left_trigger);
+            if (gamepad1.right_bumper) spindexer.setPower(0.6);
+            else if (gamepad1.left_bumper) spindexer.setPower(-0.6);
+            else{
+                spindexer.setPower(0);
+            }
             targetSpeed+=(int)gamepad1.left_stick_y*3;
             if (gamepad1.yWasPressed()){
                 correctingtoggle=!correctingtoggle;
@@ -89,6 +99,12 @@ public class tuningFlywheel extends LinearOpMode {
             if (gamepad1.xWasPressed()){
                 flywheelCoefficients=new PIDFCoefficients(Kf[0],Kf[1],Kf[2],Kf[3]);
                 flywheel.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER,flywheelCoefficients);
+            }
+            if (gamepad1.rightStickButtonWasPressed()) transferToggle=!transferToggle;
+            if (transferToggle){
+                transfer.setPower(-1);
+            }else{
+                transfer.setPower(0);
             }
             if (correctingtoggle){
                 flywheel.setVelocity(-targetSpeed);
