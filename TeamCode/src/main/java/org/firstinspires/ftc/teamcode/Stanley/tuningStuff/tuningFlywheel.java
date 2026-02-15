@@ -49,11 +49,7 @@ public class tuningFlywheel extends LinearOpMode {
         waitForStart();
         while (opModeIsActive()){
             intake.setPower(gamepad1.right_trigger-gamepad1.left_trigger);
-            if (gamepad1.right_bumper) spindexer.setPower(0.6);
-            else if (gamepad1.left_bumper) spindexer.setPower(-0.6);
-            else{
-                spindexer.setPower(0);
-            }
+            spindexer.setPower(-gamepad1.right_stick_x);
             targetSpeed+=(int)gamepad1.left_stick_y*3;
             if (gamepad1.yWasPressed()){
                 correctingtoggle=!correctingtoggle;
@@ -99,8 +95,9 @@ public class tuningFlywheel extends LinearOpMode {
             if (gamepad1.xWasPressed()){
                 flywheelCoefficients=new PIDFCoefficients(Kf[0],Kf[1],Kf[2],Kf[3]);
                 flywheel.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER,flywheelCoefficients);
+                flywheelR.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER,flywheelCoefficients);
             }
-            if (gamepad1.rightStickButtonWasPressed()) transferToggle=!transferToggle;
+            if (gamepad1.aWasPressed()) transferToggle=!transferToggle;
             if (transferToggle){
                 transfer.setPower(-1);
             }else{
@@ -108,20 +105,26 @@ public class tuningFlywheel extends LinearOpMode {
             }
             if (correctingtoggle){
                 flywheel.setVelocity(-targetSpeed);
+                flywheelR.setVelocity(-targetSpeed);
             }else{
                 flywheel.setVelocity(0);
+                flywheelR.setVelocity(0);
             }
             telemetry.addLine(line1);
             telemetry.addData("Holding",correctingtoggle);
-            telemetry.addData("Target",-targetSpeed);
-            telemetry.addData("Current",-flywheel.getVelocity());
-            telemetry.addData("Offset(ticks)",targetSpeed-flywheel.getVelocity());
+            telemetry.addData("Target",targetSpeed);
+            telemetry.addData("CurrentR",-flywheelR.getVelocity());
+            telemetry.addData("CurrentL",-flywheel.getVelocity());
+            telemetry.addData("Offset(ticks)",targetSpeed+flywheel.getVelocity());
+            telemetry.addData("OffsetR(ticks)",targetSpeed+flywheelR.getVelocity());
             telemetry.update();
             dashboardTelemetry.addLine(line1);
             dashboardTelemetry.addData("Holding",correctingtoggle);
-            dashboardTelemetry.addData("Target",-targetSpeed);
-            dashboardTelemetry.addData("Current",-flywheel.getVelocity());
-            dashboardTelemetry.addData("Offset(ticks)",targetSpeed-flywheel.getVelocity());
+            dashboardTelemetry.addData("Target",targetSpeed);
+            dashboardTelemetry.addData("CurrentR",-flywheelR.getVelocity());
+            dashboardTelemetry.addData("CurrentL",-flywheel.getVelocity());
+            dashboardTelemetry.addData("Offset(ticks)",targetSpeed+flywheel.getVelocity());
+            dashboardTelemetry.addData("OffsetR(ticks)",targetSpeed+flywheelR.getVelocity());
             dashboardTelemetry.update();
         }
     }
