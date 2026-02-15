@@ -46,11 +46,17 @@ public class tuningFlywheel extends LinearOpMode {
         dashboard = FtcDashboard.getInstance();
         dashboardTelemetry = dashboard.getTelemetry();
         double[] Kf={0,0,0,0};
+        //initialize PIDF values
+        flywheelCoefficients=flywheel.getPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER);
+        Kf[0]=flywheelCoefficients.p;
+        Kf[1]=flywheelCoefficients.i;
+        Kf[2]=flywheelCoefficients.d;
+        Kf[3]=flywheelCoefficients.f;
         waitForStart();
         while (opModeIsActive()){
             intake.setPower(gamepad1.right_trigger-gamepad1.left_trigger);
             spindexer.setPower(-gamepad1.right_stick_x);
-            targetSpeed+=(int)gamepad1.left_stick_y*3;
+            targetSpeed+=(int)-gamepad1.left_stick_y*3;
             if (gamepad1.yWasPressed()){
                 correctingtoggle=!correctingtoggle;
             }
