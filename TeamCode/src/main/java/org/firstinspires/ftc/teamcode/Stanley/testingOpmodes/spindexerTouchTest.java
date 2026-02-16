@@ -68,6 +68,12 @@ public class spindexerTouchTest extends LinearOpMode {
             telemetry.addData("Target", targetSpeed);
             telemetry.addData("Pressed", input.isPressed());
             telemetry.update();
+            if (input.isPressed()) {
+                dashboardTelemetry.addData("PressedNum", 1);
+            }
+            else{
+                dashboardTelemetry.addData("PressedNum",0);
+            }
             dashboardTelemetry.addData("Pressed",input.isPressed());
             dashboardTelemetry.update();
         }
