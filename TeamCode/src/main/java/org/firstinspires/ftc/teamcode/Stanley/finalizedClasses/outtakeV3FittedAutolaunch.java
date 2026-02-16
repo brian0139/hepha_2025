@@ -184,21 +184,28 @@ public class outtakeV3FittedAutolaunch {
         return Math.abs(apriltag.getYaw())<=turretEpsilon;
     }
 
+//    /**
+//     * Get distance to april tag using limelight
+//     * @return Distance in in.
+//     */
+//    public double getDistance(){
+//        /*
+//          Formula:
+//          d=(h2-h1)/tan (a1+a2)
+//          h1: Height of the Limelight lens from the floor.
+//          h2: Height of the target (AprilTag) from the floor.
+//          a1: Mounting angle of the Limelight (degrees back from vertical).
+//          a2: Vertical offset angle to the target, obtained from the Limelight's ty value.
+//         */
+//        return (29.5-11.4375)/Math.tan(Math.toRadians(20-apriltag.getPitch()));
+////        return (18.75-11.4375)/Math.tan(Math.toRadians(20-apriltag.getPitch()));
+//    }
     /**
-     * Get distance to april tag using limelight
+     * Get april tag size using limelight
      * @return Distance in in.
      */
     public double getDistance(){
-        /*
-          Formula:
-          d=(h2-h1)/tan (a1+a2)
-          h1: Height of the Limelight lens from the floor.
-          h2: Height of the target (AprilTag) from the floor.
-          a1: Mounting angle of the Limelight (degrees back from vertical).
-          a2: Vertical offset angle to the target, obtained from the Limelight's ty value.
-         */
-        return (29.5-11.4375)/Math.tan(Math.toRadians(20-apriltag.getPitch()));
-//        return (18.75-11.4375)/Math.tan(Math.toRadians(20-apriltag.getPitch()));
+        return this.apriltag.getTargetArea();
     }
 
     /**

@@ -426,7 +426,7 @@ public class teleOpMainNewRed extends OpMode {
         telemetry.addData("Has Target",outtakeOperator.apriltag.hasValidTarget());
         telemetry.addData("Offset(Deg)",outtakeOperator.apriltag.getYaw());
         telemetry.addData("Power",outtakeOperator.turnPID.power);
-        telemetry.addData("Distance",outtakeOperator.getDistance());
+        telemetry.addData("Area",outtakeOperator.getDistance());
 //        dashboardtelemetry.addData("Has Target",outtakeOperator.apriltag.hasValidTarget());
 //        dashboardtelemetry.addData("Offset(Deg)",outtakeOperator.apriltag.getYaw());
 //        dashboardtelemetry.addData("Power",outtakeOperator.turnPID.power);
@@ -444,14 +444,14 @@ public class teleOpMainNewRed extends OpMode {
         telemetry.addLine("=== LOG ===");
         telemetry.addData("Hood Encoder(LOG)",outtakeOperator.hoodEncoder.getCurrentPosition());
         telemetry.addData("Flywheel Target Speed(LOG)",flywheelSpeed);
-        telemetry.addData("Distance(LOG)",outtakeOperator.getDistance());
+        telemetry.addData("Area(LOG)",outtakeOperator.getDistance());
 //        for (int i=0;i<3;i++){
 //            telemetry.addData("Ball "+(i+1),launchVelocities[i]);
 //        }
 //        telemetry.addData("Max Flywheel Speed(LOG)",maxFlywheelSpeed);
         dashboardtelemetry.addData("Hood Encoder(LOG)",outtakeOperator.hoodEncoder.getCurrentPosition());
         dashboardtelemetry.addData("Flywheel Target Speed(LOG)",flywheelSpeed);
-        dashboardtelemetry.addData("Distance(LOG)",outtakeOperator.getDistance());
+        dashboardtelemetry.addData("Area(LOG)",outtakeOperator.getDistance());
         minVoltage=Math.min(minVoltage,batteryVoltageSensor.getVoltage());
         telemetry.addLine("=== Voltage ===");
         telemetry.addData("MinVoltage",minVoltage);
