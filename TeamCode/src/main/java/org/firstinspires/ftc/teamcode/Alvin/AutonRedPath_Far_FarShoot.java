@@ -1,14 +1,13 @@
 package org.firstinspires.ftc.teamcode.Alvin;
-
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
+import com.acmerobotics.roadrunner.ParallelAction;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.hardware.AnalogInput;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
@@ -16,207 +15,224 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.NormalizedColorSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.teamcode.Alvin.intake;
 import org.firstinspires.ftc.teamcode.Brian.spindexerColor;
 import org.firstinspires.ftc.teamcode.MecanumDrive;
+import org.firstinspires.ftc.teamcode.Stanley.finalizedClasses.opModeDataTransfer;
 import org.firstinspires.ftc.teamcode.Stanley.finalizedClasses.outtakeV3FittedAutolaunch;
 
-@Autonomous
+@Autonomous(name = "farred")
 public class AutonRedPath_Far_FarShoot extends LinearOpMode {
     outtakeV3FittedAutolaunch outtake;
     intake intakeSystem;
     spindexerColor spindexer;
-    CRServo spindexerServo=null;
-    ElapsedTime timer=new ElapsedTime();
-    DcMotor intakeMotor=null;
-    DcMotorEx transfer=null;
-    DcMotorEx flywheel=null;
-    DcMotorEx flywheelR=null;
-    CRServo hood=null;
-    AnalogInput hoodSensor=null;
-    Pose2d beginPose=new Pose2d(60.5, 9, Math.toRadians(180));
-    MecanumDrive drive=null;
+    CRServo spindexerServo = null;
+    ElapsedTime timer = new ElapsedTime();
+    DcMotor intakeMotor = null;
+    DcMotorEx transfer = null;
+    DcMotorEx flywheel = null;
+    DcMotorEx flywheelR = null;
+    CRServo hood = null;
+    Pose2d beginPose = new Pose2d(57.5, -43.5, Math.toRadians(-54)); // Far side starting position
+    MecanumDrive drive = null;
     NormalizedColorSensor intakeSensor;
     FtcDashboard dashboard;
-    Telemetry dashboardTelemetry;
+    TelemetryPacket packet;
+    boolean pauseSpindexer = false;
 
     @Override
     public void runOpMode() throws InterruptedException {
         // Initialize subsystems
-        outtake = new outtakeV3FittedAutolaunch(hardwareMap,"Red",true,drive);
+        spindexerServo = hardwareMap.get(CRServo.class, "spindexerServo");
+        intakeMotor = hardwareMap.dcMotor.get("intake");
+        transfer = (DcMotorEx) hardwareMap.dcMotor.get("par1");
+        flywheel = (DcMotorEx) hardwareMap.dcMotor.get("flywheel");
+        flywheelR = (DcMotorEx) hardwareMap.dcMotor.get("flywheelR");
+        hood = hardwareMap.crservo.get("hoodServo");
+        drive = new MecanumDrive(hardwareMap, beginPose);
+        intakeSensor = hardwareMap.get(NormalizedColorSensor.class, "intakeSensor");
+
+        // Initialize outtake for FAR side (third parameter is false for far side)
+        outtake = new outtakeV3FittedAutolaunch(hardwareMap, "Red", false, drive);
         outtake.setPipeLine(0);
-        intakeSystem = new intake(hardwareMap,"intake","intakeSensor");
-        spindexerServo=hardwareMap.get(CRServo.class,"spindexerServo");
-        spindexer=new spindexerColor(spindexerServo,intakeMotor,hardwareMap);
-        intakeMotor=hardwareMap.dcMotor.get("intake");
-        transfer=(DcMotorEx) hardwareMap.dcMotor.get("par1");
-        flywheel=(DcMotorEx) hardwareMap.dcMotor.get("flywheel");
-        flywheelR=(DcMotorEx) hardwareMap.dcMotor.get("flywheelR");
-        hood=hardwareMap.crservo.get("hoodServo");
-        hoodSensor=hardwareMap.get(AnalogInput.class,"hoodAnalog");
-        drive=new MecanumDrive(hardwareMap,beginPose);
-        intakeSensor=hardwareMap.get(NormalizedColorSensor.class,"intakeSensor");
+        intakeSystem = new intake(hardwareMap, "intake", "intakeSensor");
+        spindexer = new spindexerColor(spindexerServo, intakeMotor, hardwareMap);
 
         flywheel.setDirection(DcMotorSimple.Direction.REVERSE);
 
-        final Vector2d shootingPos=new Vector2d(62,10);
-        final double shootingAngle=Math.toRadians(180);
-        final double intakeFinishy=36;
-        final double intakeStarty=13;
-        final double waitTime=1.5;
-        final double shootTime=3;
-        final double row1XPos=7;
-        final double row2XPos=17;
-        final double row3XPos=38;
-        final double ballfallPos=59;
-        final double flywheelSpeed=2208;
+        // Far side shooting position - near the far white triangle
+        final Vector2d shootingPos = new Vector2d(34, -23);
+        final double shootingAngle = Math.toRadians(-40);
 
-        // Straight intake angle - pointing straight down the field
-        final double straightIntakeAngle=Math.toRadians(270);
+        // Intake path parameters for far side
+        final double intakeFinishy = -50;
+        final double intakeStarty = -13;
+        final double waitTime = 1;
+        final double shootTime = 1.5;
 
-        dashboard=FtcDashboard.getInstance();
-        dashboardTelemetry=dashboard.getTelemetry();
-        dashboardTelemetry.addData("Hood: Current Angle",0);
-        dashboardTelemetry.addData("Power",0);
-        dashboardTelemetry.addData("Voltage",0);
-        dashboardTelemetry.update();
+        // Row positions for far side (mirrored from close side)
+        final double row1XPos = 9;
+        final double row2XPos = -16;
+        final double row3XPos = -38;
+
+        dashboard = FtcDashboard.getInstance();
+        packet = new TelemetryPacket();
+
         telemetry.addData("Status", "Initialized");
         telemetry.update();
-        drive.actionBuilder(beginPose)
-            .stopAndAdd(new initHood())
-            .stopAndAdd(new SetHoodAngle(3053.58100770156));
+
+        // Initialize hood
+        Actions.runBlocking(drive.actionBuilder(beginPose)
+                .stopAndAdd(new initHood())
+                .stopAndAdd(new SetHoodAngle(45.2))
+                .build());
 
         waitForStart();
 
         while (opModeIsActive()) {
             if (isStopRequested()) return;
+
+            // Sequence 0: Shoot preloaded 3 balls
             Actions.runBlocking(
                     drive.actionBuilder(beginPose)
-                            // ========== INITIALIZATION ==========
-                            // Starting Position: (63, 9) facing 180°
-                            .stopAndAdd(new SpinFlywheel(flywheelSpeed,20))
-                            .waitSeconds(waitTime)
-
-                            // ========== SHOOTING SEQUENCE 0 (PRELOAD) ==========
-                            // Shoot from starting position
+                            // Start flywheel for preloaded balls
+                            .stopAndAdd(new SpinFlywheel(1600, 50))
+                            .strafeToLinearHeading(shootingPos, shootingAngle)
+                            // Shooting Sequence 0
+                            .stopAndAdd(new TurretAutoAimUntilAligned())
                             .stopAndAdd(new transferUp())
                             .stopAndAdd(new RunIntake())
-                            .stopAndAdd(new TurretAutoAimUntilAligned())
                             .stopAndAdd(new startspindexer())
                             .waitSeconds(shootTime)
+                            // Stop Sequence 0
                             .stopAndAdd(new StopFlywheel())
                             .stopAndAdd(new transferOff())
                             .stopAndAdd(new stopspindexer())
                             .stopAndAdd(new StopIntake())
-
-                            //Move out of way
-                            .strafeTo(new Vector2d(60.5,35))
-                            .waitSeconds(0.5)
-                            .stopAndAdd(new initHood())
-                            .stopAndAdd(new SetHoodAngle(50))
-//
-                            // ========== INTAKE CYCLE 1 (ROW 3 - CLOSEST) ==========
-//                            // Move to Row 3: (38, 3) facing 270°
-//                            .strafeToLinearHeading(new Vector2d(row3XPos, intakeStarty-10), straightIntakeAngle)
-//                            .stopAndAdd(new RunIntake())
-//                            .stopAndAdd(new startspindexer())
-//
-//                            // Drive STRAIGHT forward from y=3 to y=39
-//                            .lineToY(intakeFinishy+3)
-//                            .waitSeconds(waitTime)
-//                            .stopAndAdd(new StopIntake())
-//                            .stopAndAdd(new stopspindexer())
-//
-//                            // Back up STRAIGHT to y=3
-//                            .lineToY(intakeStarty-10)
-//
-//                            // Rotate to shooting angle 180° and shoot
-//                            .stopAndAdd(new SpinFlywheel(flywheelSpeed,2208))
-//                            .turnTo(shootingAngle)
-//                            .stopAndAdd(new transferUp())
-//                            .stopAndAdd(new RunIntake())
-//                            .stopAndAdd(new TurretAutoAimUntilAligned())
-//                            .stopAndAdd(new startspindexer())
-//                            .stopAndAdd(new TurretAutoAimUntilAligned())
-//                            .waitSeconds(shootTime)
-//                            .stopAndAdd(new StopFlywheel())
-//                            .stopAndAdd(new transferOff())
-//                            .stopAndAdd(new stopspindexer())
-//                            .stopAndAdd(new StopIntake())
-//
-//                            // ========== INTAKE CYCLE 2 (ROW 2) ==========
-//                            // Move to Row 2: (17, 6) facing 270°
-//                            .strafeToLinearHeading(new Vector2d(row2XPos, intakeStarty-7), straightIntakeAngle)
-//                            .stopAndAdd(new RunIntake())
-//                            .stopAndAdd(new startspindexer())
-//
-//                            // Drive STRAIGHT forward from y=6 to y=39
-//                            .lineToY(intakeFinishy+3)
-//                            .waitSeconds(waitTime)
-//                            .stopAndAdd(new StopIntake())
-//                            .stopAndAdd(new stopspindexer())
-//
-//                            // Back up STRAIGHT to y=6
-//                            .lineToY(intakeStarty-7)
-//
-//                            // Rotate to shooting angle 180° and shoot
-//                            .stopAndAdd(new SpinFlywheel(flywheelSpeed,2208))
-//                            .turnTo(shootingAngle)
-//                            .stopAndAdd(new transferUp())
-//                            .stopAndAdd(new RunIntake())
-//                            .stopAndAdd(new TurretAutoAimUntilAligned())
-//                            .stopAndAdd(new startspindexer())
-//                            .stopAndAdd(new TurretAutoAimUntilAligned())
-//                            .waitSeconds(shootTime)
-//                            .stopAndAdd(new StopFlywheel())
-//                            .stopAndAdd(new transferOff())
-//                            .stopAndAdd(new stopspindexer())
-//                            .stopAndAdd(new StopIntake())
-//
-//                            // ========== INTAKE CYCLE 3 (BALL FALL ZONE) ==========
-//                            // Move to ball fall position: (59, 3) facing 270°
-//                            .strafeToLinearHeading(new Vector2d(ballfallPos, intakeStarty-10), straightIntakeAngle)
-//                            .stopAndAdd(new RunIntake())
-//                            .stopAndAdd(new startspindexer())
-//
-//                            // Drive STRAIGHT forward from y=3 to y=39
-//                            .lineToY(intakeFinishy+3)
-//                            .waitSeconds(waitTime)
-//                            .stopAndAdd(new StopIntake())
-//                            .stopAndAdd(new stopspindexer())
-//
-//                            // Back up STRAIGHT and move to shooting position
-//                            .lineToY(intakeStarty-10)
-//
-//                            // Move to better shooting position if needed, then rotate and shoot
-//                            .strafeToLinearHeading(new Vector2d(row3XPos, intakeStarty-10), straightIntakeAngle)
-//                            .stopAndAdd(new SpinFlywheel(flywheelSpeed,2208))
-//                            .turnTo(shootingAngle)
-//                            .stopAndAdd(new transferUp())
-//                            .stopAndAdd(new RunIntake())
-//                            .stopAndAdd(new TurretAutoAimUntilAligned())
-//                            .stopAndAdd(new startspindexer())
-//                            .stopAndAdd(new TurretAutoAimUntilAligned())
-//                            .waitSeconds(shootTime)
-//                            .stopAndAdd(new StopFlywheel())
-//                            .stopAndAdd(new transferOff())
-//                            .stopAndAdd(new stopspindexer())
-//                            .stopAndAdd(new StopIntake())
-
+                            .stopAndAdd(new ToggleSpindexer(false))
                             .build());
+
+            // First intake (3 balls from row 1)
+            Actions.runBlocking(new ParallelAction(
+                    drive.actionBuilder(drive.localizer.getPose())
+                            // Start Intake Code 1
+                            .strafeToLinearHeading(new Vector2d(row1XPos, intakeStarty), Math.toRadians(-80))
+                            .stopAndAdd(new RunIntake())
+                            .strafeTo(new Vector2d(row1XPos, intakeFinishy - 4))
+                            .stopAndAdd(new ToggleSpindexer(true))
+                            .build(),
+                    new SpinToIntake()));
+
+            // After first intake - shoot 3 balls
+            Actions.runBlocking(drive.actionBuilder(drive.localizer.getPose())
+                    .stopAndAdd(new ToggleSpindexer(false))
+                    // Stop Intake 1
+                    .waitSeconds(waitTime)
+                    .stopAndAdd(new StopIntake())
+                    .stopAndAdd(new stopspindexer())
+                    // Start Flywheel 1
+                    .stopAndAdd(new SetHoodEncoder(8020))
+                    .stopAndAdd(new SpinFlywheel(1833, 50))
+                    .strafeToLinearHeading(new Vector2d(row1XPos, intakeStarty + 10), shootingAngle)
+                    // Shoot Sequence 1
+                    .stopAndAdd(new TurretAutoAimUntilAligned())
+                    .stopAndAdd(new transferUp())
+                    .stopAndAdd(new RunIntake())
+                    .stopAndAdd(new startspindexer())
+                    .waitSeconds(shootTime)
+                    // Stop Sequence 1
+                    .stopAndAdd(new StopFlywheel())
+                    .stopAndAdd(new transferOff())
+                    .stopAndAdd(new stopspindexer())
+                    .stopAndAdd(new StopIntake())
+                    .stopAndAdd(new SetIntakePower(-1))
+                    .build());
+
+            // Second intake (3 balls from row 2)
+            Actions.runBlocking(new ParallelAction(
+                    drive.actionBuilder(drive.localizer.getPose())
+                            // Start Intake 2
+                            .strafeToLinearHeading(new Vector2d(row2XPos, intakeStarty + 5), Math.toRadians(90))
+                            .stopAndAdd(new StopIntake())
+                            .stopAndAdd(new RunIntake())
+                            .strafeTo(new Vector2d(row2XPos, intakeFinishy - 5))
+                            .stopAndAdd(new ToggleSpindexer(true))
+                            .build(),
+                    new SpinToIntake()));
+
+            // After second intake - shoot 3 balls
+            Actions.runBlocking(drive.actionBuilder(drive.localizer.getPose())
+                    .stopAndAdd(new ToggleSpindexer(false))
+                    // Stop Intake 2
+                    .waitSeconds(waitTime)
+                    .stopAndAdd(new StopIntake())
+                    .stopAndAdd(new stopspindexer())
+                    // Start Flywheel 2
+                    .stopAndAdd(new SpinFlywheel(1833, 50))
+                    .setReversed(true)
+                    .splineToLinearHeading(new Pose2d(new Vector2d(row1XPos, intakeStarty + 10), shootingAngle),
+                            shootingAngle - Math.toRadians(90))
+                    // Shoot Sequence 2
+                    .stopAndAdd(new TurretAutoAimUntilAligned())
+                    .stopAndAdd(new transferUp())
+                    .stopAndAdd(new RunIntake())
+                    .stopAndAdd(new startspindexer())
+                    .waitSeconds(shootTime)
+                    // Stop Sequence 2
+                    .stopAndAdd(new StopFlywheel())
+                    .stopAndAdd(new StopIntake())
+                    .stopAndAdd(new transferOff())
+                    .stopAndAdd(new stopspindexer())
+                    .stopAndAdd(new SetIntakePower(-1))
+                    .build());
+
+            // Third intake (last 3 balls from row 3 for total of 9)
+            Actions.runBlocking(new ParallelAction(
+                    drive.actionBuilder(drive.localizer.getPose())
+                            // Start Intake 3
+                            .strafeToLinearHeading(new Vector2d(row3XPos, intakeStarty + 10), Math.toRadians(90))
+                            .stopAndAdd(new StopIntake())
+                            .stopAndAdd(new RunIntake())
+                            .strafeTo(new Vector2d(row3XPos, intakeFinishy - 5))
+                            .stopAndAdd(new ToggleSpindexer(true))
+                            .build(),
+                    new SpinToIntake()));
+
+            // After third intake - shoot final 3 balls (total 9)
+            Actions.runBlocking(drive.actionBuilder(drive.localizer.getPose())
+                    .stopAndAdd(new ToggleSpindexer(false))
+                    // Stop Intake 3
+                    .waitSeconds(waitTime)
+                    .stopAndAdd(new StopIntake())
+                    .stopAndAdd(new stopspindexer())
+                    // Start Flywheel 3
+                    .stopAndAdd(new SetIntakePower(-1))
+                    .stopAndAdd(new StopIntake())
+                    .stopAndAdd(new SpinFlywheel(1833, 50))
+                    .strafeToLinearHeading(new Vector2d(row1XPos, intakeStarty + 10), shootingAngle)
+                    // Shoot Sequence 3
+                    .stopAndAdd(new TurretAutoAimUntilAligned())
+                    .stopAndAdd(new transferUp())
+                    .stopAndAdd(new RunIntake())
+                    .stopAndAdd(new startspindexer())
+                    .stopAndAdd(new TurretAutoAimUntilAligned())
+                    .waitSeconds(shootTime)
+                    // Stop Sequence 3 and park
+                    .stopAndAdd(new StopFlywheel())
+                    .stopAndAdd(new transferOff())
+                    .stopAndAdd(new stopspindexer())
+                    .stopAndAdd(new StopIntake())
+                    // Park near backstage
+                    .strafeToLinearHeading(new Vector2d(48, -60), Math.toRadians(-90))
+                    .build());
+
             break;
         }
-        telemetry.addData("Status", "All Tests Complete");
-        telemetry.update();
+        opModeDataTransfer.currentPose = drive.localizer.getPose();
     }
 
-    private void runAction(Action action, long timeoutMs) {
-        Actions.runBlocking(
-                drive.actionBuilder(beginPose)
-                        .stopAndAdd(action)
-                        .build()
-        );
-    }
+    // ==================== ACTION CLASSES ====================
+    // (All the same action classes from your original code)
 
     public class ScanMotif implements Action {
         private boolean isComplete = false;
@@ -230,16 +246,11 @@ public class AutonRedPath_Far_FarShoot extends LinearOpMode {
         }
     }
 
-    /**
-     * Auto-aims turret until within threshold, then completes
-     */
-
-    //TODO: Integrate tower recognition into auton and make it have the ability to recognize the tower not the motif
     public class TurretAutoAimUntilAligned implements Action {
-        private boolean initialized=false;
+        private boolean initialized = false;
         private boolean isComplete = false;
-        private final double alignmentThreshold = 2; // degrees, adjust as needed
-        ElapsedTime timer=new ElapsedTime();
+        private final double alignmentThreshold = 2;
+        ElapsedTime timer = new ElapsedTime();
 
         public TurretAutoAimUntilAligned() {
             this.timer.reset();
@@ -248,13 +259,12 @@ public class AutonRedPath_Far_FarShoot extends LinearOpMode {
         @Override
         public boolean run(TelemetryPacket telemetryPacket) {
             if (isComplete) return false;
-            if (timer.milliseconds()>=1000){
+            if (timer.milliseconds() >= 3500) {
                 outtake.turretServo.setPower(0);
                 return false;
             }
-            if (!initialized){
-                initialized=true;
-                outtake.turretEpsilon=1.5;
+            if (!initialized) {
+                initialized = true;
                 outtake.turnPID.init();
             }
 
@@ -262,17 +272,15 @@ public class AutonRedPath_Far_FarShoot extends LinearOpMode {
 
             if (!hasTarget) {
                 telemetry.addData("Turret: Status", "No Target");
-                // Optionally complete after some attempts or keep trying
                 return true;
             }
 
-            // Check if aligned by examining heading error
             double headingError = Math.abs(outtake.apriltag.getYaw());
             if (headingError < alignmentThreshold) {
-                outtake.turretServo.setPower(0); // Stop the turret
+                outtake.turretServo.setPower(0);
                 isComplete = true;
                 telemetry.addData("Turret: Status", "Aligned!");
-                return false; // Action complete
+                return false;
             }
 
             telemetry.addData("Turret: Status", "Aligning");
@@ -289,9 +297,9 @@ public class AutonRedPath_Far_FarShoot extends LinearOpMode {
         }
     }
 
-    public class initHood implements Action{
+    public class initHood implements Action {
         @Override
-        public boolean run(TelemetryPacket packet){
+        public boolean run(TelemetryPacket packet) {
             outtake.initHoodAngleBlocking();
             return false;
         }
@@ -300,7 +308,7 @@ public class AutonRedPath_Far_FarShoot extends LinearOpMode {
     public class SetHoodAngle implements Action {
         private final double targetAngle;
         private boolean started = false;
-        double epsilon=1;
+        double epsilon = 1;
 
         public SetHoodAngle(double angleDegrees) {
             this.targetAngle = angleDegrees;
@@ -313,18 +321,34 @@ public class AutonRedPath_Far_FarShoot extends LinearOpMode {
                 outtake.hoodPID.init();
             }
 
-            boolean atPosition = outtake.setHoodEncoder(targetAngle);
+            boolean atPosition = outtake.setHood(targetAngle);
 
             telemetry.addData("Hood: Target", (66.81 - targetAngle) / outtake.servoDegPerRot * outtake.ticksPerRevHood);
             telemetry.addData("Hood: Current Angle", outtake.hoodEncoder.getCurrentPosition());
             telemetry.addData("Power", outtake.hoodPID.power);
-            dashboardTelemetry.addData("Hood: Target", (66.81 - targetAngle) / outtake.servoDegPerRot * outtake.ticksPerRevHood);
-            dashboardTelemetry.addData("Hood: Current Angle", outtake.hoodEncoder.getCurrentPosition());
-            dashboardTelemetry.addData("Power", outtake.hoodPID.power);
-            dashboardTelemetry.update();
             telemetry.addData("Hood: At Position", atPosition);
             telemetry.update();
 
+            return !(atPosition);
+        }
+    }
+
+    public class SetHoodEncoder implements Action {
+        private final double targetAngle;
+        private boolean started = false;
+
+        public SetHoodEncoder(double angleDegrees) {
+            this.targetAngle = angleDegrees;
+        }
+
+        @Override
+        public boolean run(TelemetryPacket packet) {
+            if (!started) {
+                started = true;
+                outtake.hoodPID.init();
+            }
+
+            boolean atPosition = outtake.setHoodEncoder(targetAngle);
             return !(atPosition);
         }
     }
@@ -351,7 +375,7 @@ public class AutonRedPath_Far_FarShoot extends LinearOpMode {
             telemetry.addData("Flywheel: Current Speed", outtake.flywheelDriveR.getVelocity());
             telemetry.addData("Flywheel: At Speed", atSpeed);
 
-            return !atSpeed;
+            return false;
         }
     }
 
@@ -457,7 +481,7 @@ public class AutonRedPath_Far_FarShoot extends LinearOpMode {
     public class startspindexer implements Action {
         @Override
         public boolean run(TelemetryPacket packet) {
-            spindexerServo.setPower(0.35);
+            spindexerServo.setPower(0.7);
             return false;
         }
     }
@@ -471,12 +495,7 @@ public class AutonRedPath_Far_FarShoot extends LinearOpMode {
     }
 
     public class SpinToIntake implements Action {
-        private final int motifIndex;
         private boolean initialized = false;
-
-        public SpinToIntake(int motifIndex) {
-            this.motifIndex = motifIndex;
-        }
 
         @Override
         public boolean run(TelemetryPacket packet) {
@@ -486,11 +505,21 @@ public class AutonRedPath_Far_FarShoot extends LinearOpMode {
             }
 
             boolean complete = spindexer.spinToIntake();
+            return pauseSpindexer;
+        }
+    }
 
-            telemetry.addData("Spindexer: Motif Index", motifIndex);
-            telemetry.addData("Spindexer: Status", complete ? "Complete" : "Spinning");
+    public class ToggleSpindexer implements Action {
+        private boolean onOff;
 
-            return !complete;
+        public ToggleSpindexer(boolean onOff) {
+            this.onOff = onOff;
+        }
+
+        @Override
+        public boolean run(TelemetryPacket packet) {
+            pauseSpindexer = onOff;
+            return false;
         }
     }
 }

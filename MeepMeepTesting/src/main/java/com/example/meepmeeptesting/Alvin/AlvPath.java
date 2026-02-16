@@ -10,44 +10,89 @@ public class AlvPath {
     public static void main(String[] args) {
         MeepMeep meepMeep = new MeepMeep(750);
 
-        // Set bot constraints (adjust max velocity and acceleration as necessary)
+        // Set bot constraints
         RoadRunnerBotEntity myBot = new DefaultBotBuilder(meepMeep)
                 .setConstraints(80, 70, Math.toRadians(180), Math.toRadians(180), 15)
                 .build();
 
-        // Define shooting position and angle
-        final Vector2d shootingPos = new Vector2d(-32, -32);  // Set the shooting position
-        final double shootingAngle = Math.toRadians(220);      // Set shooting angle
+        // Define shooting/basket position (red structure on right side in video)
+        final Vector2d basketPos = new Vector2d(54, -54);  // High basket position
+        final double basketAngle = Math.toRadians(45);      // Face basket
 
-        // Define classifier area where balls are collected
-        final Vector2d classifierArea = new Vector2d(-12, -25);  // Adjust position of classifier
-        final double intakeFinishy = -45;  // Position where balls are collected
-        final double intakeStarty = -25.1;  // Position for approaching the balls
+        // Define intake positions - 4 rows of 3 balls each (12 total)
+        final double row1Y = -48;  // First row
+        final double row2Y = -38;  // Second row
+        final double row3Y = -28;  // Third row
+        final double row4Y = -18;  // Fourth row (closest to center)
 
-        // Define the number of balls to collect (15 balls)
-        int numBalls = 15;
+        // X positions for the 3 balls in each row
+        final double col1X = -48;  // Left column
+        final double col2X = -36;  // Middle column
+        final double col3X = -24;  // Right column
 
-        // Main action sequence for ball collection and shooting
-        myBot.runAction(myBot.getDrive().actionBuilder(new Pose2d(-54, -23, Math.toRadians(90)))
-                .strafeToLinearHeading(new Vector2d(-12, intakeStarty), Math.toRadians(270))  // Move to first ball in classifier
-                .strafeTo(new Vector2d(-12, intakeFinishy))  // Collect first ball
-                .waitSeconds(1)  // Wait for collection
-                .strafeToLinearHeading(shootingPos, shootingAngle)  // Move to shooting position
-                .waitSeconds(1)  // Shoot first ball
-                .strafeToLinearHeading(new Vector2d(12, intakeStarty), Math.toRadians(270))  // Move to second ball
-                .strafeTo(new Vector2d(12, intakeFinishy))  // Collect second ball
-                .waitSeconds(1)  // Wait for collection
-                .strafeToLinearHeading(shootingPos, shootingAngle)  // Move to shooting position
-                .waitSeconds(1)  // Shoot second ball
-                .strafeToLinearHeading(new Vector2d(35, intakeStarty), Math.toRadians(270))  // Move to third ball
-                .strafeTo(new Vector2d(35, intakeFinishy))  // Collect third ball
-                .waitSeconds(1)  // Wait for collection
-                .strafeToLinearHeading(shootingPos, shootingAngle)  // Move to shooting position
-                .waitSeconds(1)  // Shoot third ball
-                .splineToSplineHeading(new Pose2d(-60, -36, Math.toRadians(180)), Math.toRadians(180))  // Move to next ball area
+        // Main action sequence - 12 balls in 30 seconds
+        myBot.runAction(myBot.getDrive().actionBuilder(new Pose2d(-36, -60, Math.toRadians(90)))
+                // === CYCLE 1: Collect 3 balls from row 1 ===
+                .strafeToLinearHeading(new Vector2d(col1X, row1Y), Math.toRadians(0))
+                .waitSeconds(0.3)  // Intake ball 1
+
+                .strafeTo(new Vector2d(col2X, row1Y))
+                .waitSeconds(0.3)  // Intake ball 2
+
+                .strafeTo(new Vector2d(col3X, row1Y))
+                .waitSeconds(0.3)  // Intake ball 3
+
+                // Score at basket
+                .strafeToLinearHeading(basketPos, basketAngle)
+                .waitSeconds(1.5)  // Shoot 3 balls
+
+                // === CYCLE 2: Collect 3 balls from row 2 ===
+                .strafeToLinearHeading(new Vector2d(col1X, row2Y), Math.toRadians(0))
+                .waitSeconds(0.3)  // Intake ball 4
+
+                .strafeTo(new Vector2d(col2X, row2Y))
+                .waitSeconds(0.3)  // Intake ball 5
+
+                .strafeTo(new Vector2d(col3X, row2Y))
+                .waitSeconds(0.3)  // Intake ball 6
+
+                // Score at basket
+                .strafeToLinearHeading(basketPos, basketAngle)
+                .waitSeconds(1.5)  // Shoot 3 balls
+
+                // === CYCLE 3: Collect 3 balls from row 3 ===
+                .strafeToLinearHeading(new Vector2d(col1X, row3Y), Math.toRadians(0))
+                .waitSeconds(0.3)  // Intake ball 7
+
+                .strafeTo(new Vector2d(col2X, row3Y))
+                .waitSeconds(0.3)  // Intake ball 8
+
+                .strafeTo(new Vector2d(col3X, row3Y))
+                .waitSeconds(0.3)  // Intake ball 9
+
+                // Score at basket
+                .strafeToLinearHeading(basketPos, basketAngle)
+                .waitSeconds(1.5)  // Shoot 3 balls
+
+                // === CYCLE 4: Collect 3 balls from row 4 ===
+                .strafeToLinearHeading(new Vector2d(col1X, row4Y), Math.toRadians(0))
+                .waitSeconds(0.3)  // Intake ball 10
+
+                .strafeTo(new Vector2d(col2X, row4Y))
+                .waitSeconds(0.3)  // Intake ball 11
+
+                .strafeTo(new Vector2d(col3X, row4Y))
+                .waitSeconds(0.3)  // Intake ball 12
+
+                // Score final 3 balls at basket
+                .strafeToLinearHeading(basketPos, basketAngle)
+                .waitSeconds(1.5)  // Shoot 3 balls
+
+                // Park in observation zone
+                .strafeToLinearHeading(new Vector2d(-36, -60), Math.toRadians(90))
                 .build());
 
-        // Set up the MeepMeep simulation with background and entities
+        // Set up the MeepMeep simulation
         meepMeep.setBackground(MeepMeep.Background.FIELD_DECODE_JUICE_DARK)
                 .setDarkMode(true)
                 .setBackgroundAlpha(0.95f)
