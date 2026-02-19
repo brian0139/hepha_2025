@@ -59,8 +59,8 @@ public class outtakeV3FittedAutolaunch {
     public double turretEpsilon=2.5;
     //auto aim vars
     // P, I, D
-//    public double[] Kturn={0.013,0.01,0.0023};
-    public double[] Kturn={0.0072,0.004,0.0023};
+//    public double[] Kturn={0.0072,0.004,0.0023};
+    public double[] Kturn={0.0135,0.0053,0.0013};
     public PID turnPID=new PID(Kturn[0],Kturn[1],Kturn[2]);
 
     //================================  Config  ================================
@@ -206,48 +206,6 @@ public class outtakeV3FittedAutolaunch {
      */
     public double getDistance(){
         return this.apriltag.getTargetArea();
-    }
-
-    /**
-     * Calculates exit speed for a curved hood system.
-     * @param rpm Flywheel rotations per minute.
-     * @param wheelDiameter Diameter of the flywheel (meters).
-     * @param efficiency Realistic efficiency (0.90 to 0.98 for curved hoods).
-     * @return Realistic exit speed in meters per second.
-     */
-    public double calculateCurvedExitSpeed(double rpm, double wheelDiameter, double efficiency) {
-        // Tangential velocity: (RPM * PI * D) / 60
-        double tangentialVelocity = (rpm * Math.PI * wheelDiameter) / 60.0;
-
-        // Theoretical exit speed is exactly half of tangential velocity
-        double theoreticalSpeed = tangentialVelocity / 2.0;
-
-        // Apply hood efficiency to account for minor slip and compression losses
-        return theoreticalSpeed * efficiency;
-    }
-
-    /**
-     * Calculates the required RPM to reach a target ball exit velocity.
-     *
-     * @param targetVelocity The desired ball speed (e.g., meters per second).
-     * @param diameter The diameter of the flywheel (same units as velocity, e.g., meters).
-     * @param efficiency The slip/compression factor (0.0 to 1.0).
-     *                   Use 0.90 - 0.95 for a well-tuned curved hood.
-     * @return The required motor speed in RPM.
-     */
-    public double calculateRequiredRPM(double targetVelocity, double diameter, double efficiency) {
-        // Validation to avoid division by zero
-        if (diameter <= 0 || efficiency <= 0) return 0;
-
-        // Requirement: Wheel surface speed = 2 * Target Ball Speed
-        double requiredSurfaceVelocity = targetVelocity * 2.0;
-
-        // Convert Surface Velocity to RPM:
-        // RPM = (v_surface * 60) / (pi * diameter)
-        double theoreticalRPM = (requiredSurfaceVelocity * 60.0) / (Math.PI * diameter);
-
-        // Adjust for efficiency (lower efficiency requires higher RPM)
-        return theoreticalRPM / efficiency;
     }
 
     public void setPipeLine(int pipeline){

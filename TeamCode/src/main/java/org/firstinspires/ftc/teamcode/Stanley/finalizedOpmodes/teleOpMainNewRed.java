@@ -96,7 +96,7 @@ public class teleOpMainNewRed extends OpMode {
     static final double DRIVE_SPEED = 0.7;
     static final double STRAFE_SPEED = 1;
     static final double TWIST_SPEED = 0.5;
-    static final double FLYWHEEL_IDLE_SPEED = 600;
+    static final double FLYWHEEL_IDLE_SPEED = 0;
 
     static final double[] TRANSFER_POWERS = {-1, 0};
     static final int TRANSFER_DOWN = 1;
@@ -173,7 +173,8 @@ public class teleOpMainNewRed extends OpMode {
         outtakeOperator=new outtakeV3FittedAutolaunch(hardwareMap,"Red",true,driveTrain);
         //TODO:delete after testing voltage
         batteryVoltageSensor = hardwareMap.get(VoltageSensor .class, "Control Hub");
-        outtakeOperator.setPipeLine(0);
+        //TODO:Change back to 0 after data
+        outtakeOperator.setPipeLine(5);
         outtakeOperator.apriltag.init();
 
         telemetry.addLine("Robot Initialized and Ready");
@@ -356,7 +357,7 @@ public class teleOpMainNewRed extends OpMode {
         }
         else if (spindexerState==SpindexerState.OUTTAKE){
             spindexer.setPower(0.7);
-            intake.setPower(0.7);
+//            intake.setPower(0.7);
         }
         else if (spindexerState==SpindexerState.OUTTAKE_SORTED){
             spindexerOperator.spinToMotif(1);
@@ -436,6 +437,9 @@ public class teleOpMainNewRed extends OpMode {
         telemetry.addData("Right Front",rightFront.getPower());
         telemetry.addData("Left Back",leftBack.getPower());
         telemetry.addData("Right Back",rightBack.getPower());
+        telemetry.addData("Drive",-gamepad1.left_stick_y * DRIVE_SPEED);
+        telemetry.addData("Strafe",-gamepad1.left_stick_x * STRAFE_SPEED);
+        telemetry.addData("Twist",-gamepad1.right_stick_x * TWIST_SPEED);
         dashboardtelemetry.addLine("=== Drivetrain ===");
         dashboardtelemetry.addData("Left Front",leftFront.getPower());
         dashboardtelemetry.addData("Right Front",rightFront.getPower());

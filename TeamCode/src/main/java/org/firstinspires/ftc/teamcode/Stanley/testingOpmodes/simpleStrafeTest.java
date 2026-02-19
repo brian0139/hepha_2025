@@ -38,10 +38,10 @@ public class simpleStrafeTest extends LinearOpMode {
                 power-=change;
             }
             if (toggle) {
-                leftFront.setPower(power);
+                leftFront.setPower(-power);
                 rightFront.setPower(power);
                 leftBack.setPower(power);
-                rightBack.setPower(power);
+                rightBack.setPower(-power);
             }else{
                 leftFront.setPower(0);
                 rightFront.setPower(0);
