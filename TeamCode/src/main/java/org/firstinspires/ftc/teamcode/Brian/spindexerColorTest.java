@@ -57,9 +57,9 @@ public class spindexerColorTest extends LinearOpMode{
             }else{
                 spindexercolor.spindexerServo.setPower(0);
             }
-            telemetry.addData("spindexer slots", Arrays.toString(spindexercolor.dummyMotif));
+            telemetry.addData("spindexer slots", Arrays.toString(spindexercolor.motifPattern));
             telemetry.addData("current motif index", motifIndex);
-            telemetry.addData("current motif color", spindexercolor.dummyMotif[motifIndex]);
+            telemetry.addData("current motif color", spindexercolor.motifPattern[motifIndex]);
             int detected = colorsensoroperator.getDetected();
 //
             String result;

@@ -36,7 +36,7 @@ public class spindexerColor {
     //==================== Spindexer Slot State ====================
     public int[] spindexerSlots = {0, 0, 0}; //0 none, 1 green, 2 purple
     public int currentSlot = 0;
-    public int[] dummyMotif = {1, 2, 2};
+    public int[] motifPattern = {1, 2, 2};
     public int[] currentMotifPattern = null;
 
     //==================== Configs ====================
@@ -87,6 +87,7 @@ public class spindexerColor {
     }
 
     public void initSpin() {
+        spindexerPID.init();
         detectedLocation = -1;
         detectioncnt=0;
         timer.reset();
@@ -94,7 +95,7 @@ public class spindexerColor {
     }
 
     public boolean spinToMotif(int motifIndex) {
-        int nextmotif = dummyMotif[motifIndex];
+        int nextmotif = motifPattern[motifIndex];
         if (outtakesensor.getDetected() != nextmotif && !lastDetected) {
             spindexerServo.setPower(0.75);
             detectedLocation = -1;
@@ -120,7 +121,7 @@ public class spindexerColor {
     public boolean spinToMotifV2(int motifIndex) {
         if (detectioncnt==-1) detectioncnt=0;
         if (detectioncnt==3) return false;
-        int nextmotif = dummyMotif[motifIndex];
+        int nextmotif = motifPattern[motifIndex];
         if (Math.abs(calculateError(outslotsV[currentSlot],spindexerSensor.getCurrentPosition()))>autoSpinEpsilon && !waitingCSIntegration){
             spindexerServo.setPower(spindexerPID.update(calculateError(outslotsV[currentSlot],spindexerSensor.getCurrentPosition())));
         }else{
@@ -128,7 +129,7 @@ public class spindexerColor {
                 waitingCSIntegration=true;
                 intakeTimer.reset();
             }
-            holdSpindexer();
+            holdSpindexerOuttake();
             if (intakeTimer.milliseconds()>=CSIntegrationTimeMS) {
                 waitingCSIntegration=false;
                 if (intakesensor.getDetected() == nextmotif) {
@@ -196,6 +197,9 @@ public class spindexerColor {
 
     public void holdSpindexer(){
         spindexerServo.setPower(Math.min(spindexerPID.update(calculateError(inslotsV[currentSlot],spindexerSensor.getCurrentPosition())),0.75));
+    }
+    public void holdSpindexerOuttake(){
+        spindexerServo.setPower(Math.min(spindexerPID.update(calculateError(outslotsV[currentSlot],spindexerSensor.getCurrentPosition())),0.75));
     }
 
     public boolean spinAfterIntake(boolean intakesuccess){
