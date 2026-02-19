@@ -90,8 +90,8 @@ public class teleOpMainNewRed extends OpMode {
 
     // ==================== CONFIGURATION ====================
     static final double FLYWHEEL_SENSITIVITY = 5;
-    static final double FLYWHEEL_EPSILON = 75;
-    static final double FLYWHEEL_EXIT_EPSILON = 125;
+    static final double FLYWHEEL_EPSILON = 45;
+    static final double FLYWHEEL_EXIT_EPSILON = 85;
     static final double SPINDEXER_MANUAL_SPEED=0.6;
     static final double DRIVE_SPEED = 0.7;
     static final double STRAFE_SPEED = 1;
@@ -219,11 +219,11 @@ public class teleOpMainNewRed extends OpMode {
         }
 
         //Rumble within epsilon
-        if (Math.abs(targetSpeed-flywheel.getVelocity())<FLYWHEEL_EPSILON && !atFlywheelTarget){
+        if (Math.abs(targetSpeed+flywheel.getVelocity())<FLYWHEEL_EPSILON && !atFlywheelTarget){
             atFlywheelTarget=true;
             gamepad2.rumble(100);
         }
-        if (Math.abs(targetSpeed-flywheel.getVelocity())>FLYWHEEL_EXIT_EPSILON){
+        if (Math.abs(targetSpeed+flywheel.getVelocity())>FLYWHEEL_EXIT_EPSILON){
             atFlywheelTarget=false;
         }
 
@@ -527,6 +527,8 @@ public class teleOpMainNewRed extends OpMode {
 //        dashboardtelemetry.addData("D",outtakeOperator.hoodPID.Dd);
 //        if (hoodState==HoodState.AUTO && outtakeOperator.apriltag.hasValidTarget()){
         if (hoodState==HoodState.AUTO){
+            telemetry.addData("Velocity",output.get("velocity"));
+            telemetry.addData("Angle",output.get("angle"));
             if (timer.milliseconds()>=200) {
                 output = outtakeOperator.findOptimalLaunch(outtakeOperator.getDistance());
                 if (output != null) {
@@ -543,11 +545,11 @@ public class teleOpMainNewRed extends OpMode {
             if (Double.parseDouble(output.get("angle"))>=0){
                 //9000 max
                 //0 min
-                outtakeOperator.setHoodEncoder(Math.min(Math.max(Double.parseDouble(output.get("angle"))+2600,0),9000));
+                outtakeOperator.setHoodEncoder(Double.parseDouble(output.get("angle")));
             }
-            if (outtakeOperator.hoodEncoder.getCurrentPosition()>=9400){
-                hoodServo.setPower(0);
-            }
+//            if (outtakeOperator.hoodEncoder.getCurrentPosition()>=9400){
+//                hoodServo.setPower(0);
+//            }
         }else{
             updateHoodControl();
         }

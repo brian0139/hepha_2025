@@ -218,7 +218,7 @@ public class outtakeV3FittedAutolaunch {
      * @return Map<string,string> with keys: angle, velocity(in encoder ticks/s)
      */
     public Map<String,String> findOptimalLaunch(double distance) {
-        if (distance < 25.2){
+        if (distance > 3.68 || (0.4<=distance && distance<0.75)){
             return new HashMap<>(Map.of(
                     "angle", Double.toString(-1.0),
                     "velocity", Double.toString(-1.0)
@@ -231,10 +231,16 @@ public class outtakeV3FittedAutolaunch {
             }else{
                 velocity=(-370.879121 * distance) + (2037.159341);
             }
+            if (distance<0.4){
+                velocity=(-20256.601162 * Math.pow(distance, 3)) + (20904.437702 * Math.pow(distance, 2)) + (-8786.779804 * distance) + (3367.117587);
+            }
             if (distance>=0.75){
                 angle = (107.192351 * Math.pow(distance, 2)) + (-98.057841 * distance) + (5809.211155);
             }else{
                 angle = (3818.681319 * distance) + (1578.989011);
+            }
+            if (distance<0.4){
+                angle=(471046.845588 * Math.pow(distance, 3)) + (-374521.297098 * Math.pow(distance, 2)) + (110408.08753 * distance) + (-7602.113035);
             }
             return new HashMap<>(Map.of(
                     "angle", Double.toString(angle),
