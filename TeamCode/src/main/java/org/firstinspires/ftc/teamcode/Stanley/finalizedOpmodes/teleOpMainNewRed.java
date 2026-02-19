@@ -19,6 +19,7 @@ import org.firstinspires.ftc.teamcode.MecanumDrive;
 import org.firstinspires.ftc.teamcode.Stanley.finalizedClasses.opModeDataTransfer;
 import org.firstinspires.ftc.teamcode.Stanley.finalizedClasses.outtakeV3FittedAutolaunch;
 
+import java.util.LinkedList;
 import java.util.Map;
 
 @TeleOp
@@ -96,7 +97,9 @@ public class teleOpMainNewRed extends OpMode {
     static final double DRIVE_SPEED = 0.7;
     static final double STRAFE_SPEED = 1;
     static final double TWIST_SPEED = 0.5;
-    static final double FLYWHEEL_IDLE_SPEED = 0;
+    static final double FLYWHEEL_IDLE_SPEED = 600;
+    static final int MIN_SAMPLE_SIZE=3;
+    static final int MAX_SAMPLE_SIZE=10;
 
     static final double[] TRANSFER_POWERS = {-1, 0};
     static final int TRANSFER_DOWN = 1;
@@ -106,10 +109,12 @@ public class teleOpMainNewRed extends OpMode {
     double flywheelSpeed = 2000;
     double targetSpeed = 0;
     boolean atFlywheelTarget=false;
-    boolean intakeReleased=false;
-    boolean reversingTransfer=false;
+
+    //LL sample queue
+    LinkedList<Double> LLsample=new LinkedList<>();
 
     ElapsedTime timer=new ElapsedTime();
+    ElapsedTime LLsampleTimer=new ElapsedTime();
     ElapsedTime transferTimer =new ElapsedTime();
     Map<String, String> output = Map.of(
             "angle", "66.81",
@@ -119,6 +124,7 @@ public class teleOpMainNewRed extends OpMode {
     // ==================== TELEMETRY ====================
     FtcDashboard dashboard=FtcDashboard.getInstance();
     Telemetry dashboardtelemetry=dashboard.getTelemetry();
+
     // ==================== TESTING ====================
     double minVoltage=20.0;
     VoltageSensor batteryVoltageSensor = null;
@@ -173,8 +179,7 @@ public class teleOpMainNewRed extends OpMode {
         outtakeOperator=new outtakeV3FittedAutolaunch(hardwareMap,"Red",true,driveTrain);
         //TODO:delete after testing voltage
         batteryVoltageSensor = hardwareMap.get(VoltageSensor .class, "Control Hub");
-        //TODO:Change back to 0 after data
-        outtakeOperator.setPipeLine(5);
+        outtakeOperator.setPipeLine(0);
         outtakeOperator.apriltag.init();
 
         telemetry.addLine("Robot Initialized and Ready");
@@ -357,7 +362,7 @@ public class teleOpMainNewRed extends OpMode {
         }
         else if (spindexerState==SpindexerState.OUTTAKE){
             spindexer.setPower(0.7);
-//            intake.setPower(0.7);
+            intake.setPower(0.7);
         }
         else if (spindexerState==SpindexerState.OUTTAKE_SORTED){
             spindexerOperator.spinToMotif(1);
@@ -529,8 +534,31 @@ public class teleOpMainNewRed extends OpMode {
         if (hoodState==HoodState.AUTO){
             telemetry.addData("Velocity",output.get("velocity"));
             telemetry.addData("Angle",output.get("angle"));
-            if (timer.milliseconds()>=200) {
-                output = outtakeOperator.findOptimalLaunch(outtakeOperator.getDistance());
+            double tmp=0;
+            for (int i=0;i<LLsample.size();i++){
+                tmp+=LLsample.get(i);
+            }
+            telemetry.addData("Average",tmp/LLsample.size());
+            telemetry.addData("Size",LLsample.size());
+            telemetry.addData("Total",tmp);
+            if (LLsampleTimer.milliseconds()>=50){
+                if (LLsample.size()<=MAX_SAMPLE_SIZE){
+                    LLsample.add(outtakeOperator.getDistance());
+                }else{
+                    LLsample.removeFirst();
+                    LLsample.add(outtakeOperator.getDistance());
+                }
+            }
+            if (timer.milliseconds()>200) {
+                double areaSum=0;
+                for (int i=0;i<LLsample.size();i++){
+                    areaSum+=LLsample.get(i);
+                }
+                if (LLsample.size()>=MIN_SAMPLE_SIZE) {
+                    output = outtakeOperator.findOptimalLaunch(areaSum / LLsample.size());
+                }else{
+                    output=null;
+                }
                 if (output != null) {
                     output.putIfAbsent("velocity", "0.0");
                     output.putIfAbsent("angle", "0.0");
