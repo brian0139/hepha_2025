@@ -4,7 +4,6 @@ import com.acmerobotics.dashboard.FtcDashboard;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.CRServo;
-import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.TouchSensor;
 
@@ -19,6 +18,7 @@ public class spindexerTouchTest extends LinearOpMode {
     Telemetry dashboardTelemetry=null;
     @Override
     public void runOpMode(){
+        //initialize hardware
         input=hardwareMap.get(TouchSensor.class,"touch");
         servo=hardwareMap.get(CRServo.class,"spindexerServo");
         encoder=hardwareMap.get(DcMotorEx.class,"intake");
