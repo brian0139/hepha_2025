@@ -41,8 +41,6 @@ public class outtakeV3FittedAutolaunch {
     public CRServo turretServo;
     //Degrees changed for every servo rotation
     public double servoDegPerRot =24.18;
-    //Encoder tick offset for encoder
-    public int encoderOffset=0;
     //Ticks/revolution for encoder
     public int ticksPerRevHood=8192;
     //PID instance for hood
@@ -61,8 +59,8 @@ public class outtakeV3FittedAutolaunch {
     public double turretEpsilon=2.5;
     //auto aim vars
     // P, I, D
-//    public double[] Kturn={0.013,0.0002,0.02};
-    public double[] Kturn={0.013,0.01,0.0023};
+//    public double[] Kturn={0.0072,0.004,0.0023};
+    public double[] Kturn={0.0135,0.0053,0.0013};
     public PID turnPID=new PID(Kturn[0],Kturn[1],Kturn[2]);
 
     //================================  Config  ================================
@@ -129,8 +127,6 @@ public class outtakeV3FittedAutolaunch {
      * @return False if canceled or teamColor not found, True if successful
      */
     public boolean autoturn(){
-
-
         this.apriltag.scanOnce();
         if (!apriltag.hasValidTarget()){
             turretServo.setPower(0);
@@ -188,63 +184,28 @@ public class outtakeV3FittedAutolaunch {
         return Math.abs(apriltag.getYaw())<=turretEpsilon;
     }
 
+//    /**
+//     * Get distance to april tag using limelight
+//     * @return Distance in in.
+//     */
+//    public double getDistance(){
+//        /*
+//          Formula:
+//          d=(h2-h1)/tan (a1+a2)
+//          h1: Height of the Limelight lens from the floor.
+//          h2: Height of the target (AprilTag) from the floor.
+//          a1: Mounting angle of the Limelight (degrees back from vertical).
+//          a2: Vertical offset angle to the target, obtained from the Limelight's ty value.
+//         */
+//        return (29.5-11.4375)/Math.tan(Math.toRadians(20-apriltag.getPitch()));
+////        return (18.75-11.4375)/Math.tan(Math.toRadians(20-apriltag.getPitch()));
+//    }
     /**
-     * Get distance to april tag using limelight
+     * Get april tag size using limelight
      * @return Distance in in.
      */
     public double getDistance(){
-        /*
-          Formula:
-          d=(h2-h1)/tan (a1+a2)
-          h1: Height of the Limelight lens from the floor.
-          h2: Height of the target (AprilTag) from the floor.
-          a1: Mounting angle of the Limelight (degrees back from vertical).
-          a2: Vertical offset angle to the target, obtained from the Limelight's ty value.
-         */
-        return (29.5-11.4375)/Math.tan(Math.toRadians(20-apriltag.getPitch()));
-//        return (18.75-11.4375)/Math.tan(Math.toRadians(20-apriltag.getPitch()));
-    }
-
-    /**
-     * Calculates exit speed for a curved hood system.
-     * @param rpm Flywheel rotations per minute.
-     * @param wheelDiameter Diameter of the flywheel (meters).
-     * @param efficiency Realistic efficiency (0.90 to 0.98 for curved hoods).
-     * @return Realistic exit speed in meters per second.
-     */
-    public double calculateCurvedExitSpeed(double rpm, double wheelDiameter, double efficiency) {
-        // Tangential velocity: (RPM * PI * D) / 60
-        double tangentialVelocity = (rpm * Math.PI * wheelDiameter) / 60.0;
-
-        // Theoretical exit speed is exactly half of tangential velocity
-        double theoreticalSpeed = tangentialVelocity / 2.0;
-
-        // Apply hood efficiency to account for minor slip and compression losses
-        return theoreticalSpeed * efficiency;
-    }
-
-    /**
-     * Calculates the required RPM to reach a target ball exit velocity.
-     *
-     * @param targetVelocity The desired ball speed (e.g., meters per second).
-     * @param diameter The diameter of the flywheel (same units as velocity, e.g., meters).
-     * @param efficiency The slip/compression factor (0.0 to 1.0).
-     *                   Use 0.90 - 0.95 for a well-tuned curved hood.
-     * @return The required motor speed in RPM.
-     */
-    public double calculateRequiredRPM(double targetVelocity, double diameter, double efficiency) {
-        // Validation to avoid division by zero
-        if (diameter <= 0 || efficiency <= 0) return 0;
-
-        // Requirement: Wheel surface speed = 2 * Target Ball Speed
-        double requiredSurfaceVelocity = targetVelocity * 2.0;
-
-        // Convert Surface Velocity to RPM:
-        // RPM = (v_surface * 60) / (pi * diameter)
-        double theoreticalRPM = (requiredSurfaceVelocity * 60.0) / (Math.PI * diameter);
-
-        // Adjust for efficiency (lower efficiency requires higher RPM)
-        return theoreticalRPM / efficiency;
+        return this.apriltag.getTargetArea();
     }
 
     public void setPipeLine(int pipeline){
@@ -257,7 +218,7 @@ public class outtakeV3FittedAutolaunch {
      * @return Map<string,string> with keys: angle, velocity(in encoder ticks/s)
      */
     public Map<String,String> findOptimalLaunch(double distance) {
-        if (distance < 25.2){
+        if (distance > 3.68 || (0.4<=distance && distance<0.75)){
             return new HashMap<>(Map.of(
                     "angle", Double.toString(-1.0),
                     "velocity", Double.toString(-1.0)
@@ -265,15 +226,21 @@ public class outtakeV3FittedAutolaunch {
         }else{
             double velocity;
             double angle;
-            if (distance<=60.2){
-                velocity = (0.001292 * Math.pow(distance, 4)) + (-0.202462 * Math.pow(distance, 3)) + (11.418102 * Math.pow(distance, 2)) + (-267.783745 * distance) + (3791.182542);
+            if (distance>=0.75){
+                velocity = (-29.684398 * Math.pow(distance, 2)) + (65.533814 * distance) + (1587.83355);
             }else{
-                velocity=(0.002871 * Math.pow(distance, 3)) + (-0.9114 * Math.pow(distance, 2)) + (98.260385 * distance) + (-1390.717691);
+                velocity=(-370.879121 * distance) + (2037.159341);
             }
-            if (distance<=60.2){
-                angle = (-0.002594 * Math.pow(distance, 4)) + (0.179021 * Math.pow(distance, 3)) + (7.163897 * Math.pow(distance, 2)) + (-759.400699 * distance) + (19466.886344);
+            if (distance<0.4){
+                velocity=(-20256.601162 * Math.pow(distance, 3)) + (20904.437702 * Math.pow(distance, 2)) + (-8786.779804 * distance) + (3367.117587);
+            }
+            if (distance>=0.75){
+                angle = (107.192351 * Math.pow(distance, 2)) + (-98.057841 * distance) + (5809.211155);
             }else{
-                angle = (0.019954 * Math.pow(distance, 3)) + (-3.402398 * Math.pow(distance, 2)) + (101.682974 * distance) + (6552.759184);
+                angle = (3818.681319 * distance) + (1578.989011);
+            }
+            if (distance<0.4){
+                angle=(471046.845588 * Math.pow(distance, 3)) + (-374521.297098 * Math.pow(distance, 2)) + (110408.08753 * distance) + (-7602.113035);
             }
             return new HashMap<>(Map.of(
                     "angle", Double.toString(angle),
@@ -290,17 +257,10 @@ public class outtakeV3FittedAutolaunch {
     public boolean setHood(double degrees){
         double epsilon=40;
         double targetTicks=(66.81-degrees)/servoDegPerRot*ticksPerRevHood;
-        double power=hoodPID.update(targetTicks-hoodEncoder.getCurrentPosition()+encoderOffset);
+        double power=hoodPID.update(targetTicks-hoodEncoder.getCurrentPosition());
         hoodServo.setPower(-power);
-        return (hoodEncoder.getCurrentPosition()+encoderOffset >= targetTicks - epsilon) && (hoodEncoder.getCurrentPosition()+encoderOffset <= targetTicks + epsilon);
+        return (hoodEncoder.getCurrentPosition() >= targetTicks - epsilon) && (hoodEncoder.getCurrentPosition() <= targetTicks + epsilon);
     }
-
-//    public boolean setHoodEncoder(double ticks){
-//        double epsilon=40;
-//        double power=hoodPID.update(ticks-hoodEncoder.getCurrentPosition()+encoderOffset);
-//        hoodServo.setPower(-power);
-//        return (hoodEncoder.getCurrentPosition()+encoderOffset >= ticks - epsilon) && (hoodEncoder.getCurrentPosition()+encoderOffset <= ticks + epsilon);
-//    }
 
     /**
      * Set the hood angle to a specific degree
@@ -309,9 +269,9 @@ public class outtakeV3FittedAutolaunch {
      */
     public boolean setHoodEncoder(double encoderTicks){
         double epsilon=40;
-        double power=hoodPID.update(encoderTicks-hoodEncoder.getCurrentPosition()+encoderOffset);
+        double power=hoodPID.update(encoderTicks-hoodEncoder.getCurrentPosition());
         hoodServo.setPower(-power);
-        return (hoodEncoder.getCurrentPosition()+encoderOffset >= encoderTicks - epsilon) && (hoodEncoder.getCurrentPosition()+encoderOffset <= encoderTicks + epsilon);
+        return (hoodEncoder.getCurrentPosition() >= encoderTicks - epsilon) && (hoodEncoder.getCurrentPosition() <= encoderTicks + epsilon);
     }
 
     /**
@@ -320,7 +280,7 @@ public class outtakeV3FittedAutolaunch {
      */
     public void initHoodAngleBlocking(){
         hoodEncoder.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
-        while((hoodEncoder.getCurrentPosition()+encoderOffset)> -3*ticksPerRevHood) hoodServo.setPower(1);
+        while((hoodEncoder.getCurrentPosition())> -3*ticksPerRevHood) hoodServo.setPower(1);
         hoodServo.setPower(0);
         hoodEncoder.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
         hoodEncoder.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
@@ -334,7 +294,6 @@ public class outtakeV3FittedAutolaunch {
     public void resetHoodAngle(){
         hoodEncoder.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
         hoodEncoder.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
-        encoderOffset=0;
     }
 
     /**

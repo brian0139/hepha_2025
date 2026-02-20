@@ -5,6 +5,8 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.AnalogInput;
 import com.qualcomm.robotcore.hardware.CRServo;
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.Stanley.finalizedClasses.PID;
@@ -13,7 +15,7 @@ import org.firstinspires.ftc.teamcode.Stanley.finalizedClasses.PIDspindexer;
 @TeleOp
 public class tuningSpindexer extends LinearOpMode {
     CRServo spindexer=null;
-    AnalogInput spindexerSensor =null;
+    DcMotorEx spindexerSensor =null;
     spindexerColor spindexerOperator=null;
     double change=0.1;
     int x=0;
@@ -28,13 +30,18 @@ public class tuningSpindexer extends LinearOpMode {
     @Override
     public void runOpMode(){
         spindexer=hardwareMap.get(CRServo.class,"spindexerServo");
-        spindexerSensor =hardwareMap.get(AnalogInput.class,"spindexerAnalog");
+        spindexerSensor =hardwareMap.get(DcMotorEx.class,"intake");
         spindexerOperator=new spindexerColor(spindexer,null,hardwareMap);
         dashboard = FtcDashboard.getInstance();
         dashboardTelemetry = dashboard.getTelemetry();
         waitForStart();
         while (opModeIsActive()){
             if (gamepad1.yWasPressed()) correctingtoggle=!correctingtoggle;
+            angle+=-gamepad1.left_stick_y*5;
+            if (gamepad1.rightStickButtonWasPressed()){
+                spindexerSensor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                spindexerSensor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+            }
             //shift speed
             if (gamepad1.rightBumperWasPressed()){
                 change*=10;
@@ -61,12 +68,6 @@ public class tuningSpindexer extends LinearOpMode {
             if (gamepad1.dpadDownWasPressed()){
                 spindexerOperator.kS[x]-=change;
             }
-            if (gamepad1.leftStickButtonWasPressed()){
-                angle+=change;
-            }
-            if (gamepad1.rightStickButtonWasPressed()){
-                angle-=change;
-            }
             if (angle>3.3) angle-=3.3;
             if (angle<0) angle+=3.3;
             String line1="Kh: ";
@@ -86,7 +87,7 @@ public class tuningSpindexer extends LinearOpMode {
             }
 //            boolean atTarget=false;
             if (correctingtoggle){
-                spindexerOperator.spindexerServo.setPower(spindexerOperator.spindexerPID.update(spindexerOperator.calculateError(angle,spindexerOperator.spindexerSensor.getVoltage())));
+                spindexerOperator.spindexerServo.setPower(spindexerOperator.spindexerPID.update(spindexerOperator.calculateError(angle,spindexerOperator.spindexerSensor.getCurrentPosition())));
             }else{
                 spindexerOperator.spindexerServo.setPower(0);
             }
@@ -96,8 +97,8 @@ public class tuningSpindexer extends LinearOpMode {
             telemetry.addData("Holding",correctingtoggle);
             telemetry.addData("Target",angle);
 //            telemetry.addData("Current",spindexerOperator.hoodAngle*spindexerOperator.servoDegPerRot);
-            telemetry.addData("CurrentV",spindexerOperator.spindexerSensor.getVoltage());
-            telemetry.addData("Error",spindexerOperator.calculateError(angle,spindexerOperator.spindexerSensor.getVoltage()));
+            telemetry.addData("CurrentEncoder",spindexerOperator.spindexerSensor.getCurrentPosition()%8192);
+            telemetry.addData("Error",spindexerOperator.calculateError(angle,spindexerOperator.spindexerSensor.getCurrentPosition()));
             telemetry.addData("Power",spindexerOperator.spindexerPID.power);
 //            telemetry.addData("Offset(rotations)",angle/spindexerOperator.servoDegPerRot-spindexerOperator.hoodAngle);
 //            telemetry.addData("AtTarget",atTarget);
@@ -106,8 +107,8 @@ public class tuningSpindexer extends LinearOpMode {
             dashboardTelemetry.addData("Holding",correctingtoggle);
             dashboardTelemetry.addData("Target",angle);
 //            dashboardTelemetry.addData("Current",spindexerOperator.hoodAngle);
-            dashboardTelemetry.addData("CurrentV",spindexerOperator.spindexerSensor.getVoltage());
-            dashboardTelemetry.addData("Error",spindexerOperator.calculateError(angle,spindexerOperator.spindexerSensor.getVoltage()));
+            dashboardTelemetry.addData("CurrentEncoder",spindexerOperator.spindexerSensor.getCurrentPosition()%8192);
+            dashboardTelemetry.addData("Error",spindexerOperator.calculateError(angle,spindexerOperator.spindexerSensor.getCurrentPosition()));
             dashboardTelemetry.addData("Power",spindexerOperator.spindexerPID.power);
 //            dashboardTelemetry.addData("Offset(rotations)",angle/spindexerOperator.servoDegPerRot-spindexerOperator.hoodAngle);
 //            dashboardTelemetry.addData("AtTarget",atTarget);

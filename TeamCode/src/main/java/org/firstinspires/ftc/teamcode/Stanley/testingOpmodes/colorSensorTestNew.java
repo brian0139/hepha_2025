@@ -11,7 +11,8 @@ import java.util.Vector;
 
 public class colorSensorTestNew extends LinearOpMode{
     CRServo spindexer;
-    colorSensor colorsensoroperator;
+    colorSensor colorsensoroperatorOuttake;
+    colorSensor colorSensorIntake;
     ElapsedTime timer=new ElapsedTime();
 
     //main loop
@@ -19,7 +20,8 @@ public class colorSensorTestNew extends LinearOpMode{
     public void runOpMode() {
         //initiate drivetrain motors
         spindexer=hardwareMap.get(CRServo.class,"spindexerServo");
-        colorsensoroperator=new colorSensor(hardwareMap,"intakeSensor");
+        colorsensoroperatorOuttake=new colorSensor(hardwareMap,"outtakeSensor");
+        colorSensorIntake=new colorSensor(hardwareMap,"intakeSensor");
         double spindexerPower=0.75;
         int waittime=400;
         boolean waiting=false;
@@ -31,13 +33,16 @@ public class colorSensorTestNew extends LinearOpMode{
         waitForStart();
         //repeat until opmode ends
         while (opModeIsActive()){
-            if (gamepad1.yWasPressed()) spindexer.setPower(spindexerPower);
-            if (gamepad1.dpadUpWasPressed()) spindexerPower+=0.01;
-            if (gamepad1.dpadDownWasPressed()) spindexerPower-=0.01;
-            if (gamepad1.dpadRightWasPressed()) waittime+=10;
-            if (gamepad1.dpadLeftWasPressed()) waittime-=10;
+            if (gamepad1.left_bumper){
+                spindexer.setPower(-spindexerPower);
+            }else if (gamepad1.right_bumper){
+                spindexer.setPower(spindexerPower);
+            }else{
+                spindexer.setPower(0);
+            }
 
-            int detected = colorsensoroperator.getDetected();
+            int detected = colorsensoroperatorOuttake.getDetected();
+            int detectedIntake=colorSensorIntake.getDetected();
 
             String result;
             if (detected == 1) {
@@ -47,25 +52,40 @@ public class colorSensorTestNew extends LinearOpMode{
             } else {
                 result = "NONE";
             }
-
-
-
-            telemetry.addData("Detected", result);
-
-            float[] hsv = colorsensoroperator.readHSV();
-            telemetry.addData("Hue", hsv[0]);
-            telemetry.addData("Sat", hsv[1]);
-            telemetry.addData("Val", hsv[2]);
-
-            if (result.equals("GREEN")) {
-                spindexer.setPower(-0.01);
-                waiting=true;
-                timer.reset();
+            String resultintake;
+            if (detectedIntake == 1) {
+                resultintake = "GREEN";
+            } else if (detectedIntake == 2) {
+                resultintake = "PURPLE";
+            } else {
+                resultintake = "NONE";
             }
-            if (waiting && timer.milliseconds()>=waittime){
-                waiting=false;
-                spindexer.setPower(0);
-            }
+
+
+
+            telemetry.addData("DetectedOuttake", result);
+
+            float[] hsv = colorsensoroperatorOuttake.readHSV();
+            telemetry.addData("HueOuttake", hsv[0]);
+            telemetry.addData("SatOuttake", hsv[1]);
+            telemetry.addData("ValOuttake", hsv[2]);
+
+            telemetry.addData("DetectedIntake", resultintake);
+
+            float[] hsv_ = colorSensorIntake.readHSV();
+            telemetry.addData("HueIntake", hsv_[0]);
+            telemetry.addData("SatIntake", hsv_[1]);
+            telemetry.addData("ValIntake", hsv_[2]);
+
+//            if (result.equals("GREEN")) {
+//                spindexer.setPower(-0.01);
+//                waiting=true;
+//                timer.reset();
+//            }
+//            if (waiting && timer.milliseconds()>=waittime){
+//                waiting=false;
+//                spindexer.setPower(0);
+//            }
 
 //            if (colorsensoroperator.getDetected()==1) detections.add("Green");
 //            if (colorsensoroperator.getDetected()==2) detections.add("Purple");

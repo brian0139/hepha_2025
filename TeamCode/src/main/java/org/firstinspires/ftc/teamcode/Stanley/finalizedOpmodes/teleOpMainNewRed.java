@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.Stanley.finalizedOpmodes;
 
 import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.roadrunner.ftc.OverflowEncoder;
 import com.qualcomm.robotcore.hardware.AnalogInput;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
@@ -8,23 +9,21 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.PIDFCoefficients;
+import com.qualcomm.robotcore.hardware.VoltageSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
-import com.qualcomm.robotcore.util.ReadWriteFile;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
-import org.firstinspires.ftc.robotcore.internal.system.AppUtil;
 import org.firstinspires.ftc.teamcode.Brian.spindexerColor;
 import org.firstinspires.ftc.teamcode.MecanumDrive;
 import org.firstinspires.ftc.teamcode.Stanley.finalizedClasses.opModeDataTransfer;
-import org.firstinspires.ftc.teamcode.Stanley.finalizedClasses.outtakeV3;
 import org.firstinspires.ftc.teamcode.Stanley.finalizedClasses.outtakeV3FittedAutolaunch;
 
-import java.io.File;
-import java.lang.Math;
+import java.util.LinkedList;
 import java.util.Map;
 
 @TeleOp
-public class teleOpMainNew extends OpMode {
+public class teleOpMainNewRed extends OpMode {
 
     // ==================== STATE MACHINE ENUMS ====================
     enum FlywheelState {
@@ -75,8 +74,8 @@ public class teleOpMainNew extends OpMode {
     CRServo hoodServo = null;
     CRServo spindexer = null;
 
-    //Analog Input
-    AnalogInput spindexerAnalog = null;
+    //Spindexer Encoder
+    DcMotorEx spindexerEncoder = null;
 
     // ==================== Classes ====================
     spindexerColor spindexerOperator=null;
@@ -92,16 +91,17 @@ public class teleOpMainNew extends OpMode {
 
     // ==================== CONFIGURATION ====================
     static final double FLYWHEEL_SENSITIVITY = 5;
-    static final double FLYWHEEL_EPSILON = 10;
-    static final double FLYWHEEL_EXIT_EPSILON = 35;
-    static final double FLYWHEEL_DIAMETER = 2.8346456692913386;
-    static final double FLYWHEEL_EFFICIENCY = 0.95;
+    static final double FLYWHEEL_EPSILON = 45;
+    static final double FLYWHEEL_EXIT_EPSILON = 85;
+    static final double SPINDEXER_MANUAL_SPEED=0.6;
     static final double DRIVE_SPEED = 0.7;
     static final double STRAFE_SPEED = 1;
     static final double TWIST_SPEED = 0.5;
-    static final double SECONDARY_DILATION = 0.25;
+    static final double FLYWHEEL_IDLE_SPEED = 600;
+    static final int MIN_SAMPLE_SIZE=3;
+    static final int MAX_SAMPLE_SIZE=10;
 
-    static final double[] TRANSFER_POWERS = {1, 0};
+    static final double[] TRANSFER_POWERS = {-1, 0};
     static final int TRANSFER_DOWN = 1;
     static final int TRANSFER_UP = 0;
 
@@ -109,10 +109,12 @@ public class teleOpMainNew extends OpMode {
     double flywheelSpeed = 2000;
     double targetSpeed = 0;
     boolean atFlywheelTarget=false;
-    boolean intakeReleased=false;
-    boolean reversingTransfer=false;
+
+    //LL sample queue
+    LinkedList<Double> LLsample=new LinkedList<>();
 
     ElapsedTime timer=new ElapsedTime();
+    ElapsedTime LLsampleTimer=new ElapsedTime();
     ElapsedTime transferTimer =new ElapsedTime();
     Map<String, String> output = Map.of(
             "angle", "66.81",
@@ -124,12 +126,14 @@ public class teleOpMainNew extends OpMode {
     Telemetry dashboardtelemetry=dashboard.getTelemetry();
 
     // ==================== TESTING ====================
+    double minVoltage=20.0;
+    VoltageSensor batteryVoltageSensor = null;
 //    int makeBallCnt=-1;
-    int ballcnt=0;
-    double[] launchVelocities=new double[]{0,0,0};
-    double previousRateofChange=0;
-    double previousSpeed=0;
-    ElapsedTime flywheelDeltaTimer=new ElapsedTime();
+//    int ballcnt=0;
+//    double[] launchVelocities=new double[]{0,0,0};
+//    double previousRateofChange=0;
+//    double previousSpeed=0;
+//    ElapsedTime flywheelDeltaTimer=new ElapsedTime();
 //    File file= AppUtil.getInstance().getSettingsFile("./sdcard/FIRST/shootingData.csv");
 //    //Header
 //    StringBuilder data = new StringBuilder("Make Ball Cnt,Hood Encoder,Flywheel Speed, Distance, Real Max Flywheel Speed\n");
@@ -149,8 +153,12 @@ public class teleOpMainNew extends OpMode {
 
         // Initialize other motors
         flywheel = hardwareMap.get(DcMotorEx.class, "flywheel");
+        flywheel.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         flywheel.setDirection(DcMotorSimple.Direction.REVERSE);
+        flywheel.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER,new PIDFCoefficients(9.7,0.7,1.3,3.8));
         flywheelR = hardwareMap.get(DcMotorEx.class,"flywheelR");
+        flywheelR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        flywheelR.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER,new PIDFCoefficients(9.7,0.7,1.3,3.8));
         intake = hardwareMap.get(DcMotor.class, "intake");
         transfer = hardwareMap.get(DcMotor.class, "par1");
 
@@ -158,8 +166,8 @@ public class teleOpMainNew extends OpMode {
         hoodServo = hardwareMap.get(CRServo.class, "hoodServo");
         spindexer = hardwareMap.get(CRServo.class, "spindexerServo");
 
-        // Initialize analog input
-        spindexerAnalog = hardwareMap.get(AnalogInput.class,"spindexerAnalog");
+        // Initialize Encoder
+        spindexerEncoder = hardwareMap.get(DcMotorEx.class,"intake");
 
         // Set initial positions
         transfer.setPower(TRANSFER_POWERS[TRANSFER_DOWN]);
@@ -169,8 +177,9 @@ public class teleOpMainNew extends OpMode {
         spindexerOperator=new spindexerColor(spindexer,intake,hardwareMap);
         driveTrain=new MecanumDrive(hardwareMap, opModeDataTransfer.currentPose);
         outtakeOperator=new outtakeV3FittedAutolaunch(hardwareMap,"Red",true,driveTrain);
+        //TODO:delete after testing voltage
+        batteryVoltageSensor = hardwareMap.get(VoltageSensor .class, "Control Hub");
         outtakeOperator.setPipeLine(0);
-        outtakeOperator.encoderOffset=opModeDataTransfer.currentHood;
         outtakeOperator.apriltag.init();
 
         telemetry.addLine("Robot Initialized and Ready");
@@ -180,16 +189,23 @@ public class teleOpMainNew extends OpMode {
     // ==================== MAIN LOOP ====================
     @Override
     public void loop() {
-        // Update all state machines
-        updateFlywheelStateMachine();
-        updateTransferStateMachine();
-        updateIntakeStateMachine();
-        updateSpindexerStateMachine();
-        updateDrivetrain();
-        updateManual();
+        try {
+            // Update all state machines
+            updateFlywheelStateMachine();
+            updateTransferStateMachine();
+            updateIntakeStateMachine();
+            updateSpindexerStateMachine();
+            updateDrivetrain();
+            updateManual();
 
-        // Update telemetry
-        updateTelemetry();
+            // Update telemetry
+            updateTelemetry();
+        } catch (Exception e) {
+            telemetry.addData("ERROR", e.getClass().getSimpleName());
+            telemetry.addData("Message", e.getMessage());
+            telemetry.update();
+            // Skips this loop iteration on exception
+        }
     }
 
     // ==================== FLYWHEEL STATE MACHINE ====================
@@ -208,11 +224,11 @@ public class teleOpMainNew extends OpMode {
         }
 
         //Rumble within epsilon
-        if (Math.abs(targetSpeed-flywheel.getVelocity())<FLYWHEEL_EPSILON && !atFlywheelTarget){
+        if (Math.abs(targetSpeed+flywheel.getVelocity())<FLYWHEEL_EPSILON && !atFlywheelTarget){
             atFlywheelTarget=true;
             gamepad2.rumble(100);
         }
-        if (Math.abs(targetSpeed-flywheel.getVelocity())>FLYWHEEL_EXIT_EPSILON){
+        if (Math.abs(targetSpeed+flywheel.getVelocity())>FLYWHEEL_EXIT_EPSILON){
             atFlywheelTarget=false;
         }
 
@@ -223,32 +239,39 @@ public class teleOpMainNew extends OpMode {
                 case IDLE:
                     flywheelState = FlywheelState.SPINNING;
                     targetSpeed = flywheelSpeed;
-                    flywheel.setVelocity(targetSpeed);
+                    flywheel.setVelocity(-targetSpeed);
+                    flywheelR.setVelocity(-targetSpeed);
                     break;
                 case SPINNING:
                     flywheelState = FlywheelState.STOPPED;
-                    targetSpeed = 0;
-                    flywheel.setVelocity(0);
-                    //TODO:Testing
-                    ballcnt=0;
-                    previousRateofChange=0;
+                    targetSpeed = FLYWHEEL_IDLE_SPEED;
+                    flywheel.setVelocity(-FLYWHEEL_IDLE_SPEED);
+                    flywheelR.setVelocity(-FLYWHEEL_IDLE_SPEED);
+//                    //TODO:Testing
+//                    ballcnt=0;
+//                    previousRateofChange=0;
                     break;
             }
         }
-        //TODO:Testing
-        if (gamepad2.dpadLeftWasPressed()){
-            launchVelocities=new double[]{0,0,0};
+        if (flywheelState == FlywheelState.STOPPED){
+            targetSpeed = FLYWHEEL_IDLE_SPEED;
+            flywheel.setVelocity(-FLYWHEEL_IDLE_SPEED);
+            flywheelR.setVelocity(-FLYWHEEL_IDLE_SPEED);
         }
-        if (flywheelState!=FlywheelState.STOPPED){
-//            maxFlywheelSpeed=Math.max(maxFlywheelSpeed,flywheelR.getVelocity());
-            double rateofchange=(flywheelR.getVelocity()-previousSpeed)/flywheelDeltaTimer.milliseconds();
-            if (rateofchange<0 && previousRateofChange>0){
-                launchVelocities[ballcnt%3]=previousSpeed;
-                ballcnt++;
-            }
-            previousSpeed=flywheelR.getVelocity();
-            previousRateofChange=rateofchange;
-        }
+//        //TODO:Testing
+//        if (gamepad2.dpadLeftWasPressed()){
+//            launchVelocities=new double[]{0,0,0};
+//        }
+//        if (flywheelState!=FlywheelState.STOPPED){
+////            maxFlywheelSpeed=Math.max(maxFlywheelSpeed,flywheelR.getVelocity());
+//            double rateofchange=(flywheelR.getVelocity()-previousSpeed)/flywheelDeltaTimer.milliseconds();
+//            if (rateofchange<0 && previousRateofChange>0){
+//                launchVelocities[ballcnt%3]=previousSpeed;
+//                ballcnt++;
+//            }
+//            previousSpeed=flywheelR.getVelocity();
+//            previousRateofChange=rateofchange;
+//        }
     }
 
     // ==================== TRANSFER STATE MACHINE ====================
@@ -265,7 +288,7 @@ public class teleOpMainNew extends OpMode {
 
             case UP:
                 if (gamepad2.xWasPressed()) {
-                    transfer.setPower(-1);
+                    transfer.setPower(1);
                     transferState = TransferState.DOWN;
                     transferTimer.reset();
                     spindexerState=SpindexerState.STOPPED;
@@ -288,6 +311,10 @@ public class teleOpMainNew extends OpMode {
 
     // ==================== SPINDEXER STATE MACHINE ====================
     void updateSpindexerStateMachine(){
+        if (gamepad1.aWasPressed()){
+            spindexerEncoder.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            spindexerEncoder.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        }
         if (gamepad1.yWasPressed()){
             switch (spindexerState){
                 case STOPPED:
@@ -303,10 +330,10 @@ public class teleOpMainNew extends OpMode {
         if (gamepad1.left_bumper || gamepad1.right_bumper ||gamepad2.right_bumper){
             spindexerState=SpindexerState.MANUAL;
             if (gamepad1.left_bumper){
-                spindexer.setPower(-1);
+                spindexer.setPower(-SPINDEXER_MANUAL_SPEED);
             }
             if (gamepad1.right_bumper || gamepad2.right_bumper){
-                spindexer.setPower(1);
+                spindexer.setPower(SPINDEXER_MANUAL_SPEED);
             }
         }
         if (gamepad1.leftBumperWasReleased() || gamepad1.rightBumperWasReleased() ||gamepad2.rightBumperWasReleased()){
@@ -318,7 +345,7 @@ public class teleOpMainNew extends OpMode {
             intake.setPower(0.7);
             if (result){
                 spindexerState= SpindexerState.HOLDING;
-            }else if (!result && spindexerOperator.detectioncnt==3){
+            }else if (spindexerOperator.detectioncnt==3){
                 spindexerState= SpindexerState.STOPPED;
                 gamepad1.rumble(100);
             }
@@ -391,9 +418,9 @@ public class teleOpMainNew extends OpMode {
     void updateTelemetry() {
         telemetry.addLine("=== Flywheel ===");
         telemetry.addData("Target Speed",flywheelSpeed);
-        telemetry.addData("Actual Speed",flywheel.getVelocity());
+        telemetry.addData("Actual Speed",-flywheel.getVelocity());
         dashboardtelemetry.addData("Target Speed",flywheelSpeed);
-        dashboardtelemetry.addData("Actual Speed",flywheel.getVelocity());
+        dashboardtelemetry.addData("Actual Speed",-flywheel.getVelocity());
         telemetry.addLine("=== Toggles ===");
         telemetry.addData("Auto Hood",hoodState==HoodState.AUTO);
         telemetry.addData("Auto Turret",turretState==TurretState.AUTO);
@@ -405,31 +432,44 @@ public class teleOpMainNew extends OpMode {
         telemetry.addData("Has Target",outtakeOperator.apriltag.hasValidTarget());
         telemetry.addData("Offset(Deg)",outtakeOperator.apriltag.getYaw());
         telemetry.addData("Power",outtakeOperator.turnPID.power);
-        telemetry.addData("Distance",outtakeOperator.getDistance());
-        dashboardtelemetry.addData("Has Target",outtakeOperator.apriltag.hasValidTarget());
-        dashboardtelemetry.addData("Offset(Deg)",outtakeOperator.apriltag.getYaw());
-        dashboardtelemetry.addData("Power",outtakeOperator.turnPID.power);
-        dashboardtelemetry.addData("Distance",outtakeOperator.getDistance());
+        telemetry.addData("Area",outtakeOperator.getDistance());
+//        dashboardtelemetry.addData("Has Target",outtakeOperator.apriltag.hasValidTarget());
+//        dashboardtelemetry.addData("Offset(Deg)",outtakeOperator.apriltag.getYaw());
+//        dashboardtelemetry.addData("Power",outtakeOperator.turnPID.power);
+//        dashboardtelemetry.addData("Distance",outtakeOperator.getDistance());
         telemetry.addLine("=== Drivetrain ===");
         telemetry.addData("Left Front",leftFront.getPower());
         telemetry.addData("Right Front",rightFront.getPower());
         telemetry.addData("Left Back",leftBack.getPower());
         telemetry.addData("Right Back",rightBack.getPower());
+        telemetry.addData("Drive",-gamepad1.left_stick_y * DRIVE_SPEED);
+        telemetry.addData("Strafe",-gamepad1.left_stick_x * STRAFE_SPEED);
+        telemetry.addData("Twist",-gamepad1.right_stick_x * TWIST_SPEED);
+        dashboardtelemetry.addLine("=== Drivetrain ===");
+        dashboardtelemetry.addData("Left Front",leftFront.getPower());
+        dashboardtelemetry.addData("Right Front",rightFront.getPower());
+        dashboardtelemetry.addData("Left Back",leftBack.getPower());
+        dashboardtelemetry.addData("Right Back",rightBack.getPower());
         telemetry.addLine("=== LOG ===");
         telemetry.addData("Hood Encoder(LOG)",outtakeOperator.hoodEncoder.getCurrentPosition());
         telemetry.addData("Flywheel Target Speed(LOG)",flywheelSpeed);
-        telemetry.addData("Distance(LOG)",outtakeOperator.getDistance());
-        for (int i=0;i<3;i++){
-            telemetry.addData("Ball "+(i+1),launchVelocities[i]);
-        }
+        telemetry.addData("Area(LOG)",outtakeOperator.getDistance());
+//        for (int i=0;i<3;i++){
+//            telemetry.addData("Ball "+(i+1),launchVelocities[i]);
+//        }
 //        telemetry.addData("Max Flywheel Speed(LOG)",maxFlywheelSpeed);
         dashboardtelemetry.addData("Hood Encoder(LOG)",outtakeOperator.hoodEncoder.getCurrentPosition());
         dashboardtelemetry.addData("Flywheel Target Speed(LOG)",flywheelSpeed);
-        dashboardtelemetry.addData("Distance(LOG)",outtakeOperator.getDistance());
+        dashboardtelemetry.addData("Area(LOG)",outtakeOperator.getDistance());
+        minVoltage=Math.min(minVoltage,batteryVoltageSensor.getVoltage());
+        telemetry.addLine("=== Voltage ===");
+        telemetry.addData("MinVoltage",minVoltage);
+        dashboardtelemetry.addLine("=== Voltage ===");
+        dashboardtelemetry.addData("MinVoltage",minVoltage);
 //        dashboardtelemetry.addData("Max Flywheel Speed(LOG)",maxFlywheelSpeed);
-        for (int i=0;i<3;i++){
-            dashboardtelemetry.addData("Ball "+(i+1),launchVelocities[i]);
-        }
+//        for (int i=0;i<3;i++){
+//            dashboardtelemetry.addData("Ball "+(i+1),launchVelocities[i]);
+//        }
 
         telemetry.update();
         dashboardtelemetry.update();
@@ -438,7 +478,7 @@ public class teleOpMainNew extends OpMode {
     // ==================== Manual Override/Misc ====================
     void updateManual(){
         if (gamepad2.leftBumperWasPressed()){
-            outtakeOperator.initHoodAngleBlocking();
+            outtakeOperator.resetHoodAngle();
             gamepad2.rumbleBlips(2);
             gamepad2.rumble(50);
         }
@@ -492,16 +532,52 @@ public class teleOpMainNew extends OpMode {
 //        dashboardtelemetry.addData("D",outtakeOperator.hoodPID.Dd);
 //        if (hoodState==HoodState.AUTO && outtakeOperator.apriltag.hasValidTarget()){
         if (hoodState==HoodState.AUTO){
-            if (timer.milliseconds()>=200) {
-                output = outtakeOperator.findOptimalLaunch(outtakeOperator.getDistance());
+            telemetry.addData("Velocity",output.get("velocity"));
+            telemetry.addData("Angle",output.get("angle"));
+            double tmp=0;
+            for (int i=0;i<LLsample.size();i++){
+                tmp+=LLsample.get(i);
+            }
+            telemetry.addData("Average",tmp/LLsample.size());
+            telemetry.addData("Size",LLsample.size());
+            telemetry.addData("Total",tmp);
+            if (LLsampleTimer.milliseconds()>=50){
+                if (LLsample.size()<=MAX_SAMPLE_SIZE){
+                    LLsample.add(outtakeOperator.getDistance());
+                }else{
+                    LLsample.removeFirst();
+                    LLsample.add(outtakeOperator.getDistance());
+                }
+            }
+            if (timer.milliseconds()>200) {
+                double areaSum=0;
+                for (int i=0;i<LLsample.size();i++){
+                    areaSum+=LLsample.get(i);
+                }
+                if (LLsample.size()>=MIN_SAMPLE_SIZE) {
+                    output = outtakeOperator.findOptimalLaunch(areaSum / LLsample.size());
+                }else{
+                    output=null;
+                }
+                if (output != null) {
+                    output.putIfAbsent("velocity", "0.0");
+                    output.putIfAbsent("angle", "0.0");
+                } else {
+                    output = Map.of("velocity", "0.0", "angle", "0.0");
+                }
                 if (Double.parseDouble(output.get("velocity"))>=0) {
                     flywheelSpeed = Double.parseDouble(output.get("velocity"));
                 }
                 timer.reset();
             }
             if (Double.parseDouble(output.get("angle"))>=0){
-                outtakeOperator.setHoodEncoder(Double.parseDouble(output.get("angle"))+2000);
+                //9000 max
+                //0 min
+                outtakeOperator.setHoodEncoder(Double.parseDouble(output.get("angle")));
             }
+//            if (outtakeOperator.hoodEncoder.getCurrentPosition()>=9400){
+//                hoodServo.setPower(0);
+//            }
         }else{
             updateHoodControl();
         }
@@ -509,7 +585,7 @@ public class teleOpMainNew extends OpMode {
 //            outtakeOperator.setPipeLine(5);
             outtakeOperator.autoturn();
         }else{
-            outtakeOperator.turretServo.setPower(gamepad2.right_trigger-gamepad2.left_trigger);
+            outtakeOperator.turretServo.setPower(gamepad2.left_trigger-gamepad2.right_trigger);
         }
     }
 
@@ -519,6 +595,7 @@ public class teleOpMainNew extends OpMode {
 //        ReadWriteFile.writeFile(file, data.toString());
         // Clean shutdown
         flywheel.setVelocity(0);
+        flywheelR.setVelocity(0);
         intake.setPower(0);
         hoodServo.setPower(0);
     }

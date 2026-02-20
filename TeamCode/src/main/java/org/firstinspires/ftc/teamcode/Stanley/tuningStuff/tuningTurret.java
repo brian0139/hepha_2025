@@ -1,20 +1,18 @@
-package org.firstinspires.ftc.teamcode.Stanley.testingOpmodes;
+package org.firstinspires.ftc.teamcode.Stanley.tuningStuff;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.AnalogInput;
 import com.qualcomm.robotcore.hardware.CRServo;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.Stanley.finalizedClasses.PID;
-import org.firstinspires.ftc.teamcode.Stanley.finalizedClasses.outtakeV2;
-import org.firstinspires.ftc.teamcode.Stanley.finalizedClasses.outtakeV3;
+import org.firstinspires.ftc.teamcode.Stanley.finalizedClasses.outtakeV3FittedAutolaunch;
 
 @TeleOp
 public class tuningTurret extends LinearOpMode {
     CRServo turret =null;
-    outtakeV3 outtakeOperator=null;
+    outtakeV3FittedAutolaunch outtakeOperator=null;
     double change=0.1;
     int x=0;
     //TODO:Get real value+sync with outtakeV2 value
@@ -29,7 +27,8 @@ public class tuningTurret extends LinearOpMode {
     @Override
     public void runOpMode(){
         turret =hardwareMap.get(CRServo.class,"turretServo");
-        outtakeOperator=new outtakeV3(hardwareMap,"Red",true,null);
+        outtakeOperator=new outtakeV3FittedAutolaunch(hardwareMap,"Red",true,null);
+        outtakeOperator.setPipeLine(5);
         dashboard = FtcDashboard.getInstance();
         dashboardTelemetry = dashboard.getTelemetry();
         waitForStart();
