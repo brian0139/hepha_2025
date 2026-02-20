@@ -22,8 +22,6 @@ public class offsetRead extends LinearOpMode {
 
     @Override
     public void runOpMode() {
-        telemetry.log().setCapacity(50);
-        dashboardTelemetry.log().setCapacity(50);
         // Initialize hardware
         input = hardwareMap.get(TouchSensor.class, "touch");
         servo = hardwareMap.get(CRServo.class, "spindexerServo");
@@ -44,7 +42,8 @@ public class offsetRead extends LinearOpMode {
         waitForStart();
 
         while (opModeIsActive()) {
-
+            telemetry.log().setCapacity(50);
+            dashboardTelemetry.log().setCapacity(50);
             // --- Speed Adjustment ---
             if (gamepad1.rightBumperWasPressed()) {
                 change *= 10;
@@ -70,10 +69,9 @@ public class offsetRead extends LinearOpMode {
                 encoder.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
                 encoder.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
             }
-            servo.setPower(-gamepad1.left_stick_x);
 
             // Apply power based on toggle state
-            servo.setPower(running ? targetSpeed : 0);
+            servo.setPower(running ? targetSpeed : -gamepad1.left_stick_x);
 
             // --- Touch Sensor: Log encoder position on each new press ---
             boolean currentTouchState = input.isPressed();
