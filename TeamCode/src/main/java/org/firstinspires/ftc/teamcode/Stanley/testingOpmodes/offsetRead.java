@@ -4,6 +4,7 @@ import com.acmerobotics.dashboard.FtcDashboard;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.CRServo;
+import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.TouchSensor;
 
@@ -21,6 +22,8 @@ public class offsetRead extends LinearOpMode {
 
     @Override
     public void runOpMode() {
+        telemetry.log().setCapacity(50);
+        dashboardTelemetry.log().setCapacity(50);
         // Initialize hardware
         input = hardwareMap.get(TouchSensor.class, "touch");
         servo = hardwareMap.get(CRServo.class, "spindexerServo");
@@ -63,6 +66,12 @@ public class offsetRead extends LinearOpMode {
                 running = !running;
             }
 
+            if (gamepad1.xWasPressed()){
+                encoder.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
+                encoder.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+            }
+            servo.setPower(-gamepad1.left_stick_x);
+
             // Apply power based on toggle state
             servo.setPower(running ? targetSpeed : 0);
 
@@ -87,9 +96,9 @@ public class offsetRead extends LinearOpMode {
 
             // Show last few logged positions
             int logSize = encoderLog.size();
-            for (int i = Math.max(0, logSize - 5); i < logSize; i++) {
-                telemetry.addData("Log[" + i + "]", encoderLog.get(i));
-            }
+//            for (int i = Math.max(0, logSize - 5); i < logSize; i++) {
+//                telemetry.addData("Log[" + i + "]", encoderLog.get(i));
+//            }
 
             telemetry.update();
 

@@ -93,7 +93,7 @@ public class teleOpMainNewRed extends OpMode {
     static final double FLYWHEEL_SENSITIVITY = 5;
     static final double FLYWHEEL_EPSILON = 45;
     static final double FLYWHEEL_EXIT_EPSILON = 85;
-    static final double SPINDEXER_MANUAL_SPEED=0.6;
+    static final double SPINDEXER_MANUAL_SPEED=0.75;
     static final double DRIVE_SPEED = 0.7;
     static final double STRAFE_SPEED = 1;
     static final double TWIST_SPEED = 0.5;
