@@ -46,13 +46,13 @@ public class spindexerTouchTest extends LinearOpMode {
 
         while (opModeIsActive()) {
 
-            // ── Capture offset the first time the touch sensor fires ──
-            if (input.isPressed() && !offsetCaptured) {
-                encoderOffset = encoder.getCurrentPosition();
-                offsetCaptured = true;
-            }
-            // Position relative to the home/touch-sensor zero point
-            int relativePosition = encoder.getCurrentPosition() - encoderOffset;
+//            // ── Capture offset the first time the touch sensor fires ──
+//            if (input.isPressed() && !offsetCaptured) {
+//                encoderOffset = encoder.getCurrentPosition();
+//                offsetCaptured = true;
+//            }
+//            // Position relative to the home/touch-sensor zero point
+//            int relativePosition = encoder.getCurrentPosition() - encoderOffset;
             // ──────────────────────────────────────────────────────────
 
             if (gamepad1.yWasPressed()) {
@@ -73,13 +73,14 @@ public class spindexerTouchTest extends LinearOpMode {
                 targetSpeed -= change;
             }
 
-            // Stop and home when touch sensor is hit
-            if (input.isPressed()) {
-                correctingtoggle = false;
-                servo.setPower(0);
-                // Re-capture offset every time we return home
-                encoderOffset = encoder.getCurrentPosition();
-            } else if (correctingtoggle) {
+//            // Stop and home when touch sensor is hit
+//            if (input.isPressed()) {
+//                correctingtoggle = false;
+//                servo.setPower(0);
+//                // Re-capture offset every time we return home
+//                encoderOffset = encoder.getCurrentPosition();
+//            }
+            if (correctingtoggle) {
                 servo.setPower(targetSpeed);
             } else {
                 servo.setPower(0);
@@ -92,14 +93,14 @@ public class spindexerTouchTest extends LinearOpMode {
             telemetry.addData("Pressed", input.isPressed());
             telemetry.addData("Raw Encoder Ticks", encoder.getCurrentPosition());
             telemetry.addData("Encoder Offset", encoderOffset);
-            telemetry.addData("Relative Position", relativePosition);  // ← key value
+//            telemetry.addData("Relative Position", relativePosition);  // ← key value
             telemetry.addData("Offset Captured", offsetCaptured);
             telemetry.update();
 
             dashboardTelemetry.addData("PressedNum", input.isPressed() ? 1 : 0);
             dashboardTelemetry.addData("Pressed", input.isPressed());
             dashboardTelemetry.addData("Raw Ticks", encoder.getCurrentPosition());
-            dashboardTelemetry.addData("Relative Position", relativePosition);
+//            dashboardTelemetry.addData("Relative Position", relativePosition);
             dashboardTelemetry.addData("Encoder Offset", encoderOffset);
             dashboardTelemetry.update();
         }
