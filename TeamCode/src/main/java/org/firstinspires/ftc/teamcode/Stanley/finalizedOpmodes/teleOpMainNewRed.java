@@ -482,7 +482,7 @@ public class teleOpMainNewRed extends OpMode {
             gamepad2.rumbleBlips(2);
             gamepad2.rumble(50);
         }
-        if (gamepad2.dpadUpWasPressed()){
+        if (gamepad2.dpadDownWasPressed()){
             switch (hoodState){
                 case MANUAL:
                     hoodState=HoodState.AUTO;
@@ -493,8 +493,6 @@ public class teleOpMainNewRed extends OpMode {
                     outtakeOperator.hoodServo.setPower(0);
                     break;
             }
-        }
-        if (gamepad2.dpadDownWasPressed()){
             switch (turretState){
                 case MANUAL:
                     turretState=TurretState.AUTO;
