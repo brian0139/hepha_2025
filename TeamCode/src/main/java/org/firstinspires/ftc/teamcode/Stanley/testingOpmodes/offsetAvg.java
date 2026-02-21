@@ -75,6 +75,13 @@ public class offsetAvg extends LinearOpMode {
             if (gamepad1.xWasPressed()){
                 encoder.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
                 encoder.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+                totalCnt=0;
+                slot1Cnt=0;
+                slot1Total=0;
+                slot2Cnt=0;
+                slot2Total=0;
+                slot3Cnt=0;
+                slot3Total=0;
             }
 
             // Apply power based on toggle state
@@ -88,13 +95,13 @@ public class offsetAvg extends LinearOpMode {
                 totalCnt++;
                 if (totalCnt%3==1){
                     slot1Cnt++;
-                    slot1Total+=pos;
+                    slot1Total+=pos%8192;
                 }else if (totalCnt%3==2){
                     slot2Cnt++;
-                    slot2Total+=pos;
+                    slot2Total+=pos%8192;
                 }else{
                     slot3Cnt++;
-                    slot3Total+=pos;
+                    slot3Total+=pos%8192;
                 }
             }
             lastTouchState = currentTouchState;
@@ -103,14 +110,27 @@ public class offsetAvg extends LinearOpMode {
             telemetry.addData("Running", running);
             telemetry.addData("Target Speed", targetSpeed);
             telemetry.addData("Change Step", change);
-            telemetry.addData("Encoder Ticks", encoder.getCurrentPosition());
+            telemetry.addData("Encoder Ticks", encoder.getCurrentPosition()%8192);
             telemetry.addData("Touch Pressed", input.isPressed());
             telemetry.addData("Total Triggers", totalCnt);
-            telemetry.addData("Slot 1 Avg",slot1Total/slot1Cnt);
+            telemetry.addData("slot2total",slot2Total);
+            if (slot1Cnt!=0) {
+                telemetry.addData("Slot 1 Avg", (slot1Total)*1.0 / slot1Cnt);
+            }else{
+                telemetry.addData("Slot 1 Avg", 0);
+            }
             telemetry.addData("Slot 1 Count",slot1Cnt);
-            telemetry.addData("Slot 2 Avg",slot2Total/slot2Cnt);
+            if (slot2Cnt!=0) {
+                telemetry.addData("Slot 2 Avg", (slot2Total)*1.0 / slot2Cnt);
+            }else{
+                telemetry.addData("Slot 2 Avg", 0);
+            }
             telemetry.addData("Slot 2 Count",slot2Cnt);
-            telemetry.addData("Slot 3 Avg",slot3Total/slot3Cnt);
+            if (slot3Cnt!=0) {
+                telemetry.addData("Slot 3 Avg", (slot3Total)*1.0 / slot3Cnt);
+            }else{
+                telemetry.addData("Slot 3 Avg", 0);
+            }
             telemetry.addData("Slot 3 Count",slot3Cnt);
 
             // Show last few logged positions
