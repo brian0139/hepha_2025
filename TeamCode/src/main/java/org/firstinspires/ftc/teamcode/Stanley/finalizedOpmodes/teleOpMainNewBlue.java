@@ -98,7 +98,7 @@ public class teleOpMainNewBlue extends OpMode {
     static final double TWIST_SPEED = 0.5;
     static final double FLYWHEEL_IDLE_SPEED = 600;
     static final int MIN_SAMPLE_SIZE=3;
-    static final int MAX_SAMPLE_SIZE=10;
+    static final int MAX_SAMPLE_SIZE=20;
 
     static final double[] TRANSFER_POWERS = {-1, 0};
     static final int TRANSFER_DOWN = 1;
@@ -476,9 +476,11 @@ public class teleOpMainNewBlue extends OpMode {
             switch (hoodState){
                 case MANUAL:
                     hoodState=HoodState.AUTO;
+                    outtakeOperator.hoodPID.init();
                     break;
                 case AUTO:
                     hoodState=HoodState.MANUAL;
+                    outtakeOperator.hoodServo.setPower(0);
                     break;
             }
         }
