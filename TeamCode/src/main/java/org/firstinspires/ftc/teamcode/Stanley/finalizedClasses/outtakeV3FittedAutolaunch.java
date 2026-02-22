@@ -67,7 +67,7 @@ public class outtakeV3FittedAutolaunch {
     //to use turret rotation limitation or not(requires initialized MecanumDrive
     public boolean setRange=false;
     //Hood encoder epsilon
-    final double epsilonHood=75;
+    final double epsilonHood=300;
 
     /**
      * Constructor

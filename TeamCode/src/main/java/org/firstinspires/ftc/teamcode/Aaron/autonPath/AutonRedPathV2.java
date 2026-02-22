@@ -268,10 +268,11 @@ public class AutonRedPathV2 extends LinearOpMode {
 
         @Override
         public boolean run(TelemetryPacket telemetryPacket) {
-//            if (timer.milliseconds()>=3500){
-//                outtake.turretServo.setPower(0);
-//                return false;
-//            }
+            if (timer.milliseconds()>=3500){
+                outtake.turretServo.setPower(0);
+                outtake.hoodServo.setPower(0);
+                return false;
+            }
             if (!initialized){
                 initialized=true;
                 outtake.turnPID.init();
@@ -299,8 +300,8 @@ public class AutonRedPathV2 extends LinearOpMode {
                 outtake.turretServo.setPower(0); // Stop the turret
                 telemetry.addData("Turret: Status", "Aligned!");
                 outtake.hoodServo.setPower(0);
-                return true;
-//                return false; // Action complete
+//                return true;
+                return false; // Action complete
             }
 
             telemetry.addData("Turret: Status", "Aligning");
