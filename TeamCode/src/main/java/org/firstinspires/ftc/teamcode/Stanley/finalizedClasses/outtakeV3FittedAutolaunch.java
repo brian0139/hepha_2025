@@ -79,7 +79,7 @@ public class outtakeV3FittedAutolaunch {
     public outtakeV3FittedAutolaunch(HardwareMap hardwareMap, String teamColor, boolean useTag, MecanumDrive drive){
         this.flywheelDriveR = hardwareMap.get(DcMotorEx.class,"flywheelR");
         this.flywheelDrive=hardwareMap.get(DcMotorEx.class,"flywheel");
-        flywheelDrive.setDirection(DcMotorSimple.Direction.REVERSE);
+        flywheelDriveR.setDirection(DcMotorSimple.Direction.REVERSE);
         this.drive=drive;
         this.teamColor=teamColor;
         this.hoodServo=hardwareMap.get(CRServo.class,"hoodServo");
@@ -252,7 +252,7 @@ public class outtakeV3FittedAutolaunch {
      * @return if hood is at position
      */
     public boolean setHood(double degrees){
-        double epsilon=40;
+        double epsilon=75;
         double targetTicks=(66.81-degrees)/servoDegPerRot*ticksPerRevHood;
         double power=hoodPID.update(targetTicks-hoodEncoder.getCurrentPosition());
         hoodServo.setPower(-power);

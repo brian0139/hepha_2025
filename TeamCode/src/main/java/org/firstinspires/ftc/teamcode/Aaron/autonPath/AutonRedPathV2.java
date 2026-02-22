@@ -24,6 +24,8 @@ import org.firstinspires.ftc.teamcode.MecanumDrive;
 import org.firstinspires.ftc.teamcode.Stanley.finalizedClasses.opModeDataTransfer;
 import org.firstinspires.ftc.teamcode.Stanley.finalizedClasses.outtakeV3FittedAutolaunch;
 
+import java.util.Map;
+
 @Autonomous
 public class AutonRedPathV2 extends LinearOpMode {
     outtakeV3FittedAutolaunch outtake;
@@ -48,9 +50,11 @@ public class AutonRedPathV2 extends LinearOpMode {
         // Initialize subsystems
         spindexerServo=hardwareMap.get(CRServo.class,"spindexerServo");
         intakeMotor=hardwareMap.dcMotor.get("intake");
-        transfer=(DcMotorEx) hardwareMap.dcMotor.get("par1");
-        flywheel=(DcMotorEx) hardwareMap.dcMotor.get("flywheel");
-        flywheelR=(DcMotorEx) hardwareMap.dcMotor.get("flywheelR");
+//        transfer=(DcMotorEx) hardwareMap.dcMotor.get("par1");
+//        flywheel=(DcMotorEx) hardwareMap.dcMotor.get("flywheel");
+//        flywheelR=(DcMotorEx) hardwareMap.dcMotor.get("flywheelR");
+//        flywheelR.setDirection(DcMotorSimple.Direction.REVERSE);
+
         hood=hardwareMap.crservo.get("hoodServo");
         drive=new MecanumDrive(hardwareMap,beginPose);
         intakeSensor=hardwareMap.get(NormalizedColorSensor.class,"intakeSensor");
@@ -59,14 +63,12 @@ public class AutonRedPathV2 extends LinearOpMode {
         intakeSystem = new intake(hardwareMap,"intake","intakeSensor");
         spindexer=new spindexerColor(spindexerServo,intakeMotor,hardwareMap);
 
-        flywheel.setDirection(DcMotorSimple.Direction.REVERSE);
-
         final Vector2d shootingPos=new Vector2d(-34,23);
         final double shootingAngle=Math.toRadians(140);
         final double intakeFinishy = 50;
         final double intakeStarty=13;
         final double waitTime=1;
-        final double shootTime=1.5;
+        final double shootTime=2;
         final double row1XPos=-9;
         final double row2XPos=16;
         final double row3XPos=38;
@@ -79,9 +81,10 @@ public class AutonRedPathV2 extends LinearOpMode {
         dashboardTelemetry.update();
         telemetry.addData("Status", "Initialized");
         telemetry.update();
-        Actions.runBlocking(drive.actionBuilder(beginPose).stopAndAdd(new initHood()).stopAndAdd(new SetHoodAngle(45.2)).build());
 
         waitForStart();
+        outtake.resetHoodAngle();
+
 
         while (opModeIsActive()) {
             if (isStopRequested()) return;
@@ -108,7 +111,7 @@ public class AutonRedPathV2 extends LinearOpMode {
             //First intake
             Actions.runBlocking(new ParallelAction(drive.actionBuilder(drive.localizer.getPose())
                     //Start Intake Code 1
-                    .strafeToLinearHeading(new Vector2d(row1XPos, intakeStarty), Math.toRadians(80))
+                    .strafeToLinearHeading(new Vector2d(row1XPos-5, intakeStarty), Math.toRadians(90))
                     .stopAndAdd(new RunIntake())
                     .strafeTo(new Vector2d(row1XPos,intakeFinishy+4))
                     .stopAndAdd(new ToggleSpindexer(true))
@@ -142,7 +145,7 @@ public class AutonRedPathV2 extends LinearOpMode {
             //Second intake
             Actions.runBlocking(new ParallelAction(drive.actionBuilder(drive.localizer.getPose())
                     //Start Intake 2
-                    .strafeToLinearHeading(new Vector2d(row2XPos, intakeStarty-5), Math.toRadians(360-270))
+                    .strafeToLinearHeading(new Vector2d(row2XPos-7, intakeStarty-5), Math.toRadians(360-270))
                     .stopAndAdd(new StopIntake())
                     .stopAndAdd(new RunIntake())
                     .strafeTo(new Vector2d(row2XPos, intakeFinishy+5))
@@ -152,7 +155,7 @@ public class AutonRedPathV2 extends LinearOpMode {
             //After second intake
             Actions.runBlocking(drive.actionBuilder(drive.localizer.getPose())
                     .stopAndAdd(new ToggleSpindexer(false))
-                    //Stop Intake 2
+//                    //Stop Intake 2
                     .waitSeconds(waitTime)
                     .stopAndAdd(new StopIntake())
                     .stopAndAdd(new stopspindexer())
@@ -177,7 +180,7 @@ public class AutonRedPathV2 extends LinearOpMode {
             //Third intake
             Actions.runBlocking(new ParallelAction(drive.actionBuilder(drive.localizer.getPose())
                     //Start Intake 3
-                    .strafeToLinearHeading(new Vector2d(row3XPos, intakeStarty-10), Math.toRadians(360-270))
+                    .strafeToLinearHeading(new Vector2d(row3XPos-3, intakeStarty-7), Math.toRadians(360-265))
                     .stopAndAdd(new StopIntake())
                     .stopAndAdd(new RunIntake())
                     .strafeTo(new Vector2d(row3XPos, intakeFinishy+5))
@@ -256,7 +259,6 @@ public class AutonRedPathV2 extends LinearOpMode {
     //TODO: Integrate tower recognition into auton and make it have the ability to recognize the tower not the motif
     public class TurretAutoAimUntilAligned implements Action {
         private boolean initialized=false;
-        private boolean isComplete = false;
         private final double alignmentThreshold = 2; // degrees, adjust as needed
         ElapsedTime timer=new ElapsedTime();
 
@@ -266,14 +268,14 @@ public class AutonRedPathV2 extends LinearOpMode {
 
         @Override
         public boolean run(TelemetryPacket telemetryPacket) {
-            if (isComplete) return false;
-            if (timer.milliseconds()>=3500){
-                outtake.turretServo.setPower(0);
-                return false;
-            }
+//            if (timer.milliseconds()>=3500){
+//                outtake.turretServo.setPower(0);
+//                return false;
+//            }
             if (!initialized){
                 initialized=true;
                 outtake.turnPID.init();
+                outtake.hoodPID.init();
             }
 
             boolean hasTarget = outtake.autoturn();
@@ -286,11 +288,19 @@ public class AutonRedPathV2 extends LinearOpMode {
 
             // Check if aligned by examining heading error
             double headingError = Math.abs(outtake.apriltag.getYaw());
-            if (headingError < alignmentThreshold) {
+            Map<String,String> optimalLaunch = outtake.findOptimalLaunch(outtake.getDistance());
+            outtake.spin_flywheel(Double.parseDouble(optimalLaunch.get("velocity")),50);
+            boolean hoodPos = outtake.setHoodEncoder(Double.parseDouble(optimalLaunch.get("angle")));
+            telemetry.addData("hoodtarget",Double.parseDouble(optimalLaunch.get("angle")));
+            telemetry.addData("Current",outtake.hoodEncoder.getCurrentPosition());
+            telemetry.update();
+
+            if (headingError < alignmentThreshold && hoodPos) {
                 outtake.turretServo.setPower(0); // Stop the turret
-                isComplete = true;
                 telemetry.addData("Turret: Status", "Aligned!");
-                return false; // Action complete
+                outtake.hoodServo.setPower(0);
+                return true;
+//                return false; // Action complete
             }
 
             telemetry.addData("Turret: Status", "Aligning");

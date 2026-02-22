@@ -78,7 +78,6 @@ public class RoadrunnerTest extends LinearOpMode {
         dashboardTelemetry.update();
         telemetry.addData("Status", "Initialized");
         telemetry.update();
-        Actions.runBlocking(drive.actionBuilder(beginPose).stopAndAdd(new initHood()).stopAndAdd(new SetHoodAngle(45.2)).build());
 
         waitForStart();
 
@@ -86,55 +85,78 @@ public class RoadrunnerTest extends LinearOpMode {
             if (isStopRequested()) return;
             Actions.runBlocking(
                     drive.actionBuilder(beginPose)
+//                            .setVelocityConstraint()
                             .strafeToSplineHeading(new Vector2d(37, 33), Math.toRadians(180))
+                            .waitSeconds(0.5)
                             .strafeToSplineHeading(new Vector2d(-37, 33), Math.toRadians(270))
+                            .waitSeconds(0.5)
                             .strafeToSplineHeading(new Vector2d(-37, -33), Math.toRadians(0))
+                            .waitSeconds(0.5)
                             .strafeToSplineHeading(new Vector2d(37, -33), Math.toRadians(90))
+                            .waitSeconds(0.5)
 
                             .strafeToSplineHeading(new Vector2d(37, 33), Math.toRadians(180))
+                            .waitSeconds(0.5)
                             .strafeToSplineHeading(new Vector2d(-37, 33), Math.toRadians(270))
+                            .waitSeconds(0.5)
                             .strafeToSplineHeading(new Vector2d(-37, -33), Math.toRadians(0))
+                            .waitSeconds(0.5)
                             .strafeToSplineHeading(new Vector2d(37, -33), Math.toRadians(90))
+                            .waitSeconds(0.5)
 
                             .strafeToSplineHeading(new Vector2d(37, 33), Math.toRadians(180))
+                            .waitSeconds(0.5)
                             .strafeToSplineHeading(new Vector2d(-37, 33), Math.toRadians(270))
+                            .waitSeconds(0.5)
                             .strafeToSplineHeading(new Vector2d(-37, -33), Math.toRadians(0))
+                            .waitSeconds(0.5)
                             .strafeToSplineHeading(new Vector2d(37, -33), Math.toRadians(90))
+                            .waitSeconds(0.5)
 
                             .strafeToSplineHeading(new Vector2d(37, 33), Math.toRadians(180))
+                            .waitSeconds(0.5)
                             .strafeToSplineHeading(new Vector2d(-37, 33), Math.toRadians(270))
+                            .waitSeconds(0.5)
                             .strafeToSplineHeading(new Vector2d(-37, -33), Math.toRadians(0))
+                            .waitSeconds(0.5)
                             .strafeToSplineHeading(new Vector2d(37, -33), Math.toRadians(90))
+                            .waitSeconds(0.5)
 
                             .strafeToSplineHeading(new Vector2d(37, 33), Math.toRadians(180))
+                            .waitSeconds(0.5)
                             .strafeToSplineHeading(new Vector2d(-37, 33), Math.toRadians(270))
+                            .waitSeconds(0.5)
                             .strafeToSplineHeading(new Vector2d(-37, -33), Math.toRadians(0))
+                            .waitSeconds(0.5)
                             .strafeToSplineHeading(new Vector2d(37, -33), Math.toRadians(90))
+                            .waitSeconds(0.5)
 
                             .strafeToSplineHeading(new Vector2d(37, 33), Math.toRadians(180))
+                            .waitSeconds(0.5)
                             .strafeToSplineHeading(new Vector2d(-37, 33), Math.toRadians(270))
+                            .waitSeconds(0.5)
                             .strafeToSplineHeading(new Vector2d(-37, -33), Math.toRadians(0))
+                            .waitSeconds(0.5)
                             .strafeToSplineHeading(new Vector2d(37, -33), Math.toRadians(90))
+                            .waitSeconds(0.5)
 
                             .strafeToSplineHeading(new Vector2d(37, 33), Math.toRadians(180))
+                            .waitSeconds(0.5)
                             .strafeToSplineHeading(new Vector2d(-37, 33), Math.toRadians(270))
+                            .waitSeconds(0.5)
                             .strafeToSplineHeading(new Vector2d(-37, -33), Math.toRadians(0))
+                            .waitSeconds(0.5)
                             .strafeToSplineHeading(new Vector2d(37, -33), Math.toRadians(90))
+                            .waitSeconds(0.5)
 
                             .strafeToSplineHeading(new Vector2d(37, 33), Math.toRadians(180))
+                            .waitSeconds(0.5)
                             .strafeToSplineHeading(new Vector2d(-37, 33), Math.toRadians(270))
+                            .waitSeconds(0.5)
                             .strafeToSplineHeading(new Vector2d(-37, -33), Math.toRadians(0))
+                            .waitSeconds(0.5)
                             .strafeToSplineHeading(new Vector2d(37, -33), Math.toRadians(90))
-
-                            .strafeToSplineHeading(new Vector2d(37, 33), Math.toRadians(180))
-                            .strafeToSplineHeading(new Vector2d(-37, 33), Math.toRadians(270))
-                            .strafeToSplineHeading(new Vector2d(-37, -33), Math.toRadians(0))
-                            .strafeToSplineHeading(new Vector2d(37, -33), Math.toRadians(90))
-
-                            .strafeToSplineHeading(new Vector2d(37, 33), Math.toRadians(180))
-                            .strafeToSplineHeading(new Vector2d(-37, 33), Math.toRadians(270))
-                            .strafeToSplineHeading(new Vector2d(-37, -33), Math.toRadians(0))
-                            .strafeToSplineHeading(new Vector2d(37, -33), Math.toRadians(90))
+                            .waitSeconds(0.5)
                             .build());
             break;
         }
