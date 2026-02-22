@@ -13,8 +13,8 @@ public class spindexerColor {
     //==================== Hardware ====================
     public CRServo spindexerServo = null;
     public DcMotor intake = null;
-    DcMotorEx spindexerSensor;
-    colorSensor outtakesensor;
+    public DcMotorEx spindexerSensor;
+    public colorSensor outtakesensor;
     public colorSensor intakesensor;
 
     //==================== Timers ====================
@@ -38,6 +38,8 @@ public class spindexerColor {
     public int currentSlot = 0;
     public int[] motifPattern = {1, 2, 2};
     public int[] currentMotifPattern = null;
+    public int[] touchSensorEncoder = {1832,4616,7281};
+    public int encoderOffset=0;
 
     //==================== Configs ====================
     public double adjust = 0.1;
@@ -47,7 +49,6 @@ public class spindexerColor {
     static final double CSIntegrationTimeMS = 100;
     public double autoSpinEpsilon=150;
     public double[] kS = {0.0007, 0.0005, 0.00003};
-//    public double[] kS = {1.06, 0.1, 0.014};
     public double[] inslotsV = {0, -2691, -5470};
     public double[] outslotsV = {-6796, -1423, -4087};
 
@@ -103,17 +104,17 @@ public class spindexerColor {
         } else if (detectedLocation==-1){
             /*TODO:Adjust for color sensor offset
             If adjust is negative,
-               detectedLocation = Math.abs(spindexerSensor.getCurrentPosition()-adjust);
+               detectedLocation = Math.abs(spindexerSensor.getCurrentPosition()+encoderOffset-adjust);
             If adjust is positive,
-               detectedLocation = (spindexerSensor.getCurrentPosition()+adjust)%3.3;
+               detectedLocation = (spindexerSensor.getCurrentPosition()+encoderOffset+adjust)%3.3;
             */
-            detectedLocation = Math.abs(spindexerSensor.getCurrentPosition()-adjust);
+            detectedLocation = Math.abs(spindexerSensor.getCurrentPosition()+encoderOffset-adjust);
             lastDetected=true;
             spindexerPID.init();
         }
         if (detectedLocation != -1) {
-            spindexerServo.setPower(spindexerPID.update(calculateError(detectedLocation,spindexerSensor.getCurrentPosition())));
-            return (spindexerSensor.getCurrentPosition() >= detectedLocation - autoSpinEpsilon && spindexerSensor.getCurrentPosition() <= detectedLocation + autoSpinEpsilon);
+            spindexerServo.setPower(spindexerPID.update(calculateError(detectedLocation,spindexerSensor.getCurrentPosition()+encoderOffset)));
+            return (spindexerSensor.getCurrentPosition()+encoderOffset >= detectedLocation - autoSpinEpsilon && spindexerSensor.getCurrentPosition()+encoderOffset <= detectedLocation + autoSpinEpsilon);
         }
         return false;
     }
@@ -122,8 +123,8 @@ public class spindexerColor {
         if (detectioncnt==-1) detectioncnt=0;
         if (detectioncnt==3) return false;
         int nextmotif = motifPattern[motifIndex];
-        if (Math.abs(calculateError(outslotsV[currentSlot],spindexerSensor.getCurrentPosition()))>autoSpinEpsilon && !waitingCSIntegration){
-            spindexerServo.setPower(spindexerPID.update(calculateError(outslotsV[currentSlot],spindexerSensor.getCurrentPosition())));
+        if (Math.abs(calculateError(outslotsV[currentSlot],spindexerSensor.getCurrentPosition()+encoderOffset))>autoSpinEpsilon && !waitingCSIntegration){
+            spindexerServo.setPower(spindexerPID.update(calculateError(outslotsV[currentSlot],spindexerSensor.getCurrentPosition()+encoderOffset)));
         }else{
             if (!waitingCSIntegration){
                 waitingCSIntegration=true;
@@ -155,8 +156,8 @@ public class spindexerColor {
         if (detectioncnt==3){
             return true;
         }
-        if (Math.abs(calculateError(inslotsV[currentSlot],spindexerSensor.getCurrentPosition()))>autoSpinEpsilon && !waitingCSIntegration){
-            spindexerServo.setPower(Math.min(spindexerPID.update(calculateError(inslotsV[currentSlot],spindexerSensor.getCurrentPosition())),0.75));
+        if (Math.abs(calculateError(inslotsV[currentSlot],spindexerSensor.getCurrentPosition()+encoderOffset))>autoSpinEpsilon && !waitingCSIntegration){
+            spindexerServo.setPower(Math.min(spindexerPID.update(calculateError(inslotsV[currentSlot],spindexerSensor.getCurrentPosition()+encoderOffset)),0.75));
         }else{
             if (!waitingCSIntegration){
                 waitingCSIntegration=true;
@@ -186,7 +187,7 @@ public class spindexerColor {
                 if (spindexerSlots[i]!=0){
                     numBalls++;
                 }
-                if (spindexerSlots[i]==spindexerSensor.getCurrentPosition()){
+                if (spindexerSlots[i]==spindexerSensor.getCurrentPosition()+encoderOffset){
                     spindexerSlots[i]=1;
                 }
             }
@@ -196,10 +197,27 @@ public class spindexerColor {
     }
 
     public void holdSpindexer(){
-        spindexerServo.setPower(Math.min(spindexerPID.update(calculateError(inslotsV[currentSlot],spindexerSensor.getCurrentPosition())),0.75));
+        spindexerServo.setPower(Math.min(spindexerPID.update(calculateError(inslotsV[currentSlot],spindexerSensor.getCurrentPosition()+encoderOffset)),0.75));
     }
     public void holdSpindexerOuttake(){
-        spindexerServo.setPower(Math.min(spindexerPID.update(calculateError(outslotsV[currentSlot],spindexerSensor.getCurrentPosition())),0.75));
+        spindexerServo.setPower(Math.min(spindexerPID.update(calculateError(outslotsV[currentSlot],spindexerSensor.getCurrentPosition()+encoderOffset)),0.75));
+    }
+
+    public void resetSpindexerTouch(){
+        int tmp= spindexerSensor.getCurrentPosition()+encoderOffset;
+        tmp%=8192;
+        int absoluteOffset=99999;
+        int curSlot=-1;
+        for (int i=0;i<3;i++){
+            absoluteOffset=Math.min(absoluteOffset,Math.abs(tmp-touchSensorEncoder[i]));
+            if (Math.abs(tmp-touchSensorEncoder[i])<absoluteOffset){
+                curSlot=i;
+                absoluteOffset=Math.abs(tmp-touchSensorEncoder[i]);
+            }
+        }
+        encoderOffset=touchSensorEncoder[curSlot];
+        spindexerSensor.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
+        spindexerSensor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
     }
 
     public boolean spinAfterIntake(boolean intakesuccess){
@@ -207,12 +225,12 @@ public class spindexerColor {
         if (intakesuccess){
             spindexerServo.setPower(0.75);
         }else{
-            detectedLocation=spindexerSensor.getCurrentPosition();
+            detectedLocation=spindexerSensor.getCurrentPosition()+encoderOffset;
             spindexerPID.init();
         }
         if (detectedLocation!=-1){
-            spindexerServo.setPower(spindexerPID.update(detectedLocation-spindexerSensor.getCurrentPosition()));
-            return (spindexerSensor.getCurrentPosition()>=detectedLocation-epsilon&&spindexerSensor.getCurrentPosition()<=detectedLocation+epsilon);
+            spindexerServo.setPower(spindexerPID.update(detectedLocation-spindexerSensor.getCurrentPosition()+encoderOffset));
+            return (spindexerSensor.getCurrentPosition()+encoderOffset>=detectedLocation-epsilon&&spindexerSensor.getCurrentPosition()+encoderOffset<=detectedLocation+epsilon);
         }
         return false;
     }

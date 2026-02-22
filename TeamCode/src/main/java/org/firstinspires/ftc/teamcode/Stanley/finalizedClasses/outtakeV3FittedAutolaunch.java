@@ -31,7 +31,7 @@ public class outtakeV3FittedAutolaunch {
     //transfer servo
     public DcMotor transfer;
     //transfer positions(up, down)
-    public static double[] transferpowers ={1,0};
+    public static double[] transferpowers ={-1,0};
 
     //================================  Hood  ================================
     //Motor for hood encoder
@@ -44,8 +44,6 @@ public class outtakeV3FittedAutolaunch {
     //Ticks/revolution for encoder
     public int ticksPerRevHood=8192;
     //PID instance for hood
-//    public double[] Kh={0.0005,0.0005,0.00003};
-    //35 little too low
     public double[] Kh={0.0004,0.0005,0.00001};
     public PIDhood hoodPID=new PIDhood(Kh[0],Kh[1],Kh[2]);
 
@@ -68,9 +66,8 @@ public class outtakeV3FittedAutolaunch {
     int targetTagID=-1;
     //to use turret rotation limitation or not(requires initialized MecanumDrive
     public boolean setRange=false;
-    double[] distances     = new double[]{2,3,4,5,6,7,9,11};
-    double[] hoodDegrees   = new double[]{37.19,36.69,37.34,39.71,43.14,40.01,43.2,48.75};
-    double[] flywheelSpeeds= new double[]{1800,1430,1470,1620,1660,1730,1960,2100};
+    //Hood encoder epsilon
+    final double epsilonHood=75;
 
     /**
      * Constructor
@@ -268,10 +265,9 @@ public class outtakeV3FittedAutolaunch {
      * @return if hood is at position
      */
     public boolean setHoodEncoder(double encoderTicks){
-        double epsilon=40;
         double power=hoodPID.update(encoderTicks-hoodEncoder.getCurrentPosition());
         hoodServo.setPower(-power);
-        return (hoodEncoder.getCurrentPosition() >= encoderTicks - epsilon) && (hoodEncoder.getCurrentPosition() <= encoderTicks + epsilon);
+        return (hoodEncoder.getCurrentPosition() >= encoderTicks - epsilonHood) && (hoodEncoder.getCurrentPosition() <= encoderTicks + epsilonHood);
     }
 
     /**
@@ -321,9 +317,8 @@ public class outtakeV3FittedAutolaunch {
      * @return If flywheel is up to speed.
      */
     public boolean spin_flywheel(double targetSpeed, int tolerance){
-        DcMotorEx flywheelDriveEx=this.flywheelDriveR;
-        flywheelDriveEx.setVelocity(targetSpeed);
+        flywheelDriveR.setVelocity(targetSpeed);
         flywheelDrive.setVelocity(targetSpeed);
-        return targetSpeed - tolerance <= flywheelDriveEx.getVelocity() && flywheelDriveEx.getVelocity() <= targetSpeed + tolerance;
+        return targetSpeed - tolerance <= flywheelDriveR.getVelocity() && flywheelDriveR.getVelocity() <= targetSpeed + tolerance;
     }
 }

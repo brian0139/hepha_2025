@@ -10,6 +10,8 @@ import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
+import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.hardware.TouchSensor;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
@@ -77,6 +79,12 @@ public class teleOpMainNewRed extends OpMode {
     //Spindexer Encoder
     DcMotorEx spindexerEncoder = null;
 
+    //Touch Sensor
+    TouchSensor spindexerTouch = null;
+
+    //Indicator Light
+    Servo flywheelIndicator=null;
+
     // ==================== Classes ====================
     spindexerColor spindexerOperator=null;
     outtakeV3FittedAutolaunch outtakeOperator=null;
@@ -92,7 +100,7 @@ public class teleOpMainNewRed extends OpMode {
     // ==================== CONFIGURATION ====================
     static final double FLYWHEEL_SENSITIVITY = 5;
     static final double FLYWHEEL_EPSILON = 45;
-    static final double FLYWHEEL_EXIT_EPSILON = 85;
+    static final double FLYWHEEL_EXIT_EPSILON = 65;
     static final double SPINDEXER_MANUAL_SPEED=0.75;
     static final double DRIVE_SPEED = 0.7;
     static final double STRAFE_SPEED = 1;
@@ -100,6 +108,7 @@ public class teleOpMainNewRed extends OpMode {
     static final double FLYWHEEL_IDLE_SPEED = 600;
     static final int MIN_SAMPLE_SIZE=3;
     static final int MAX_SAMPLE_SIZE=20;
+    static final double FLYWHEEL_INDICATOR_COLOR=0.5;
 
     static final double[] TRANSFER_POWERS = {-1, 0};
     static final int TRANSFER_DOWN = 1;
@@ -109,6 +118,8 @@ public class teleOpMainNewRed extends OpMode {
     double flywheelSpeed = 2000;
     double targetSpeed = 0;
     boolean atFlywheelTarget=false;
+    //Spindexer Touch Sensor Edge Detection
+    boolean lastPressed=false;
 
     //LL sample queue
     LinkedList<Double> LLsample=new LinkedList<>();
@@ -117,7 +128,7 @@ public class teleOpMainNewRed extends OpMode {
     ElapsedTime LLsampleTimer=new ElapsedTime();
     ElapsedTime transferTimer =new ElapsedTime();
     Map<String, String> output = Map.of(
-            "angle", "66.81",
+            "angle", "0",
             "velocity","0"
     );
 
@@ -165,6 +176,9 @@ public class teleOpMainNewRed extends OpMode {
         // Initialize servos
         hoodServo = hardwareMap.get(CRServo.class, "hoodServo");
         spindexer = hardwareMap.get(CRServo.class, "spindexerServo");
+
+        //Initialize Lights
+        flywheelIndicator = hardwareMap.get(Servo.class,"flywheelIndicator");
 
         // Initialize Encoder
         spindexerEncoder = hardwareMap.get(DcMotorEx.class,"intake");
@@ -227,9 +241,11 @@ public class teleOpMainNewRed extends OpMode {
         if (Math.abs(targetSpeed+flywheel.getVelocity())<FLYWHEEL_EPSILON && !atFlywheelTarget){
             atFlywheelTarget=true;
             gamepad2.rumble(100);
+            flywheelIndicator.setPosition(FLYWHEEL_INDICATOR_COLOR);
         }
         if (Math.abs(targetSpeed+flywheel.getVelocity())>FLYWHEEL_EXIT_EPSILON){
             atFlywheelTarget=false;
+            flywheelIndicator.setPosition(0);
         }
 
         // Toggle flywheel on/off with Y button
@@ -311,6 +327,13 @@ public class teleOpMainNewRed extends OpMode {
 
     // ==================== SPINDEXER STATE MACHINE ====================
     void updateSpindexerStateMachine(){
+        //Reset spindexer encoder on touch sensor press
+        if (spindexerTouch.isPressed() && !lastPressed){
+            spindexerOperator.resetSpindexerTouch();
+            lastPressed=true;
+        }else{
+            lastPressed=spindexerTouch.isPressed();
+        }
         if (gamepad1.aWasPressed()){
             spindexerEncoder.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
             spindexerEncoder.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
@@ -428,6 +451,7 @@ public class teleOpMainNewRed extends OpMode {
         telemetry.addData("State",spindexerState);
         telemetry.addData("Hue",spindexerOperator.intakesensor.readHSV()[0]);
         telemetry.addData("Detected",spindexerOperator.intakesensor.getDetected());
+        telemetry.addData("Spindexer Absolute Position",(spindexerOperator.spindexerSensor.getCurrentPosition()+spindexerOperator.encoderOffset)%8192);
         telemetry.addLine("=== Limelight ===");
         telemetry.addData("Has Target",outtakeOperator.apriltag.hasValidTarget());
         telemetry.addData("Offset(Deg)",outtakeOperator.apriltag.getYaw());
