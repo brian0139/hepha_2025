@@ -85,6 +85,7 @@ public class RoadrunnerTest extends LinearOpMode {
             if (isStopRequested()) return;
             Actions.runBlocking(
                     drive.actionBuilder(beginPose)
+//                            .setVelocityConstraint()
                             .strafeToSplineHeading(new Vector2d(37, 33), Math.toRadians(180))
                             .waitSeconds(0.5)
                             .strafeToSplineHeading(new Vector2d(-37, 33), Math.toRadians(270))

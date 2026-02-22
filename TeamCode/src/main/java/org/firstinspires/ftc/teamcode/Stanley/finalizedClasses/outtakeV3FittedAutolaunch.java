@@ -31,7 +31,7 @@ public class outtakeV3FittedAutolaunch {
     //transfer servo
     public DcMotor transfer;
     //transfer positions(up, down)
-    public static double[] transferpowers ={1,0};
+    public static double[] transferpowers ={-1,0};
 
     //================================  Hood  ================================
     //Motor for hood encoder
@@ -82,7 +82,7 @@ public class outtakeV3FittedAutolaunch {
     public outtakeV3FittedAutolaunch(HardwareMap hardwareMap, String teamColor, boolean useTag, MecanumDrive drive){
         this.flywheelDriveR = hardwareMap.get(DcMotorEx.class,"flywheelR");
         this.flywheelDrive=hardwareMap.get(DcMotorEx.class,"flywheel");
-        flywheelDrive.setDirection(DcMotorSimple.Direction.REVERSE);
+        flywheelDriveR.setDirection(DcMotorSimple.Direction.REVERSE);
         this.drive=drive;
         this.teamColor=teamColor;
         this.hoodServo=hardwareMap.get(CRServo.class,"hoodServo");
@@ -255,7 +255,7 @@ public class outtakeV3FittedAutolaunch {
      * @return if hood is at position
      */
     public boolean setHood(double degrees){
-        double epsilon=40;
+        double epsilon=75;
         double targetTicks=(66.81-degrees)/servoDegPerRot*ticksPerRevHood;
         double power=hoodPID.update(targetTicks-hoodEncoder.getCurrentPosition());
         hoodServo.setPower(-power);
@@ -268,10 +268,10 @@ public class outtakeV3FittedAutolaunch {
      * @return if hood is at position
      */
     public boolean setHoodEncoder(double encoderTicks){
-        double epsilon=40;
+        double epsilon=75;
         double power=hoodPID.update(encoderTicks-hoodEncoder.getCurrentPosition());
         hoodServo.setPower(-power);
-        return (hoodEncoder.getCurrentPosition() >= encoderTicks - epsilon) && (hoodEncoder.getCurrentPosition() <= encoderTicks + epsilon);
+        return (Math.abs(hoodEncoder.getCurrentPosition()-encoderTicks)<=epsilon);
     }
 
     /**
@@ -321,9 +321,8 @@ public class outtakeV3FittedAutolaunch {
      * @return If flywheel is up to speed.
      */
     public boolean spin_flywheel(double targetSpeed, int tolerance){
-        DcMotorEx flywheelDriveEx=this.flywheelDriveR;
-        flywheelDriveEx.setVelocity(targetSpeed);
+        flywheelDriveR.setVelocity(targetSpeed);
         flywheelDrive.setVelocity(targetSpeed);
-        return targetSpeed - tolerance <= flywheelDriveEx.getVelocity() && flywheelDriveEx.getVelocity() <= targetSpeed + tolerance;
+        return targetSpeed - tolerance <= flywheelDriveR.getVelocity() && flywheelDriveR.getVelocity() <= targetSpeed + tolerance;
     }
 }
