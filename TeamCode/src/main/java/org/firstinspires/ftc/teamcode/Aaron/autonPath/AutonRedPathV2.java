@@ -145,7 +145,7 @@ public class AutonRedPathV2 extends LinearOpMode {
             //Second intake
             Actions.runBlocking(new ParallelAction(drive.actionBuilder(drive.localizer.getPose())
                     //Start Intake 2
-                    .strafeToLinearHeading(new Vector2d(row2XPos-5, intakeStarty-5), Math.toRadians(360-270))
+                    .strafeToLinearHeading(new Vector2d(row2XPos-7, intakeStarty-5), Math.toRadians(360-270))
 //                    .stopAndAdd(new StopIntake())
 //                    .stopAndAdd(new RunIntake())
                     .strafeTo(new Vector2d(row2XPos, intakeFinishy+5))
