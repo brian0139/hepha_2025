@@ -145,7 +145,7 @@ public class AutonRedPathV2 extends LinearOpMode {
             //Second intake
             Actions.runBlocking(new ParallelAction(drive.actionBuilder(drive.localizer.getPose())
                     //Start Intake 2
-                    .strafeToLinearHeading(new Vector2d(row2XPos, intakeStarty-5), Math.toRadians(360-270))
+                    .strafeToLinearHeading(new Vector2d(row2XPos-5, intakeStarty-5), Math.toRadians(360-270))
 //                    .stopAndAdd(new StopIntake())
 //                    .stopAndAdd(new RunIntake())
                     .strafeTo(new Vector2d(row2XPos, intakeFinishy+5))
@@ -180,7 +180,7 @@ public class AutonRedPathV2 extends LinearOpMode {
             //Third intake
             Actions.runBlocking(new ParallelAction(drive.actionBuilder(drive.localizer.getPose())
                     //Start Intake 3
-                    .strafeToLinearHeading(new Vector2d(row3XPos, intakeStarty-10), Math.toRadians(360-270))
+                    .strafeToLinearHeading(new Vector2d(row3XPos-3, intakeStarty-7), Math.toRadians(360-265))
 //                    .stopAndAdd(new StopIntake())
 //                    .stopAndAdd(new RunIntake())
                     .strafeTo(new Vector2d(row3XPos, intakeFinishy+5))
