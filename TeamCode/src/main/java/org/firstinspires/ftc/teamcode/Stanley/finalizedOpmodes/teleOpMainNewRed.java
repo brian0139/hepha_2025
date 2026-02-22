@@ -183,6 +183,9 @@ public class teleOpMainNewRed extends OpMode {
         // Initialize Encoder
         spindexerEncoder = hardwareMap.get(DcMotorEx.class,"intake");
 
+        // Initialize touch sensor
+        spindexerTouch = hardwareMap.get(TouchSensor.class,"touch");
+
         // Set initial positions
         transfer.setPower(TRANSFER_POWERS[TRANSFER_DOWN]);
         transferState = TransferState.STOPPED;
@@ -337,6 +340,7 @@ public class teleOpMainNewRed extends OpMode {
         if (gamepad1.aWasPressed()){
             spindexerEncoder.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
             spindexerEncoder.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+            spindexerOperator.encoderOffset=0;
         }
         if (gamepad1.yWasPressed()){
             switch (spindexerState){
