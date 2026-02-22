@@ -267,7 +267,7 @@ public class outtakeV3FittedAutolaunch {
     public boolean setHoodEncoder(double encoderTicks){
         double power=hoodPID.update(encoderTicks-hoodEncoder.getCurrentPosition());
         hoodServo.setPower(-power);
-        return (hoodEncoder.getCurrentPosition() >= encoderTicks - epsilonHood) && (hoodEncoder.getCurrentPosition() <= encoderTicks + epsilonHood);
+        return (Math.abs(hoodEncoder.getCurrentPosition()-encoderTicks)<=epsilonHood);
     }
 
     /**
