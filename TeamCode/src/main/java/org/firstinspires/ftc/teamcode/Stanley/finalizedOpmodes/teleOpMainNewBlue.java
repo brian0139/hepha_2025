@@ -270,7 +270,7 @@ public class teleOpMainNewBlue extends OpMode {
             targetSpeed = FLYWHEEL_IDLE_SPEED;
             flywheel.setVelocity(FLYWHEEL_IDLE_SPEED);
         }
-        flywheelR.setPower(flywheel.getPower()*0.95);
+        flywheelR.setPower(flywheel.getPower()*0.92);
 //        //TODO:Testing
 //        if (gamepad2.dpadLeftWasPressed()){
 //            launchVelocities=new double[]{0,0,0};

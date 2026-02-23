@@ -44,7 +44,7 @@ public class outtakeV3FittedAutolaunch {
     //Ticks/revolution for encoder
     public int ticksPerRevHood=8192;
     //PID instance for hood
-    public double[] Kh={0.0003,0.0005,0.00001};
+    public double[] Kh={0.00035,0.0005,0.00001};
     public PIDhood hoodPID=new PIDhood(Kh[0],Kh[1],Kh[2]);
 
     //================================  Turret  ================================
@@ -224,12 +224,12 @@ public class outtakeV3FittedAutolaunch {
             double velocity;
             double angle;
             if (distance>=0.75){
-                velocity = (-29.684398 * Math.pow(distance, 2)) + (65.533814 * distance) + (1587.83355)+10;
+                velocity = (-29.684398 * Math.pow(distance, 2)) + (65.533814 * distance) + (1587.83355)-10;
             }else{
                 velocity=(-370.879121 * distance) + (2037.159341)+10;
             }
             if (distance<0.4){
-                velocity=(-20256.601162 * Math.pow(distance, 3)) + (20904.437702 * Math.pow(distance, 2)) + (-8786.779804 * distance) + (3367.117587)+300;
+                velocity=(-20256.601162 * Math.pow(distance, 3)) + (20904.437702 * Math.pow(distance, 2)) + (-8786.779804 * distance) + (3367.117587)-300;
             }
             if (distance>=0.75){
                 angle = (107.192351 * Math.pow(distance, 2)) + (-98.057841 * distance) + (5809.211155)+100;
@@ -237,7 +237,7 @@ public class outtakeV3FittedAutolaunch {
                 angle = (3818.681319 * distance) + (1578.989011)+100;
             }
             if (distance<0.4){
-                angle=(471046.845588 * Math.pow(distance, 3)) + (-374521.297098 * Math.pow(distance, 2)) + (110408.08753 * distance) + (-7602.113035)+100;
+                angle=(471046.845588 * Math.pow(distance, 3)) + (-374521.297098 * Math.pow(distance, 2)) + (110408.08753 * distance) + (-7602.113035)+75;
             }
             return new HashMap<>(Map.of(
                     "angle", Double.toString(angle),
