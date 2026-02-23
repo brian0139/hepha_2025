@@ -204,19 +204,19 @@ public class spindexerColor {
     }
 
     public void resetSpindexerTouch(){
-        int tmp= spindexerSensor.getCurrentPosition()+encoderOffset;
-        tmp%=8192;
-        int absoluteOffset=99999;
-        int curSlot=-1;
-        for (int i=0;i<3;i++){
-            if (Math.abs(tmp-touchSensorEncoder[i])<absoluteOffset){
-                curSlot=i;
-                absoluteOffset=Math.abs(tmp-touchSensorEncoder[i]);
-            }
-        }
-        encoderOffset=touchSensorEncoder[curSlot];
-        spindexerSensor.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
-        spindexerSensor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+//        int tmp= spindexerSensor.getCurrentPosition()+encoderOffset;
+//        tmp%=8192;
+//        int absoluteOffset=99999;
+//        int curSlot=-1;
+//        for (int i=0;i<3;i++){
+//            if (Math.abs(tmp-touchSensorEncoder[i])<absoluteOffset){
+//                curSlot=i;
+//                absoluteOffset=Math.abs(tmp-touchSensorEncoder[i]);
+//            }
+//        }
+//        encoderOffset=touchSensorEncoder[curSlot];
+//        spindexerSensor.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
+//        spindexerSensor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
     }
 
     public boolean spinAfterIntake(boolean intakesuccess){
