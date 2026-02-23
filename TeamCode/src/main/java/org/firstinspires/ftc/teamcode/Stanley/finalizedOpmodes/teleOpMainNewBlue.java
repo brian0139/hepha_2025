@@ -162,11 +162,12 @@ public class teleOpMainNewBlue extends OpMode {
         // Initialize other motors
         flywheel = hardwareMap.get(DcMotorEx.class, "flywheel");
         flywheel.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        flywheel.setDirection(DcMotorSimple.Direction.REVERSE);
+        flywheel.setDirection(DcMotorSimple.Direction.FORWARD);
         flywheel.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER,new PIDFCoefficients(9.7,0.7,1.3,3.8));
         flywheelR = hardwareMap.get(DcMotorEx.class,"flywheelR");
-        flywheelR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        flywheelR.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER,new PIDFCoefficients(9.7,0.7,1.3,3.8));
+        flywheelR.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        flywheelR.setDirection(DcMotorSimple.Direction.FORWARD);
+//        flywheelR.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER,new PIDFCoefficients(9.7,0.7,1.3,3.8));
         intake = hardwareMap.get(DcMotor.class, "intake");
         transfer = hardwareMap.get(DcMotor.class, "par1");
 
@@ -253,14 +254,12 @@ public class teleOpMainNewBlue extends OpMode {
                 case IDLE:
                     flywheelState = FlywheelState.SPINNING;
                     targetSpeed = flywheelSpeed;
-                    flywheel.setVelocity(-targetSpeed);
-                    flywheelR.setVelocity(-targetSpeed);
+                    flywheel.setVelocity(targetSpeed);
                     break;
                 case SPINNING:
                     flywheelState = FlywheelState.STOPPED;
                     targetSpeed = FLYWHEEL_IDLE_SPEED;
-                    flywheel.setVelocity(-FLYWHEEL_IDLE_SPEED);
-                    flywheelR.setVelocity(-FLYWHEEL_IDLE_SPEED);
+                    flywheel.setVelocity(FLYWHEEL_IDLE_SPEED);
 //                    //TODO:Testing
 //                    ballcnt=0;
 //                    previousRateofChange=0;
@@ -269,9 +268,9 @@ public class teleOpMainNewBlue extends OpMode {
         }
         if (flywheelState == FlywheelState.STOPPED){
             targetSpeed = FLYWHEEL_IDLE_SPEED;
-            flywheel.setVelocity(-FLYWHEEL_IDLE_SPEED);
-            flywheelR.setVelocity(-FLYWHEEL_IDLE_SPEED);
+            flywheel.setVelocity(FLYWHEEL_IDLE_SPEED);
         }
+        flywheelR.setPower(flywheel.getPower()*0.95);
 //        //TODO:Testing
 //        if (gamepad2.dpadLeftWasPressed()){
 //            launchVelocities=new double[]{0,0,0};
@@ -440,9 +439,9 @@ public class teleOpMainNewBlue extends OpMode {
     void updateTelemetry() {
         telemetry.addLine("=== Flywheel ===");
         telemetry.addData("Target Speed",flywheelSpeed);
-        telemetry.addData("Actual Speed",-flywheel.getVelocity());
+        telemetry.addData("Actual Speed",flywheel.getVelocity());
         dashboardtelemetry.addData("Target Speed",flywheelSpeed);
-        dashboardtelemetry.addData("Actual Speed",-flywheel.getVelocity());
+        dashboardtelemetry.addData("Actual Speed",flywheel.getVelocity());
         telemetry.addLine("=== Toggles ===");
         telemetry.addData("Auto Hood",hoodState==HoodState.AUTO);
         telemetry.addData("Auto Turret",turretState==TurretState.AUTO);
