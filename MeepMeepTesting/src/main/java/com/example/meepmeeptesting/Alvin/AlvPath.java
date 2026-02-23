@@ -8,95 +8,59 @@ import com.noahbres.meepmeep.roadrunner.entity.RoadRunnerBotEntity;
 
 public class AlvPath {
     public static void main(String[] args) {
-        MeepMeep meepMeep = new MeepMeep(750);
+        MeepMeep meepMeep = new MeepMeep(800);
 
-        // Set bot constraints
-        RoadRunnerBotEntity myBot = new DefaultBotBuilder(meepMeep)
-                .setConstraints(80, 70, Math.toRadians(180), Math.toRadians(180), 15)
+        // ==================== CONSTANTS ====================
+        // White triangle = start AND shoot position (top-right)
+        final Pose2d beginPose     = new Pose2d(57.5, 43.5, Math.toRadians(180));
+        final Vector2d shootingPos = new Vector2d(57.5, 43.5);  // same as start
+        final double shootingAngle = Math.toRadians(180);
+
+        // Ball cluster X columns (right to left)
+        final double row3XPos      = 38;   // rightmost — nearest to white triangle
+        final double row2XPos      = 16;   // center column
+        final double row1XPos      = -9;   // left column
+
+        // Intake sweep Y range (sweeping toward top wall)
+        final double intakeStartY  = 46;
+        final double intakeFinishY = 56;
+
+        RoadRunnerBotEntity bot = new DefaultBotBuilder(meepMeep)
+                .setConstraints(50, 50, Math.toRadians(180), Math.toRadians(180), 15)
                 .build();
 
-        // Define shooting/basket position (red structure on right side in video)
-        final Vector2d basketPos = new Vector2d(54, -54);  // High basket position
-        final double basketAngle = Math.toRadians(45);      // Face basket
+        bot.runAction(bot.getDrive().actionBuilder(beginPose)
 
-        // Define intake positions - 4 rows of 3 balls each (12 total)
-        final double row1Y = -48;  // First row
-        final double row2Y = -38;  // Second row
-        final double row3Y = -28;  // Third row
-        final double row4Y = -18;  // Fourth row (closest to center)
+                // ===== STEP 1: Shoot 3 preloaded balls from white triangle =====
+                // (robot is already here, just shoot in place)
 
-        // X positions for the 3 balls in each row
-        final double col1X = -48;  // Left column
-        final double col2X = -36;  // Middle column
-        final double col3X = -24;  // Right column
+                // ===== STEP 2: Intake row 3 (nearest cluster, x=38) =====
+                .strafeToLinearHeading(new Vector2d(row3XPos, intakeStartY), Math.toRadians(90))
+                .strafeTo(new Vector2d(row3XPos, intakeFinishY))
 
-        // Main action sequence - 12 balls in 30 seconds
-        myBot.runAction(myBot.getDrive().actionBuilder(new Pose2d(-36, -60, Math.toRadians(90)))
-                // === CYCLE 1: Collect 3 balls from row 1 ===
-                .strafeToLinearHeading(new Vector2d(col1X, row1Y), Math.toRadians(0))
-                .waitSeconds(0.3)  // Intake ball 1
+                // ===== STEP 3: Return to white triangle and shoot =====
+                .strafeToLinearHeading(shootingPos, shootingAngle)
 
-                .strafeTo(new Vector2d(col2X, row1Y))
-                .waitSeconds(0.3)  // Intake ball 2
+                // ===== STEP 4: Intake row 2 (center, x=16) =====
+                .strafeToLinearHeading(new Vector2d(row2XPos, intakeStartY), Math.toRadians(90))
+                .strafeTo(new Vector2d(row2XPos, intakeFinishY))
 
-                .strafeTo(new Vector2d(col3X, row1Y))
-                .waitSeconds(0.3)  // Intake ball 3
+                // ===== STEP 5: Return to white triangle and shoot =====
+                .strafeToLinearHeading(shootingPos, shootingAngle)
 
-                // Score at basket
-                .strafeToLinearHeading(basketPos, basketAngle)
-                .waitSeconds(1.5)  // Shoot 3 balls
+                // ===== STEP 6: Intake row 1 (left, x=-9) =====
+                .strafeToLinearHeading(new Vector2d(row1XPos, intakeStartY), Math.toRadians(90))
+                .strafeTo(new Vector2d(row1XPos, intakeFinishY))
 
-                // === CYCLE 2: Collect 3 balls from row 2 ===
-                .strafeToLinearHeading(new Vector2d(col1X, row2Y), Math.toRadians(0))
-                .waitSeconds(0.3)  // Intake ball 4
+                // ===== STEP 7: Return to white triangle and shoot final balls =====
+                .strafeToLinearHeading(shootingPos, shootingAngle)
 
-                .strafeTo(new Vector2d(col2X, row2Y))
-                .waitSeconds(0.3)  // Intake ball 5
-
-                .strafeTo(new Vector2d(col3X, row2Y))
-                .waitSeconds(0.3)  // Intake ball 6
-
-                // Score at basket
-                .strafeToLinearHeading(basketPos, basketAngle)
-                .waitSeconds(1.5)  // Shoot 3 balls
-
-                // === CYCLE 3: Collect 3 balls from row 3 ===
-                .strafeToLinearHeading(new Vector2d(col1X, row3Y), Math.toRadians(0))
-                .waitSeconds(0.3)  // Intake ball 7
-
-                .strafeTo(new Vector2d(col2X, row3Y))
-                .waitSeconds(0.3)  // Intake ball 8
-
-                .strafeTo(new Vector2d(col3X, row3Y))
-                .waitSeconds(0.3)  // Intake ball 9
-
-                // Score at basket
-                .strafeToLinearHeading(basketPos, basketAngle)
-                .waitSeconds(1.5)  // Shoot 3 balls
-
-                // === CYCLE 4: Collect 3 balls from row 4 ===
-                .strafeToLinearHeading(new Vector2d(col1X, row4Y), Math.toRadians(0))
-                .waitSeconds(0.3)  // Intake ball 10
-
-                .strafeTo(new Vector2d(col2X, row4Y))
-                .waitSeconds(0.3)  // Intake ball 11
-
-                .strafeTo(new Vector2d(col3X, row4Y))
-                .waitSeconds(0.3)  // Intake ball 12
-
-                // Score final 3 balls at basket
-                .strafeToLinearHeading(basketPos, basketAngle)
-                .waitSeconds(1.5)  // Shoot 3 balls
-
-                // Park in observation zone
-                .strafeToLinearHeading(new Vector2d(-36, -60), Math.toRadians(90))
                 .build());
 
-        // Set up the MeepMeep simulation
         meepMeep.setBackground(MeepMeep.Background.FIELD_DECODE_JUICE_DARK)
                 .setDarkMode(true)
                 .setBackgroundAlpha(0.95f)
-                .addEntity(myBot)
+                .addEntity(bot)
                 .start();
     }
 }
