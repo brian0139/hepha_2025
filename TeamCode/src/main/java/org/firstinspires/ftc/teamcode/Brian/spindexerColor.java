@@ -197,12 +197,16 @@ public class spindexerColor {
     }
 
     public void holdSpindexer(){
-        spindexerServo.setPower(Math.min(spindexerPID.update(calculateError(inslotsV[currentSlot],spindexerSensor.getCurrentPosition()+encoderOffset)),0.75));
+        spindexerServo.setPower(spindexerPID.update(calculateError(inslotsV[currentSlot],spindexerSensor.getCurrentPosition()+encoderOffset)));
     }
     public void holdSpindexerOuttake(){
-        spindexerServo.setPower(Math.min(spindexerPID.update(calculateError(outslotsV[currentSlot],spindexerSensor.getCurrentPosition()+encoderOffset)),0.75));
+        spindexerServo.setPower(spindexerPID.update(calculateError(outslotsV[currentSlot],spindexerSensor.getCurrentPosition()+encoderOffset)));
     }
 
+    /**
+     * Rsets encoder offset
+     * @param direction Direction servo is spinning()
+     */
     public void resetSpindexerTouch(){
 //        int tmp= spindexerSensor.getCurrentPosition()+encoderOffset;
 //        tmp%=8192;
