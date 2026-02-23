@@ -332,6 +332,7 @@ public class teleOpMainNewBlue extends OpMode {
         if (gamepad1.aWasPressed()){
             spindexerEncoder.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
             spindexerEncoder.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+            spindexerOperator.encoderOffset=0;
         }
         if (gamepad1.yWasPressed()){
             switch (spindexerState){

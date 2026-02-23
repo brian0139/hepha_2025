@@ -209,7 +209,6 @@ public class spindexerColor {
         int absoluteOffset=99999;
         int curSlot=-1;
         for (int i=0;i<3;i++){
-            absoluteOffset=Math.min(absoluteOffset,Math.abs(tmp-touchSensorEncoder[i]));
             if (Math.abs(tmp-touchSensorEncoder[i])<absoluteOffset){
                 curSlot=i;
                 absoluteOffset=Math.abs(tmp-touchSensorEncoder[i]);
