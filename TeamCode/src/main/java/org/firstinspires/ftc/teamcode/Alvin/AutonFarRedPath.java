@@ -107,15 +107,13 @@ public class AutonFarRedPath extends LinearOpMode {
                             .build());
 
             // ===== FIRST INTAKE: Row 3 (x=38, nearest cluster to white triangle) =====
-            Actions.runBlocking(new ParallelAction(
-                    drive.actionBuilder(drive.localizer.getPose())
+            Actions.runBlocking(drive.actionBuilder(drive.localizer.getPose())
                             // Start Intake Code 1
                             .strafeToLinearHeading(new Vector2d(row3XPos, intakeStarty), Math.toRadians(90))
+                            .stopAndAdd(new ToggleSpindexer(true))
                             .stopAndAdd(new RunIntake())
                             .strafeTo(new Vector2d(row3XPos, intakeFinishy))
-                            .stopAndAdd(new ToggleSpindexer(true))
-                            .build(),
-                    new SpinToIntake()));
+                            .build());
 
             // ===== AFTER FIRST INTAKE: Return to white triangle and shoot =====
             Actions.runBlocking(drive.actionBuilder(drive.localizer.getPose())
@@ -143,16 +141,14 @@ public class AutonFarRedPath extends LinearOpMode {
                     .build());
 
             // ===== SECOND INTAKE: Row 2 (x=16, center column) =====
-            Actions.runBlocking(new ParallelAction(
-                    drive.actionBuilder(drive.localizer.getPose())
+            Actions.runBlocking(drive.actionBuilder(drive.localizer.getPose())
                             // Start Intake 2
                             .strafeToLinearHeading(new Vector2d(row2XPos, intakeStarty), Math.toRadians(90))
                             .stopAndAdd(new StopIntake())
+                            .stopAndAdd(new ToggleSpindexer(true))
                             .stopAndAdd(new RunIntake())
                             .strafeTo(new Vector2d(row2XPos, intakeFinishy))
-                            .stopAndAdd(new ToggleSpindexer(true))
-                            .build(),
-                    new SpinToIntake()));
+                            .build());
 
             // ===== AFTER SECOND INTAKE: Return to white triangle and shoot =====
             Actions.runBlocking(drive.actionBuilder(drive.localizer.getPose())
@@ -180,16 +176,14 @@ public class AutonFarRedPath extends LinearOpMode {
                     .build());
 
             // ===== THIRD INTAKE: Row 1 (x=-9, leftmost column) =====
-            Actions.runBlocking(new ParallelAction(
-                    drive.actionBuilder(drive.localizer.getPose())
+            Actions.runBlocking(drive.actionBuilder(drive.localizer.getPose())
                             // Start Intake 3
                             .strafeToLinearHeading(new Vector2d(row1XPos, intakeStarty), Math.toRadians(90))
                             .stopAndAdd(new StopIntake())
+                            .stopAndAdd(new ToggleSpindexer(true))
                             .stopAndAdd(new RunIntake())
                             .strafeTo(new Vector2d(row1XPos, intakeFinishy))
-                            .stopAndAdd(new ToggleSpindexer(true))
-                            .build(),
-                    new SpinToIntake()));
+                            .build());
 
             // ===== AFTER THIRD INTAKE: Return to white triangle and shoot =====
             Actions.runBlocking(drive.actionBuilder(drive.localizer.getPose())
@@ -448,6 +442,8 @@ public class AutonFarRedPath extends LinearOpMode {
 
         @Override
         public boolean run(TelemetryPacket packet) {
+            if (onOff) spindexer.spindexerServo.setPower(0.75);
+            else spindexer.spindexerServo.setPower(0);
             pauseSpindexer = onOff;
             return false;
         }
