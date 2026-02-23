@@ -180,6 +180,9 @@ public class teleOpMainNewBlue extends OpMode {
         // Initialize Encoder
         spindexerEncoder = hardwareMap.get(DcMotorEx.class,"intake");
 
+        // Initialize touch sensor
+        spindexerTouch = hardwareMap.get(TouchSensor.class,"touch");
+
         // Set initial positions
         transfer.setPower(TRANSFER_POWERS[TRANSFER_DOWN]);
         transferState = TransferState.STOPPED;
