@@ -43,6 +43,8 @@ public class outtakeV3FittedAutolaunch {
     public double servoDegPerRot =24.18;
     //Ticks/revolution for encoder
     public int ticksPerRevHood=8192;
+    public double maxpower=1;
+    public double minpower=-1;
     //PID instance for hood
     public double[] Kh={0.00035,0.0005,0.00001};
     public PIDhood hoodPID=new PIDhood(Kh[0],Kh[1],Kh[2]);
@@ -67,7 +69,7 @@ public class outtakeV3FittedAutolaunch {
     //to use turret rotation limitation or not(requires initialized MecanumDrive
     public boolean setRange=false;
     //Hood encoder epsilon
-    final double epsilonHood=300;
+    public double epsilonHood=100;
 
     /**
      * Constructor
@@ -265,6 +267,7 @@ public class outtakeV3FittedAutolaunch {
      */
     public boolean setHoodEncoder(double encoderTicks){
         double power=hoodPID.update(encoderTicks-hoodEncoder.getCurrentPosition());
+        power=Math.min(maxpower,Math.max(power,minpower));
         hoodServo.setPower(-power);
         return (Math.abs(hoodEncoder.getCurrentPosition()-encoderTicks)<=epsilonHood);
     }
