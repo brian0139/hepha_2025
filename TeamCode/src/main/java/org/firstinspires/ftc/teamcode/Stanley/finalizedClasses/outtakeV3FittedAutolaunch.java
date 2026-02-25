@@ -235,7 +235,7 @@ public class outtakeV3FittedAutolaunch {
             if (distance>=0.75){
                 angle = (107.192351 * Math.pow(distance, 2)) + (-98.057841 * distance) + (5809.211155)-60;
             }else{
-                angle = (3818.681319 * distance) + (1578.989011)-100;
+                angle = (3818.681319 * distance) + (1578.989011)-70;
             }
             if (distance<0.4){
                 angle=(471046.845588 * Math.pow(distance, 3)) + (-374521.297098 * Math.pow(distance, 2)) + (110408.08753 * distance) + (-7602.113035)-200;
