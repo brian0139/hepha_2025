@@ -174,8 +174,7 @@ public class outtakeV3FittedAutolaunch {
         }
         // Determine heading, range and Yaw (tag image rotation) error so we can use them to control the robot automatically.
         double  headingError    = apriltag.getYaw();
-
-        // Use the speed and turn "gains" to calculate how we want the robot to move.
+        //Use PID to set power to turret servo
         double power   = turnPID.update(headingError) ;
         turretServo.setPower(power);
         return Math.abs(apriltag.getYaw())<=turretEpsilon;

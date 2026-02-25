@@ -259,12 +259,12 @@ public class teleOpMainNewRed extends OpMode {
                 case IDLE:
                     flywheelState = FlywheelState.SPINNING;
                     targetSpeed = flywheelSpeed;
-                    flywheel.setVelocity(targetSpeed);
+                    outtakeOperator.spin_flywheel(targetSpeed,50);
                     break;
                 case SPINNING:
                     flywheelState = FlywheelState.STOPPED;
                     targetSpeed = FLYWHEEL_IDLE_SPEED;
-                    flywheel.setVelocity(FLYWHEEL_IDLE_SPEED);
+                    outtakeOperator.spin_flywheel(targetSpeed,50);
 //                    //TODO:Testing
 //                    ballcnt=0;
 //                    previousRateofChange=0;
@@ -273,9 +273,8 @@ public class teleOpMainNewRed extends OpMode {
         }
         if (flywheelState == FlywheelState.STOPPED){
             targetSpeed = FLYWHEEL_IDLE_SPEED;
-            flywheel.setVelocity(FLYWHEEL_IDLE_SPEED);
+            outtakeOperator.spin_flywheel(FLYWHEEL_IDLE_SPEED,50);
         }
-        flywheelR.setPower(flywheel.getPower()*0.92);
 //        //TODO:Testing
 //        if (gamepad2.dpadLeftWasPressed()){
 //            launchVelocities=new double[]{0,0,0};
