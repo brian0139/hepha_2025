@@ -43,6 +43,8 @@ public class outtakeV3FittedAutolaunch {
     public double servoDegPerRot =24.18;
     //Ticks/revolution for encoder
     public int ticksPerRevHood=8192;
+    public double maxpower=1;
+    public double minpower=-1;
     //PID instance for hood
     public double[] Kh={0.00035,0.0005,0.00001};
     public PIDhood hoodPID=new PIDhood(Kh[0],Kh[1],Kh[2]);
@@ -67,7 +69,7 @@ public class outtakeV3FittedAutolaunch {
     //to use turret rotation limitation or not(requires initialized MecanumDrive
     public boolean setRange=false;
     //Hood encoder epsilon
-    final double epsilonHood=300;
+    public double epsilonHood=100;
 
     /**
      * Constructor
@@ -174,8 +176,7 @@ public class outtakeV3FittedAutolaunch {
         }
         // Determine heading, range and Yaw (tag image rotation) error so we can use them to control the robot automatically.
         double  headingError    = apriltag.getYaw();
-
-        // Use the speed and turn "gains" to calculate how we want the robot to move.
+        //Use PID to set power to turret servo
         double power   = turnPID.update(headingError) ;
         turretServo.setPower(power);
         return Math.abs(apriltag.getYaw())<=turretEpsilon;
@@ -234,7 +235,7 @@ public class outtakeV3FittedAutolaunch {
             if (distance>=0.75){
                 angle = (107.192351 * Math.pow(distance, 2)) + (-98.057841 * distance) + (5809.211155)-60;
             }else{
-                angle = (3818.681319 * distance) + (1578.989011)-100;
+                angle = (3818.681319 * distance) + (1578.989011)-70;
             }
             if (distance<0.4){
                 angle=(471046.845588 * Math.pow(distance, 3)) + (-374521.297098 * Math.pow(distance, 2)) + (110408.08753 * distance) + (-7602.113035)-200;
@@ -266,6 +267,7 @@ public class outtakeV3FittedAutolaunch {
      */
     public boolean setHoodEncoder(double encoderTicks){
         double power=hoodPID.update(encoderTicks-hoodEncoder.getCurrentPosition());
+        power=Math.min(maxpower,Math.max(power,minpower));
         hoodServo.setPower(-power);
         return (Math.abs(hoodEncoder.getCurrentPosition()-encoderTicks)<=epsilonHood);
     }
