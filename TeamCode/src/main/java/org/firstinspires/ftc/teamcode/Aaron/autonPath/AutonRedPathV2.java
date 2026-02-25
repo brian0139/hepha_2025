@@ -92,34 +92,34 @@ public class AutonRedPathV2 extends LinearOpMode {
 
         while (opModeIsActive()) {
             if (isStopRequested()) return;
-//            Actions.runBlocking(
-//                    drive.actionBuilder(beginPose)
-//                            //STARTPOSITION IS FACING THE WALL!!
-//                            //Start Flywheel 0
-//                            .stopAndAdd(new SpinFlywheel(1600,70))
-//                            .strafeToLinearHeading(shootingPos, shootingAngle)
-////                            .stopAndAdd(new SetHoodEncoder(6115,75))
-//                            //Shooting Sequence 0
-//                            .stopAndAdd(new TurretAutoAimUntilAligned(1,75,60,5000))
-////                            .stopAndAdd(new SetHoodEncoder(6115,75))
-//                            .stopAndAdd(new transferUp())
-//                            .stopAndAdd(new RunIntake())
-//                            .stopAndAdd(new rotateSpindexer())
-//                            //Stop Sequence 0
-//                            .stopAndAdd(new StopFlywheel())
-//                            .stopAndAdd(new transferOff())
-//                            .stopAndAdd(new StopIntake())
-//                            .stopAndAdd(new ToggleSpindexer(false))
-//                            .build());
-//            //First intake
-//            Actions.runBlocking(new ParallelAction(drive.actionBuilder(drive.localizer.getPose())
-//                    //Start Intake Code 1
-//                    .strafeToLinearHeading(new Vector2d(row1XPos-5, intakeStarty), Math.toRadians(90))
-//                    .stopAndAdd(new RunIntake())
-//                    .stopAndAdd(new startspindexer(1))
-//                    .strafeTo(new Vector2d(row1XPos,intakeFinishy+4))
-//                    .build()
-//                    ,new SpinToIntake()));
+            Actions.runBlocking(
+                    drive.actionBuilder(beginPose)
+                            //STARTPOSITION IS FACING THE WALL!!
+                            //Start Flywheel 0
+                            .stopAndAdd(new SpinFlywheel(1600,70))
+                            .strafeToLinearHeading(shootingPos, shootingAngle)
+//                            .stopAndAdd(new SetHoodEncoder(6115,75))
+                            //Shooting Sequence 0
+                            .stopAndAdd(new TurretAutoAimUntilAligned(1,75,60,5000))
+//                            .stopAndAdd(new SetHoodEncoder(6115,75))
+                            .stopAndAdd(new transferUp())
+                            .stopAndAdd(new RunIntake())
+                            .stopAndAdd(new rotateSpindexer())
+                            //Stop Sequence 0
+                            .stopAndAdd(new StopFlywheel())
+                            .stopAndAdd(new transferOff())
+                            .stopAndAdd(new StopIntake())
+                            .stopAndAdd(new ToggleSpindexer(false))
+                            .build());
+            //First intake
+            Actions.runBlocking(new ParallelAction(drive.actionBuilder(drive.localizer.getPose())
+                    //Start Intake Code 1
+                    .strafeToLinearHeading(new Vector2d(row1XPos-5, intakeStarty), Math.toRadians(90))
+                    .stopAndAdd(new RunIntake())
+                    .stopAndAdd(new startspindexer(1))
+                    .strafeTo(new Vector2d(row1XPos,intakeFinishy+4))
+                    .build()
+                    ,new SpinToIntake()));
             //After first intake
             Actions.runBlocking(drive.actionBuilder(drive.localizer.getPose())
                     .stopAndAdd(new stopspindexer())
