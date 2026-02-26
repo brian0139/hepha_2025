@@ -23,6 +23,7 @@ import org.firstinspires.ftc.teamcode.Brian.spindexerColor;
 import org.firstinspires.ftc.teamcode.MecanumDrive;
 import org.firstinspires.ftc.teamcode.Stanley.finalizedClasses.opModeDataTransfer;
 import org.firstinspires.ftc.teamcode.Stanley.finalizedClasses.outtakeV3FittedAutolaunch;
+import org.firstinspires.ftc.teamcode.Stanley.finalizedOpmodes.teleOpMainNewRed;
 
 import java.util.Map;
 
@@ -45,6 +46,11 @@ public class AutonRedPathV2 extends LinearOpMode {
     FtcDashboard dashboard;
     Telemetry dashboardTelemetry;
     boolean pauseSpindexer=false;
+    enum SpindexerState {
+        STOPPED,
+        HOLDING,
+        INTAKE
+    }
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -66,6 +72,8 @@ public class AutonRedPathV2 extends LinearOpMode {
         outtake.setPipeLine(0);
         intakeSystem = new intake(hardwareMap,"intake","intakeSensor");
         spindexer=new spindexerColor(spindexerServo,intakeMotor,hardwareMap);
+        spindexer.spindexerSensor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        spindexer.spindexerSensor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         final Vector2d shootingPos=new Vector2d(-34,23);
         final double shootingAngle=Math.toRadians(140);
@@ -96,20 +104,19 @@ public class AutonRedPathV2 extends LinearOpMode {
                     drive.actionBuilder(beginPose)
                             //STARTPOSITION IS FACING THE WALL!!
                             //Start Flywheel 0
-                            .stopAndAdd(new SpinFlywheel(1600,70))
+//                            .stopAndAdd(new SpinFlywheel(1600,70))
                             .strafeToLinearHeading(shootingPos, shootingAngle)
-//                            .stopAndAdd(new SetHoodEncoder(6115,75))
-                            //Shooting Sequence 0
-                            .stopAndAdd(new TurretAutoAimUntilAligned(1,75,60,5000))
-//                            .stopAndAdd(new SetHoodEncoder(6115,75))
-                            .stopAndAdd(new transferUp())
-                            .stopAndAdd(new RunIntake())
-                            .stopAndAdd(new rotateSpindexer())
-                            //Stop Sequence 0
-                            .stopAndAdd(new StopFlywheel())
-                            .stopAndAdd(new transferOff())
-                            .stopAndAdd(new StopIntake())
-                            .stopAndAdd(new ToggleSpindexer(false))
+                            .waitSeconds(3)
+//                            //Shooting Sequence 0
+//                            .stopAndAdd(new TurretAutoAimUntilAligned(1,75,60,5000))
+//                            .stopAndAdd(new transferUp())
+//                            .stopAndAdd(new RunIntake())
+//                            .stopAndAdd(new rotateSpindexer())
+//                            //Stop Sequence 0
+//                            .stopAndAdd(new StopFlywheel())
+//                            .stopAndAdd(new transferOff())
+//                            .stopAndAdd(new StopIntake())
+//                            .stopAndAdd(new ToggleSpindexer(false))
                             .build());
             //First intake
             Actions.runBlocking(new ParallelAction(drive.actionBuilder(drive.localizer.getPose())
@@ -119,31 +126,31 @@ public class AutonRedPathV2 extends LinearOpMode {
                     .stopAndAdd(new startspindexer(1))
                     .strafeTo(new Vector2d(row1XPos,intakeFinishy+4))
                     .build()
-                    ,new SpinToIntake()));
-            //After first intake
-            Actions.runBlocking(drive.actionBuilder(drive.localizer.getPose())
-                    .stopAndAdd(new stopspindexer())
-                    //Stop Intake 1
-                    .waitSeconds(waitTime)
-                    .stopAndAdd(new StopIntake())
-                    .stopAndAdd(new stopspindexer())
-
-                    //Start Flywheel 1
-                    .stopAndAdd(new SpinFlywheel(1833,50))
-                    .strafeToLinearHeading(new Vector2d(row1XPos, intakeStarty-10), shootingAngle)
-                    //Shoot Sequence 1
-                    .stopAndAdd(new TurretAutoAimUntilAligned(0.8,75,60,5000))
-                    .stopAndAdd(new transferUp())
-                    .stopAndAdd(new RunIntake())
-                    .stopAndAdd(new rotateSpindexer())
-                    .waitSeconds(shootTime)
-                    //Stop Sequence 1
-                    .stopAndAdd(new StopFlywheel())
-                    .stopAndAdd(new transferOff())
-                    .stopAndAdd(new stopspindexer())
-                    .stopAndAdd(new StopIntake())
-                    .stopAndAdd(new SetIntakePower(-1))
-                    .build());
+                    ,new SpinToIntake(10000,1)));
+//            //After first intake
+//            Actions.runBlocking(drive.actionBuilder(drive.localizer.getPose())
+//                    .stopAndAdd(new stopspindexer())
+//                    //Stop Intake 1
+//                    .waitSeconds(waitTime)
+//                    .stopAndAdd(new StopIntake())
+//                    .stopAndAdd(new stopspindexer())
+//
+//                    //Start Flywheel 1
+//                    .stopAndAdd(new SpinFlywheel(1833,50))
+//                    .strafeToLinearHeading(new Vector2d(row1XPos, intakeStarty-10), shootingAngle)
+//                    //Shoot Sequence 1
+//                    .stopAndAdd(new TurretAutoAimUntilAligned(0.8,75,60,5000))
+//                    .stopAndAdd(new transferUp())
+//                    .stopAndAdd(new RunIntake())
+//                    .stopAndAdd(new rotateSpindexer())
+//                    .waitSeconds(shootTime)
+//                    //Stop Sequence 1
+//                    .stopAndAdd(new StopFlywheel())
+//                    .stopAndAdd(new transferOff())
+//                    .stopAndAdd(new stopspindexer())
+//                    .stopAndAdd(new StopIntake())
+//                    .stopAndAdd(new SetIntakePower(-1))
+//                    .build());
 //            //Second intake
 //            Actions.runBlocking(new ParallelAction(drive.actionBuilder(drive.localizer.getPose())
 //                    //Start Intake 2
@@ -626,17 +633,53 @@ public class AutonRedPathV2 extends LinearOpMode {
      */
     public class SpinToIntake implements Action {
         private boolean initialized = false;
+        private ElapsedTime timer=new ElapsedTime();
+        public double timeout;
+        public double intakePower;
+        SpindexerState spindexerState = SpindexerState.STOPPED;
+        
+        public SpinToIntake(double timeout, double intakePower){
+            this.timeout=timeout;
+            this.intakePower=intakePower;
+        }
 
         @Override
         public boolean run(TelemetryPacket packet) {
+            if (this.timer.milliseconds()>=timeout){
+                spindexer.spindexerServo.setPower(0);
+                return false;
+            }
             if (!initialized) {
+                this.timer.reset();
                 spindexer.initSpin();
+                spindexerState=SpindexerState.INTAKE;
                 initialized = true;
             }
-
-            boolean complete = spindexer.spinToIntake();
-
-            return pauseSpindexer; // Return false when complete
+            if (spindexerState==SpindexerState.INTAKE && spindexer.spindexerSensor.getVelocity()<10){
+                intakeSystem.setPower(0);
+            }else{
+                intakeSystem.setPower(this.intakePower);
+            }
+            if (spindexerState== SpindexerState.INTAKE){
+                boolean result=spindexer.spinToIntake();
+                if (result){
+                    spindexerState= SpindexerState.HOLDING;
+                }else if (spindexer.detectioncnt==3){
+                    spindexerState= SpindexerState.STOPPED;
+                    gamepad1.rumble(100);
+                }
+            }
+            else if (spindexerState== SpindexerState.STOPPED){
+                spindexer.spindexerServo.setPower(0);
+            }
+            else if (spindexerState== SpindexerState.HOLDING){
+                spindexer.holdSpindexer();
+                if (spindexer.intakesensor.isGreen() || spindexer.intakesensor.isPurple()){
+                    spindexerState= SpindexerState.INTAKE;
+                    spindexer.initSpin();
+                }
+            }
+            return !(spindexerState==SpindexerState.STOPPED); // Return false when complete
         }
     }
 
