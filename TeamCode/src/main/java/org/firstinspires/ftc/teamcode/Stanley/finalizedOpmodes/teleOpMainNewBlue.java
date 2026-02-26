@@ -301,6 +301,7 @@ public class teleOpMainNewBlue extends OpMode {
             case UP:
                 if (gamepad2.xWasPressed()) {
                     transfer.setPower(1);
+                    spindexer.setPower(-1);
                     transferState = TransferState.DOWN;
                     transferTimer.reset();
                     spindexerState=SpindexerState.STOPPED;
@@ -308,8 +309,9 @@ public class teleOpMainNewBlue extends OpMode {
                 }
                 break;
             case DOWN:
-                if (transferTimer.milliseconds()>=500){
+                if (transferTimer.milliseconds()>=500 && transferTimer.milliseconds()<600){
                     transfer.setPower(0);
+                    spindexer.setPower(0);
                     transferState=TransferState.STOPPED;
                     break;
                 }
@@ -325,7 +327,7 @@ public class teleOpMainNewBlue extends OpMode {
     void updateSpindexerStateMachine(){
         //Reset spindexer encoder on touch sensor press
         if (spindexerTouch.isPressed() && !lastPressed){
-            spindexerOperator.resetSpindexerTouch();
+//            spindexerOperator.resetSpindexerTouch();
             lastPressed=true;
         }else{
             lastPressed=spindexerTouch.isPressed();
@@ -349,10 +351,10 @@ public class teleOpMainNewBlue extends OpMode {
         }
         if (gamepad1.left_bumper || gamepad1.right_bumper ||gamepad2.right_bumper){
             spindexerState=SpindexerState.MANUAL;
-            if (gamepad1.left_bumper){
+            if (gamepad1.left_bumper || gamepad2.right_bumper){
                 spindexer.setPower(-SPINDEXER_MANUAL_SPEED);
             }
-            if (gamepad1.right_bumper || gamepad2.right_bumper){
+            if (gamepad1.right_bumper){
                 spindexer.setPower(SPINDEXER_MANUAL_SPEED);
             }
         }
@@ -380,7 +382,7 @@ public class teleOpMainNewBlue extends OpMode {
             }
         }
         else if (spindexerState==SpindexerState.OUTTAKE){
-            spindexer.setPower(0.7);
+            spindexer.setPower(0.9);
         }
         else if (spindexerState==SpindexerState.OUTTAKE_SORTED){
             spindexerOperator.spinToMotif(1);
