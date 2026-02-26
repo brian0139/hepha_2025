@@ -124,9 +124,9 @@ public class AutonRedPathV2 extends LinearOpMode {
                     .strafeToLinearHeading(new Vector2d(row1XPos-5, intakeStarty), Math.toRadians(90))
                     .stopAndAdd(new RunIntake())
                     .stopAndAdd(new startspindexer(1))
-                    .strafeTo(new Vector2d(row1XPos,intakeFinishy+4))
+                    .strafeTo(new Vector2d(row1XPos,intakeFinishy-1))
                     .build()
-                    ,new SpinToIntake(10000,1)));
+                    ,new SpinToIntake(-1,0.9)));
 //            //After first intake
 //            Actions.runBlocking(drive.actionBuilder(drive.localizer.getPose())
 //                    .stopAndAdd(new stopspindexer())
@@ -634,6 +634,9 @@ public class AutonRedPathV2 extends LinearOpMode {
     public class SpinToIntake implements Action {
         private boolean initialized = false;
         private ElapsedTime timer=new ElapsedTime();
+        private ElapsedTime finishtimer=new ElapsedTime();
+        boolean previousStopped=false;
+        int intakecnt=0;
         public double timeout;
         public double intakePower;
         SpindexerState spindexerState = SpindexerState.STOPPED;
@@ -645,12 +648,13 @@ public class AutonRedPathV2 extends LinearOpMode {
 
         @Override
         public boolean run(TelemetryPacket packet) {
-            if (this.timer.milliseconds()>=timeout){
+            if (timeout != -1 && this.timer.milliseconds()>=timeout){
                 spindexer.spindexerServo.setPower(0);
                 return false;
             }
             if (!initialized) {
                 this.timer.reset();
+                this.finishtimer.reset();
                 spindexer.initSpin();
                 spindexerState=SpindexerState.INTAKE;
                 initialized = true;
@@ -662,6 +666,9 @@ public class AutonRedPathV2 extends LinearOpMode {
             }
             if (spindexerState== SpindexerState.INTAKE){
                 boolean result=spindexer.spinToIntake();
+                if (this.intakecnt==3){
+                    spindexerState=SpindexerState.STOPPED;
+                }
                 if (result){
                     spindexerState= SpindexerState.HOLDING;
                 }else if (spindexer.detectioncnt==3){
@@ -671,15 +678,25 @@ public class AutonRedPathV2 extends LinearOpMode {
             }
             else if (spindexerState== SpindexerState.STOPPED){
                 spindexer.spindexerServo.setPower(0);
+                if (!previousStopped) {
+                    previousStopped = true;
+                    finishtimer.reset();
+                    intakeSystem.setPower(this.intakePower);
+                }
+                if (finishtimer.milliseconds()>=100){
+                    intakeSystem.stop();
+                    return false;
+                }
             }
             else if (spindexerState== SpindexerState.HOLDING){
                 spindexer.holdSpindexer();
                 if (spindexer.intakesensor.isGreen() || spindexer.intakesensor.isPurple()){
                     spindexerState= SpindexerState.INTAKE;
+                    this.intakecnt++;
                     spindexer.initSpin();
                 }
             }
-            return !(spindexerState==SpindexerState.STOPPED); // Return false when complete
+            return true; // Return false when complete
         }
     }
 
