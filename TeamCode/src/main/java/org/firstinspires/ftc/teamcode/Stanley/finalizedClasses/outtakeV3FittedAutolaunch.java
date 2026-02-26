@@ -224,21 +224,29 @@ public class outtakeV3FittedAutolaunch {
         }else{
             double velocity;
             double angle;
+            //Velocity
+            //Close
             if (distance>=0.75){
-                velocity = (-29.684398 * Math.pow(distance, 2)) + (65.533814 * distance) + (1587.83355)+10;
+                //Closer
+                velocity = (-29.684398 * Math.pow(distance, 2)) + (65.533814 * distance) + (1587.83355)-50;
             }else{
+                //Tip
                 velocity=(-370.879121 * distance) + (2037.159341)+10;
             }
+            //Far
             if (distance<0.4){
-                velocity=(-20256.601162 * Math.pow(distance, 3)) + (20904.437702 * Math.pow(distance, 2)) + (-8786.779804 * distance) + (3367.117587)+100;
+                velocity=(-20256.601162 * Math.pow(distance, 3)) + (20904.437702 * Math.pow(distance, 2)) + (-8786.779804 * distance) + (3367.117587);
             }
+            //Angle
+            //Close
             if (distance>=0.75){
-                angle = (107.192351 * Math.pow(distance, 2)) + (-98.057841 * distance) + (5809.211155)-60;
+                //Closer
+                angle = (107.192351 * Math.pow(distance, 2)) + (-98.057841 * distance) + (5809.211155)-90;
             }else{
                 angle = (3818.681319 * distance) + (1578.989011)-70;
             }
             if (distance<0.4){
-                angle=(471046.845588 * Math.pow(distance, 3)) + (-374521.297098 * Math.pow(distance, 2)) + (110408.08753 * distance) + (-7602.113035)-200;
+                angle=(471046.845588 * Math.pow(distance, 3)) + (-374521.297098 * Math.pow(distance, 2)) + (110408.08753 * distance) + (-7602.113035)+200;
             }
             return new HashMap<>(Map.of(
                     "angle", Double.toString(angle),
