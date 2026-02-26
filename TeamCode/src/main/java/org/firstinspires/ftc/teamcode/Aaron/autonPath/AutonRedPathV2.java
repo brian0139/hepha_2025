@@ -40,6 +40,7 @@ public class AutonRedPathV2 extends LinearOpMode {
     boolean pauseSpindexer=false;
     boolean turretAligned=false;
     boolean disableTurret=false;
+    boolean toggleTurret =false;
     int intakecnt=0;
     enum SpindexerState {
         STOPPED,
@@ -114,7 +115,7 @@ public class AutonRedPathV2 extends LinearOpMode {
                             .stopAndAdd(new StopIntake())
                             .stopAndAdd(new ToggleSpindexer(false))
                             .stopAndAdd(new toggleTurretAutoAim(false))
-                            .build(),new TurretAutoAimWhileTrue(1,75,60)));
+                            .build(),new TurretAutoAimWhileTrue(1,100,60)));
             //First intake
             Actions.runBlocking(new ParallelAction(drive.actionBuilder(drive.localizer.getPose())
                     //Start Intake Code 1
@@ -126,30 +127,32 @@ public class AutonRedPathV2 extends LinearOpMode {
                     .strafeTo(new Vector2d(row1XPos,intakeFinishy))
                     .build()
                     ,new SpinToIntake(-1,0.9)));
-//            //After first intake
-//            Actions.runBlocking(drive.actionBuilder(drive.localizer.getPose())
-//                    .stopAndAdd(new stopspindexer())
-//                    //Stop Intake 1
-//                    .waitSeconds(waitTime)
-//                    .stopAndAdd(new StopIntake())
-//                    .stopAndAdd(new stopspindexer())
-//
-//                    //Start Flywheel 1
+            //After first intake
+            Actions.runBlocking(new ParallelAction(drive.actionBuilder(drive.localizer.getPose())
+                    //Stop Intake 1
+                    .stopAndAdd(new stopspindexer())
+                    .stopAndAdd(new StopIntake())
+                    .stopAndAdd(new stopspindexer())
+//                    .stopAndAdd(new toggleDisableTurretAutoAim(true))
+
+                    //Start Flywheel 1
 //                    .stopAndAdd(new SpinFlywheel(1833,50))
-//                    .strafeToLinearHeading(new Vector2d(row1XPos, intakeStarty-10), shootingAngle)
-//                    //Shoot Sequence 1
+                    .strafeToLinearHeading(new Vector2d(row1XPos, intakeStarty-10), shootingAngle)
+                    //Shoot Sequence 1
 //                    .stopAndAdd(new TurretAutoAimUntilAligned(0.8,75,60,5000))
-//                    .stopAndAdd(new transferUp())
-//                    .stopAndAdd(new RunIntake())
-//                    .stopAndAdd(new rotateSpindexer())
-//                    .waitSeconds(shootTime)
-//                    //Stop Sequence 1
-//                    .stopAndAdd(new StopFlywheel())
-//                    .stopAndAdd(new transferOff())
-//                    .stopAndAdd(new stopspindexer())
-//                    .stopAndAdd(new StopIntake())
+                    .stopAndAdd(new awaitTurretAutoAim())
+                    .stopAndAdd(new awaitTurretAutoAim())
+                    .stopAndAdd(new transferUp())
+                    .stopAndAdd(new RunIntake())
+                    .stopAndAdd(new rotateSpindexer())
+                    //Stop Sequence 1
+                    .stopAndAdd(new StopFlywheel())
+                    .stopAndAdd(new transferOff())
+                    .stopAndAdd(new stopspindexer())
+                    .stopAndAdd(new StopIntake())
 //                    .stopAndAdd(new SetIntakePower(-1))
-//                    .build());
+                    .stopAndAdd(new toggleTurretAutoAim(false))
+                    .build(),new TurretAutoAimWhileTrue(1,100,60)));
 //            //Second intake
 //            Actions.runBlocking(new ParallelAction(drive.actionBuilder(drive.localizer.getPose())
 //                    //Start Intake 2
@@ -347,7 +350,19 @@ public class AutonRedPathV2 extends LinearOpMode {
         }
         @Override
         public boolean run(TelemetryPacket telemetryPacket){
-            disableTurret=!toggle;
+            toggleTurret =!toggle;
+            return false;
+        }
+    }
+
+    public class toggleDisableTurretAutoAim implements Action{
+        boolean toggle;
+        public toggleDisableTurretAutoAim(boolean toggle){
+            this.toggle=toggle;
+        }
+        @Override
+        public boolean run(TelemetryPacket telemetryPacket){
+            disableTurret =toggle;
             return false;
         }
     }
@@ -373,8 +388,9 @@ public class AutonRedPathV2 extends LinearOpMode {
 
         public TurretAutoAimWhileTrue(double epsilon,double hoodEspilon,int flywheelEpsilon) {
             this.timer.reset();
-            disableTurret=false;
+            toggleTurret =false;
             turretAligned=false;
+            disableTurret=false;
             outtake.turretEpsilon=epsilon;
             alignmentThreshold=epsilon;
             this.hoodEpsilon=hoodEspilon;
@@ -383,10 +399,15 @@ public class AutonRedPathV2 extends LinearOpMode {
 
         @Override
         public boolean run(TelemetryPacket telemetryPacket) {
-            if (disableTurret){
+            if (toggleTurret){
                 outtake.turretServo.setPower(0);
                 outtake.hoodServo.setPower(0);
                 return false;
+            }
+            if (disableTurret){
+                outtake.turretServo.setPower(0);
+                outtake.hoodServo.setPower(0);
+                return true;
             }
             if (this.timer.milliseconds()%50<=3){
                 this.optimalLaunch = outtake.findOptimalLaunch(outtake.getDistance());
