@@ -105,7 +105,7 @@ public class teleOpMainNewRed extends OpMode {
     static final double DRIVE_SPEED = 0.7;
     static final double STRAFE_SPEED = 1;
     static final double TWIST_SPEED = 0.5;
-    static final double FLYWHEEL_IDLE_SPEED = 600;
+    static final double FLYWHEEL_IDLE_SPEED = 1200;
     static final int MIN_SAMPLE_SIZE=3;
     static final int MAX_SAMPLE_SIZE=20;
     static final double FLYWHEEL_INDICATOR_COLOR=0.5;
