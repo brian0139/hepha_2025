@@ -41,6 +41,30 @@ public class DecodeCloseCollectFifteenAuto extends LinearOpMode {
     Telemetry dashboardTelemetry;
     boolean pauseSpindexer = false;
 
+    private boolean shouldAbortActions() {
+        return isStopRequested() || (isStarted() && !opModeIsActive());
+    }
+
+    private void runBlockingAbortable(Action action) {
+        Actions.runBlocking(new AbortOnStopAction(action));
+    }
+
+    private class AbortOnStopAction implements Action {
+        private final Action inner;
+
+        private AbortOnStopAction(Action inner) {
+            this.inner = inner;
+        }
+
+        @Override
+        public boolean run(TelemetryPacket packet) {
+            if (shouldAbortActions()) {
+                return false;
+            }
+            return inner.run(packet);
+        }
+    }
+
     @Override
     public void runOpMode() throws InterruptedException {
         // Initialize subsystems
@@ -84,7 +108,7 @@ public class DecodeCloseCollectFifteenAuto extends LinearOpMode {
         telemetry.update();
 
         // Initialize hood
-        Actions.runBlocking(drive.actionBuilder(beginPose)
+        runBlockingAbortable(drive.actionBuilder(beginPose)
                 .stopAndAdd(new initHood())
                 .stopAndAdd(new SetHoodAngle(45.2))
                 .build());
@@ -95,7 +119,7 @@ public class DecodeCloseCollectFifteenAuto extends LinearOpMode {
             if (isStopRequested()) return;
 
             // Sequence 0: Shoot preloaded 3 balls
-            Actions.runBlocking(
+            runBlockingAbortable(
                     drive.actionBuilder(beginPose)
                             .stopAndAdd(new SpinFlywheel(1600, 50))
                             .strafeToLinearHeading(shootingPos, shootingAngle)
@@ -112,7 +136,7 @@ public class DecodeCloseCollectFifteenAuto extends LinearOpMode {
                             .build());
 
             // Cycle 1 intake from ramp
-            Actions.runBlocking(new ParallelAction(
+            runBlockingAbortable(new ParallelAction(
                     drive.actionBuilder(drive.localizer.getPose())
                             .strafeToLinearHeading(new Vector2d(rampEntryX, -12), Math.toRadians(-90))
                             .stopAndAdd(new StopIntake())
@@ -123,7 +147,7 @@ public class DecodeCloseCollectFifteenAuto extends LinearOpMode {
                     new SpinToIntake()));
 
             // Cycle 1 shoot
-            Actions.runBlocking(drive.actionBuilder(drive.localizer.getPose())
+            runBlockingAbortable(drive.actionBuilder(drive.localizer.getPose())
                     .stopAndAdd(new ToggleSpindexer(false))
                     .waitSeconds(waitTime)
                     .stopAndAdd(new StopIntake())
@@ -144,7 +168,7 @@ public class DecodeCloseCollectFifteenAuto extends LinearOpMode {
                     .build());
 
             // Cycle 2 intake from ramp (deeper pass)
-            Actions.runBlocking(new ParallelAction(
+            runBlockingAbortable(new ParallelAction(
                     drive.actionBuilder(drive.localizer.getPose())
                             .strafeToLinearHeading(new Vector2d(rampDeepX, -16), Math.toRadians(-90))
                             .stopAndAdd(new StopIntake())
@@ -155,7 +179,7 @@ public class DecodeCloseCollectFifteenAuto extends LinearOpMode {
                     new SpinToIntake()));
 
             // Cycle 2 shoot
-            Actions.runBlocking(drive.actionBuilder(drive.localizer.getPose())
+            runBlockingAbortable(drive.actionBuilder(drive.localizer.getPose())
                     .stopAndAdd(new ToggleSpindexer(false))
                     .waitSeconds(waitTime)
                     .stopAndAdd(new StopIntake())
@@ -178,7 +202,7 @@ public class DecodeCloseCollectFifteenAuto extends LinearOpMode {
                     .build());
 
             // Cycle 3 intake from ramp
-            Actions.runBlocking(new ParallelAction(
+            runBlockingAbortable(new ParallelAction(
                     drive.actionBuilder(drive.localizer.getPose())
                             .strafeToLinearHeading(new Vector2d(rampEntryX, -20), Math.toRadians(-90))
                             .stopAndAdd(new StopIntake())
@@ -189,7 +213,7 @@ public class DecodeCloseCollectFifteenAuto extends LinearOpMode {
                     new SpinToIntake()));
 
             // Cycle 3 shoot
-            Actions.runBlocking(drive.actionBuilder(drive.localizer.getPose())
+            runBlockingAbortable(drive.actionBuilder(drive.localizer.getPose())
                     .stopAndAdd(new ToggleSpindexer(false))
                     .waitSeconds(waitTime)
                     .stopAndAdd(new StopIntake())
@@ -210,7 +234,7 @@ public class DecodeCloseCollectFifteenAuto extends LinearOpMode {
                     .build());
 
             // Cycle 4 intake from ramp (deeper pass)
-            Actions.runBlocking(new ParallelAction(
+            runBlockingAbortable(new ParallelAction(
                     drive.actionBuilder(drive.localizer.getPose())
                             .strafeToLinearHeading(new Vector2d(rampDeepX, -24), Math.toRadians(-90))
                             .stopAndAdd(new StopIntake())
@@ -221,7 +245,7 @@ public class DecodeCloseCollectFifteenAuto extends LinearOpMode {
                     new SpinToIntake()));
 
             // Cycle 4 shoot
-            Actions.runBlocking(drive.actionBuilder(drive.localizer.getPose())
+            runBlockingAbortable(drive.actionBuilder(drive.localizer.getPose())
                     .stopAndAdd(new ToggleSpindexer(false))
                     .waitSeconds(waitTime)
                     .stopAndAdd(new StopIntake())
@@ -241,7 +265,7 @@ public class DecodeCloseCollectFifteenAuto extends LinearOpMode {
                     .build());
 
             // Cycle 5 intake from ramp
-            Actions.runBlocking(new ParallelAction(
+            runBlockingAbortable(new ParallelAction(
                     drive.actionBuilder(drive.localizer.getPose())
                             .strafeToLinearHeading(new Vector2d(rampEntryX, -28), Math.toRadians(-90))
                             .stopAndAdd(new StopIntake())
@@ -252,7 +276,7 @@ public class DecodeCloseCollectFifteenAuto extends LinearOpMode {
                     new SpinToIntake()));
 
             // Cycle 5 shoot (15 total) then hold near close wing like the recording
-            Actions.runBlocking(drive.actionBuilder(drive.localizer.getPose())
+            runBlockingAbortable(drive.actionBuilder(drive.localizer.getPose())
                     .stopAndAdd(new ToggleSpindexer(false))
                     .waitSeconds(waitTime)
                     .stopAndAdd(new StopIntake())

@@ -41,6 +41,30 @@ public class DecodeFarCollectNineAuto extends LinearOpMode {
     Telemetry dashboardTelemetry;
     boolean pauseSpindexer = false;
 
+    private boolean shouldAbortActions() {
+        return isStopRequested() || (isStarted() && !opModeIsActive());
+    }
+
+    private void runBlockingAbortable(Action action) {
+        Actions.runBlocking(new AbortOnStopAction(action));
+    }
+
+    private class AbortOnStopAction implements Action {
+        private final Action inner;
+
+        private AbortOnStopAction(Action inner) {
+            this.inner = inner;
+        }
+
+        @Override
+        public boolean run(TelemetryPacket packet) {
+            if (shouldAbortActions()) {
+                return false;
+            }
+            return inner.run(packet);
+        }
+    }
+
     @Override
     public void runOpMode() throws InterruptedException {
         // Initialize subsystems
@@ -54,7 +78,7 @@ public class DecodeFarCollectNineAuto extends LinearOpMode {
         intakeSensor = hardwareMap.get(NormalizedColorSensor.class, "intakeSensor");
 
         // Initialize outtake for FAR side (third parameter is false for far side)
-        outtake = new outtakeV3FittedAutolaunch(hardwareMap, "Red", false, drive);
+        outtake = new outtakeV3FittedAutolaunch(hardwareMap, "Red", true, drive);
         outtake.setPipeLine(2);
         intakeSystem = new intake(hardwareMap, "intake", "intakeSensor");
         spindexer = new spindexerColor(spindexerServo, intakeMotor, hardwareMap);
@@ -87,7 +111,7 @@ public class DecodeFarCollectNineAuto extends LinearOpMode {
         telemetry.update();
 
         // Initialize hood
-        Actions.runBlocking(drive.actionBuilder(beginPose)
+        runBlockingAbortable(drive.actionBuilder(beginPose)
                 .stopAndAdd(new initHood())
                 .stopAndAdd(new SetHoodAngle(45.2))
                 .build());
@@ -98,7 +122,7 @@ public class DecodeFarCollectNineAuto extends LinearOpMode {
             if (isStopRequested()) return;
 
             // Sequence 0: Shoot preloaded 3 balls
-            Actions.runBlocking(
+            runBlockingAbortable(
                     drive.actionBuilder(beginPose)
                             // Start flywheel for preloaded balls
                             .stopAndAdd(new SpinFlywheel(1600, 50))
@@ -118,7 +142,7 @@ public class DecodeFarCollectNineAuto extends LinearOpMode {
                             .build());
 
             // First intake (3 balls from row 1)
-            Actions.runBlocking(new ParallelAction(
+            runBlockingAbortable(new ParallelAction(
                     drive.actionBuilder(drive.localizer.getPose())
                             // Start Intake Code 1
                             .strafeToLinearHeading(new Vector2d(row1XPos, intakeStarty), Math.toRadians(-80))
@@ -129,7 +153,7 @@ public class DecodeFarCollectNineAuto extends LinearOpMode {
                     new SpinToIntake()));
 
             // After first intake - shoot 3 balls
-            Actions.runBlocking(drive.actionBuilder(drive.localizer.getPose())
+            runBlockingAbortable(drive.actionBuilder(drive.localizer.getPose())
                     .stopAndAdd(new ToggleSpindexer(false))
                     // Stop Intake 1
                     .waitSeconds(waitTime)
@@ -154,7 +178,7 @@ public class DecodeFarCollectNineAuto extends LinearOpMode {
                     .build());
 
             // Second intake (3 balls from row 2)
-            Actions.runBlocking(new ParallelAction(
+            runBlockingAbortable(new ParallelAction(
                     drive.actionBuilder(drive.localizer.getPose())
                             // Start Intake 2
                             .strafeToLinearHeading(new Vector2d(row2XPos, intakeStarty + 5), Math.toRadians(90))
@@ -166,7 +190,7 @@ public class DecodeFarCollectNineAuto extends LinearOpMode {
                     new SpinToIntake()));
 
             // After second intake - shoot 3 balls
-            Actions.runBlocking(drive.actionBuilder(drive.localizer.getPose())
+            runBlockingAbortable(drive.actionBuilder(drive.localizer.getPose())
                     .stopAndAdd(new ToggleSpindexer(false))
                     // Stop Intake 2
                     .waitSeconds(waitTime)
@@ -192,7 +216,7 @@ public class DecodeFarCollectNineAuto extends LinearOpMode {
                     .build());
 
             // Third intake (last 3 balls from row 3 for total of 9)
-            Actions.runBlocking(new ParallelAction(
+            runBlockingAbortable(new ParallelAction(
                     drive.actionBuilder(drive.localizer.getPose())
                             // Start Intake 3
                             .strafeToLinearHeading(new Vector2d(row3XPos, intakeStarty + 10), Math.toRadians(90))
@@ -204,7 +228,7 @@ public class DecodeFarCollectNineAuto extends LinearOpMode {
                     new SpinToIntake()));
 
             // After third intake - shoot final 3 balls (total 9)
-            Actions.runBlocking(drive.actionBuilder(drive.localizer.getPose())
+            runBlockingAbortable(drive.actionBuilder(drive.localizer.getPose())
                     .stopAndAdd(new ToggleSpindexer(false))
                     // Stop Intake 3
                     .waitSeconds(waitTime)
