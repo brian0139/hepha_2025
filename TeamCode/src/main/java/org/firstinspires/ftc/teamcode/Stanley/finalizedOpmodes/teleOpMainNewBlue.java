@@ -74,6 +74,7 @@ public class teleOpMainNewBlue extends OpMode {
     // Servos
     CRServo hoodServo = null;
     CRServo spindexer = null;
+    CRServo kickstand=null;
 
     //Spindexer Encoder
     DcMotorEx spindexerEncoder = null;
@@ -104,7 +105,7 @@ public class teleOpMainNewBlue extends OpMode {
     static final double DRIVE_SPEED = 0.7;
     static final double STRAFE_SPEED = 1;
     static final double TWIST_SPEED = 0.5;
-    static final double FLYWHEEL_IDLE_SPEED = 1000;
+    static final double FLYWHEEL_IDLE_SPEED = 1200;
     static final int MIN_SAMPLE_SIZE=3;
     static final int MAX_SAMPLE_SIZE=20;
     static final double FLYWHEEL_INDICATOR_COLOR=0.5;
@@ -161,12 +162,12 @@ public class teleOpMainNewBlue extends OpMode {
 
         // Initialize other motors
         flywheel = hardwareMap.get(DcMotorEx.class, "flywheel");
-        flywheel.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        flywheel.setDirection(DcMotorSimple.Direction.FORWARD);
-        flywheel.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER,new PIDFCoefficients(9.7,0.7,1.3,3.8));
+//        flywheel.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+//        flywheel.setDirection(DcMotorSimple.Direction.FORWARD);
+//        flywheel.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER,new PIDFCoefficients(9.7,0.7,1.3,3.8));
         flywheelR = hardwareMap.get(DcMotorEx.class,"flywheelR");
-        flywheelR.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        flywheelR.setDirection(DcMotorSimple.Direction.FORWARD);
+//        flywheelR.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+//        flywheelR.setDirection(DcMotorSimple.Direction.FORWARD);
 //        flywheelR.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER,new PIDFCoefficients(9.7,0.7,1.3,3.8));
         intake = hardwareMap.get(DcMotor.class, "intake");
         transfer = hardwareMap.get(DcMotor.class, "par1");
@@ -174,6 +175,7 @@ public class teleOpMainNewBlue extends OpMode {
         // Initialize servos
         hoodServo = hardwareMap.get(CRServo.class, "hoodServo");
         spindexer = hardwareMap.get(CRServo.class, "spindexerServo");
+        kickstand = hardwareMap.get(CRServo.class,"kickstand");
 
         //Initialize Lights
         flywheelIndicator = hardwareMap.get(Servo.class,"flywheelIndicator");
@@ -519,34 +521,13 @@ public class teleOpMainNewBlue extends OpMode {
                     break;
             }
         }
-//        if (gamepad2.rightStickButtonWasPressed()){
-//            data.append(makeBallCnt).append(",")
-//                    .append(outtakeOperator.hoodEncoder.getCurrentPosition()).append(",")
-//                    .append(flywheelSpeed).append(",")
-//                    .append(outtakeOperator.getDistance()).append(",")
-//                    .append(maxFlywheelSpeed).append("\n");
-//            dashboardtelemetry.addData("Make Ball Cnt(LOG)",makeBallCnt);
-//        }
-//        else if (gamepad2.dpadLeftWasPressed()){
-//            makeBallCnt--;
-//        }
-//        else if (gamepad2.dpadRightWasPressed()){
-//            makeBallCnt++;
-//        }
-//        telemetry.addData("Make Ball Count",makeBallCnt);
-//        dashboardtelemetry.addData("Make Ball Count",makeBallCnt);
-
-//        telemetry.addData("Angle Target",Double.parseDouble(output.get("angle")));
-//        telemetry.addData("Encoder Reading",outtakeOperator.hoodEncoder.getCurrentPosition());
-//        telemetry.addData("Encoder Target",(66.81-Double.parseDouble(output.get("angle")))/outtakeOperator.servoDegPerRot*outtakeOperator.ticksPerRevHood);
-//        telemetry.addData("Error",((66.81-Double.parseDouble(output.get("angle")))/outtakeOperator.servoDegPerRot*outtakeOperator.ticksPerRevHood)-outtakeOperator.hoodEncoder.getCurrentPosition());
-//        telemetry.addData("Power",outtakeOperator.hoodPID.power);
-//        dashboardtelemetry.addData("Error Hood",((66.81-Double.parseDouble(output.get("angle")))/outtakeOperator.servoDegPerRot*outtakeOperator.ticksPerRevHood)-outtakeOperator.hoodEncoder.getCurrentPosition());
-//        dashboardtelemetry.addData("Power Hood",outtakeOperator.hoodPID.power);
-//        dashboardtelemetry.addData("P",outtakeOperator.hoodPID.Pd);
-//        dashboardtelemetry.addData("I",outtakeOperator.hoodPID.Id);
-//        dashboardtelemetry.addData("D",outtakeOperator.hoodPID.Dd);
-//        if (hoodState==HoodState.AUTO && outtakeOperator.apriltag.hasValidTarget()){
+        if (gamepad1.a){
+            kickstand.setPower(1);
+        }else if (gamepad1.b){
+            kickstand.setPower(-1);
+        }else{
+            kickstand.setPower(0);
+        }
         if (hoodState==HoodState.AUTO){
             telemetry.addData("Velocity",output.get("velocity"));
             telemetry.addData("Angle",output.get("angle"));
@@ -610,8 +591,8 @@ public class teleOpMainNewBlue extends OpMode {
 //        //Save testing logs
 //        ReadWriteFile.writeFile(file, data.toString());
         // Clean shutdown
-        flywheel.setVelocity(0);
-        flywheelR.setVelocity(0);
+//        flywheel.setVelocity(0);
+//        flywheelR.setVelocity(0);
         intake.setPower(0);
         hoodServo.setPower(0);
     }

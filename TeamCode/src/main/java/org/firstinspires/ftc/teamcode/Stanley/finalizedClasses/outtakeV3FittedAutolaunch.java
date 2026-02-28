@@ -6,6 +6,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 
 import org.firstinspires.ftc.teamcode.Aaron.aprilTagV3;
 import org.firstinspires.ftc.teamcode.MecanumDrive;
@@ -46,7 +47,7 @@ public class outtakeV3FittedAutolaunch {
     public double maxpower=1;
     public double minpower=-1;
     //PID instance for hood
-    public double[] Kh={0.00035,0.0005,0.00001};
+    public double[] Kh={0.00035,0.0005,0.000013};
     public PIDhood hoodPID=new PIDhood(Kh[0],Kh[1],Kh[2]);
 
     //================================  Turret  ================================
@@ -61,6 +62,7 @@ public class outtakeV3FittedAutolaunch {
     // P, I, D
 //    public double[] Kturn={0.0072,0.004,0.0023};
     public double[] Kturn={0.0135,0.0063,0.0013};
+    public double[] Kflywheel={9.7,0.7,1.3,3.8};
     public PID turnPID=new PID(Kturn[0],Kturn[1],Kturn[2]);
 
     //================================  Config  ================================
@@ -235,7 +237,7 @@ public class outtakeV3FittedAutolaunch {
             }
             //Far
             if (distance<0.4){
-                velocity=(-20256.601162 * Math.pow(distance, 3)) + (20904.437702 * Math.pow(distance, 2)) + (-8786.779804 * distance) + (3367.117587);
+                velocity=(-20256.601162 * Math.pow(distance, 3)) + (20904.437702 * Math.pow(distance, 2)) + (-8786.779804 * distance) + (3367.117587)+75;
             }
             //Angle
             //Close
@@ -247,7 +249,7 @@ public class outtakeV3FittedAutolaunch {
                 angle = (3386.176714 * Math.pow(distance, 2)) + (-2493.152075 * distance) + (4408.139655);
             }
             if (distance<0.4){
-                angle=(471046.845588 * Math.pow(distance, 3)) + (-374521.297098 * Math.pow(distance, 2)) + (110408.08753 * distance) + (-7602.113035)+200;
+                angle=(471046.845588 * Math.pow(distance, 3)) + (-374521.297098 * Math.pow(distance, 2)) + (110408.08753 * distance) + (-7602.113035)-175;
             }
             return new HashMap<>(Map.of(
                     "angle", Double.toString(angle),
@@ -330,6 +332,8 @@ public class outtakeV3FittedAutolaunch {
     public boolean spin_flywheel(double targetSpeed, int tolerance){
         flywheelDriveR.setVelocity(targetSpeed);
         flywheelDrive.setVelocity(targetSpeed);
+        flywheelDrive.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER,new PIDFCoefficients(Kflywheel[0],Kflywheel[1],Kflywheel[2],Kflywheel[3]));
+        flywheelDriveR.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER,new PIDFCoefficients(Kflywheel[0],Kflywheel[1],Kflywheel[2],Kflywheel[3]));
         return targetSpeed - tolerance <= flywheelDriveR.getVelocity() && flywheelDriveR.getVelocity() <= targetSpeed + tolerance;
     }
 }
