@@ -106,7 +106,7 @@ public class AutonRedPathV2 extends LinearOpMode {
                             //Shooting Sequence 0
 //                            .stopAndAdd(new TurretAutoAimUntilAligned(1,75,60,5000))
                             .stopAndAdd(new SetHoodEncoder(6060,75))
-                            .stopAndAdd(new awaitSpinFlywheel(1531,50))
+                            .stopAndAdd(new awaitSpinFlywheel(1531,25))
                             .stopAndAdd(new TurretAutoAimUntilAligned(0.15,100,60,3500))
                             .stopAndAdd(new transferUp())
                             .stopAndAdd(new RunIntake())
@@ -143,8 +143,8 @@ public class AutonRedPathV2 extends LinearOpMode {
                     .strafeToLinearHeading(new Vector2d(row1XPos, intakeStarty-10), shootingAngle)
                     //Shoot Sequence 1
 //                    .stopAndAdd(new TurretAutoAimUntilAligned(0.8,75,60,5000))
-                    .stopAndAdd(new awaitTurretAutoAim())
-                    .stopAndAdd(new awaitTurretAutoAim())
+                    .stopAndAdd(new awaitTurretAutoAim(1250))
+                    .stopAndAdd(new awaitTurretAutoAim(1250))
                     .stopAndAdd(new transferUp())
                     .stopAndAdd(new RunIntake())
                     .stopAndAdd(new rotateSpindexer())
@@ -155,7 +155,7 @@ public class AutonRedPathV2 extends LinearOpMode {
                     .stopAndAdd(new StopIntake())
 //                    .stopAndAdd(new SetIntakePower(-1))
                     .stopAndAdd(new toggleTurretAutoAim(false))
-                    .build(),new TurretAutoAimWhileTrue(0.2,150,60)));
+                    .build(),new TurretAutoAimWhileTrue(0.4,150,60)));
             //Second intake
             Actions.runBlocking(new ParallelAction(drive.actionBuilder(drive.localizer.getPose())
                     //Start Intake 2
@@ -166,7 +166,7 @@ public class AutonRedPathV2 extends LinearOpMode {
                     .strafeTo(new Vector2d(row2XPos, intakeFinishy+7))
 //                    .stopAndAdd(new ToggleSpindexer(true))
                     .build()
-                    ,new SpinToIntake(-1,1)));
+                    ,new SpinToIntake(20000,1)));
             //After second intake
             Actions.runBlocking(new ParallelAction(drive.actionBuilder(drive.localizer.getPose())
                     .stopAndAdd(new ToggleSpindexer(false))
@@ -180,8 +180,8 @@ public class AutonRedPathV2 extends LinearOpMode {
                     .setReversed(true)
                     .splineToLinearHeading(new Pose2d(new Vector2d(row1XPos, intakeStarty-10),shootingAngle),shootingAngle+Math.toRadians(90))
                     //Shoot Sequence 2
-                    .stopAndAdd(new awaitTurretAutoAim())
-                    .stopAndAdd(new awaitTurretAutoAim())
+                    .stopAndAdd(new awaitTurretAutoAim(1250))
+                    .stopAndAdd(new awaitTurretAutoAim(1250))
                     .stopAndAdd(new transferUp())
                     .stopAndAdd(new RunIntake())
                     .stopAndAdd(new rotateSpindexer())
@@ -193,7 +193,7 @@ public class AutonRedPathV2 extends LinearOpMode {
                     .stopAndAdd(new stopspindexer())
                     .stopAndAdd(new toggleDisableTurretAutoAim(false))
 //                    .stopAndAdd(new SetIntakePower(-1))
-                    .build(),new TurretAutoAimWhileTrue(0.2,100,60)));
+                    .build(),new TurretAutoAimWhileTrue(0.4,100,60)));
 //            //Third intake
 //            Actions.runBlocking(new ParallelAction(drive.actionBuilder(drive.localizer.getPose())
 //                    //Start Intake 3
@@ -374,8 +374,17 @@ public class AutonRedPathV2 extends LinearOpMode {
     }
 
     public class awaitTurretAutoAim implements Action{
+        ElapsedTime timer=new ElapsedTime();
+        double timeout;
+        public awaitTurretAutoAim(double timeout){
+            this.timeout=timeout;
+            timer.reset();
+        }
         @Override
         public boolean run(TelemetryPacket telemetryPacket){
+            if (timer.milliseconds()>=timeout){
+                return false;
+            }
             return !turretAligned;
         }
     }
