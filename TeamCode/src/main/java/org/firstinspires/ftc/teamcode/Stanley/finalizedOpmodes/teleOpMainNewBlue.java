@@ -193,7 +193,7 @@ public class teleOpMainNewBlue extends OpMode {
         //Initialize classes
         spindexerOperator=new spindexerColor(spindexer,intake,hardwareMap);
         driveTrain=new MecanumDrive(hardwareMap, opModeDataTransfer.currentPose);
-        outtakeOperator=new outtakeV3FittedAutolaunch(hardwareMap,"Red",true,driveTrain);
+        outtakeOperator=new outtakeV3FittedAutolaunch(hardwareMap,"Blue",true,driveTrain);
         outtakeOperator.setPipeLine(2);
         outtakeOperator.apriltag.init();
 
