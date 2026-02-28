@@ -237,7 +237,7 @@ public class outtakeV3FittedAutolaunch {
             }
             //Far
             if (distance<0.4){
-                velocity=(-20256.601162 * Math.pow(distance, 3)) + (20904.437702 * Math.pow(distance, 2)) + (-8786.779804 * distance) + (3367.117587)+75;
+                velocity=(-20256.601162 * Math.pow(distance, 3)) + (20904.437702 * Math.pow(distance, 2)) + (-8786.779804 * distance) + (3367.117587);
             }
             //Angle
             //Close
@@ -249,7 +249,7 @@ public class outtakeV3FittedAutolaunch {
                 angle = (3386.176714 * Math.pow(distance, 2)) + (-2493.152075 * distance) + (4408.139655);
             }
             if (distance<0.4){
-                angle=(471046.845588 * Math.pow(distance, 3)) + (-374521.297098 * Math.pow(distance, 2)) + (110408.08753 * distance) + (-7602.113035)-175;
+                angle=(471046.845588 * Math.pow(distance, 3)) + (-374521.297098 * Math.pow(distance, 2)) + (110408.08753 * distance) + (-7602.113035);
             }
             return new HashMap<>(Map.of(
                     "angle", Double.toString(angle),
@@ -334,6 +334,6 @@ public class outtakeV3FittedAutolaunch {
         flywheelDrive.setVelocity(targetSpeed);
         flywheelDrive.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER,new PIDFCoefficients(Kflywheel[0],Kflywheel[1],Kflywheel[2],Kflywheel[3]));
         flywheelDriveR.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER,new PIDFCoefficients(Kflywheel[0],Kflywheel[1],Kflywheel[2],Kflywheel[3]));
-        return targetSpeed - tolerance <= flywheelDriveR.getVelocity() && flywheelDriveR.getVelocity() <= targetSpeed + tolerance;
+        return Math.abs(flywheelDriveR.getVelocity()-targetSpeed)<=tolerance;
     }
 }

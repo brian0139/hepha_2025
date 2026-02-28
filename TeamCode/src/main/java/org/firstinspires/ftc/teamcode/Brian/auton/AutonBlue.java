@@ -65,7 +65,7 @@ public class AutonBlue extends LinearOpMode {
         drive=new MecanumDrive(hardwareMap,beginPose);
         intakeSensor=hardwareMap.get(NormalizedColorSensor.class,"intakeSensor");
         outtake = new outtakeV3FittedAutolaunch(hardwareMap,"Red",true,drive);
-        outtake.setPipeLine(0);
+        outtake.setPipeLine(2);
         intakeSystem = new intake(hardwareMap,"intake","intakeSensor");
         spindexer=new spindexerColor(spindexerServo,intakeMotor,hardwareMap);
         spindexer.spindexerSensor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -106,8 +106,8 @@ public class AutonBlue extends LinearOpMode {
                             //Shooting Sequence 0
 //                            .stopAndAdd(new TurretAutoAimUntilAligned(1,75,60,5000))
                             .stopAndAdd(new SetHoodEncoder(6060,75))
-                            .stopAndAdd(new awaitSpinFlywheel(1531,50))
-                            .stopAndAdd(new TurretAutoAimUntilAligned(1,100,60,3500))
+                            .stopAndAdd(new awaitSpinFlywheel(1531,25))
+                            .stopAndAdd(new TurretAutoAimUntilAligned(0.15,100,60,3500))
                             .stopAndAdd(new transferUp())
                             .stopAndAdd(new RunIntake())
                             .stopAndAdd(new rotateSpindexer())
@@ -121,11 +121,11 @@ public class AutonBlue extends LinearOpMode {
             //First intake
             Actions.runBlocking(new ParallelAction(drive.actionBuilder(drive.localizer.getPose())
                     //Start Intake Code 1
-                    .strafeToLinearHeading(new Vector2d(row1XPos-5, -intakeStarty), Math.toRadians(-90))
+                    .strafeToLinearHeading(new Vector2d(row1XPos-5, intakeStarty), Math.toRadians(-90))
 //                    .stopAndAdd(new RunIntake())
 //                    .stopAndAdd(new startspindexer(1))
                     .stopAndAdd(new SpinFlywheel(1570,60))
-                    .strafeTo(new Vector2d(row1XPos,-intakeFinishy+5))
+                    .strafeTo(new Vector2d(row1XPos,intakeFinishy+5))
                     .stopAndAdd(new awaitSpindexerIntake(2))
                     .strafeTo(new Vector2d(row1XPos,intakeFinishy))
                     .build()
@@ -140,11 +140,11 @@ public class AutonBlue extends LinearOpMode {
 
                     //Start Flywheel 1
 //                    .stopAndAdd(new SpinFlywheel(1833,50))
-                    .strafeToLinearHeading(new Vector2d(row1XPos, -intakeStarty+10), shootingAngle)
+                    .strafeToLinearHeading(new Vector2d(row1XPos, intakeStarty+10), shootingAngle)
                     //Shoot Sequence 1
 //                    .stopAndAdd(new TurretAutoAimUntilAligned(0.8,75,60,5000))
-                    .stopAndAdd(new awaitTurretAutoAim())
-                    .stopAndAdd(new awaitTurretAutoAim())
+                    .stopAndAdd(new awaitTurretAutoAim(1250))
+                    .stopAndAdd(new awaitTurretAutoAim(1250))
                     .stopAndAdd(new transferUp())
                     .stopAndAdd(new RunIntake())
                     .stopAndAdd(new rotateSpindexer())
@@ -155,17 +155,18 @@ public class AutonBlue extends LinearOpMode {
                     .stopAndAdd(new StopIntake())
 //                    .stopAndAdd(new SetIntakePower(-1))
                     .stopAndAdd(new toggleTurretAutoAim(false))
-                    .build(),new TurretAutoAimWhileTrue(1.5,150,60)));
+                    .build(),new TurretAutoAimWhileTrue(0.4,150,60)));
             //Second intake
             Actions.runBlocking(new ParallelAction(drive.actionBuilder(drive.localizer.getPose())
                     //Start Intake 2
-                    .strafeToLinearHeading(new Vector2d(row2XPos-7, -intakeStarty+5), Math.toRadians(-90))
+                    .strafeToLinearHeading(new Vector2d(row2XPos-2, intakeStarty+5), Math.toRadians(-87))
 //                    .stopAndAdd(new StopIntake())
 //                    .stopAndAdd(new RunIntake())
-                    .strafeTo(new Vector2d(row2XPos, -intakeFinishy-5))
+                    .strafeTo(new Vector2d(row2XPos, intakeFinishy-5))
+                    .strafeTo(new Vector2d(row2XPos, intakeFinishy-7))
 //                    .stopAndAdd(new ToggleSpindexer(true))
                     .build()
-                    ,new SpinToIntake(-1,1)));
+                    ,new SpinToIntake(20000,1)));
             //After second intake
             Actions.runBlocking(new ParallelAction(drive.actionBuilder(drive.localizer.getPose())
                     .stopAndAdd(new ToggleSpindexer(false))
@@ -177,10 +178,10 @@ public class AutonBlue extends LinearOpMode {
                     //Start Flywheel 2
 //                    .stopAndAdd(new SpinFlywheel(1833,50))
                     .setReversed(true)
-                    .splineToLinearHeading(new Pose2d(new Vector2d(row1XPos, -intakeStarty+10),shootingAngle),shootingAngle+Math.toRadians(90))
+                    .splineToLinearHeading(new Pose2d(new Vector2d(row1XPos, intakeStarty+5),shootingAngle),shootingAngle+Math.toRadians(90))
                     //Shoot Sequence 2
-                    .stopAndAdd(new awaitTurretAutoAim())
-                    .stopAndAdd(new awaitTurretAutoAim())
+                    .stopAndAdd(new awaitTurretAutoAim(1250))
+                    .stopAndAdd(new awaitTurretAutoAim(1250))
                     .stopAndAdd(new transferUp())
                     .stopAndAdd(new RunIntake())
                     .stopAndAdd(new rotateSpindexer())
@@ -192,7 +193,7 @@ public class AutonBlue extends LinearOpMode {
                     .stopAndAdd(new stopspindexer())
                     .stopAndAdd(new toggleDisableTurretAutoAim(false))
 //                    .stopAndAdd(new SetIntakePower(-1))
-                    .build(),new TurretAutoAimWhileTrue(1.5,100,60)));
+                    .build(),new TurretAutoAimWhileTrue(0.4,100,60)));
 //            //Third intake
 //            Actions.runBlocking(new ParallelAction(drive.actionBuilder(drive.localizer.getPose())
 //                    //Start Intake 3
@@ -373,8 +374,17 @@ public class AutonBlue extends LinearOpMode {
     }
 
     public class awaitTurretAutoAim implements Action{
+        ElapsedTime timer=new ElapsedTime();
+        double timeout;
+        public awaitTurretAutoAim(double timeout){
+            this.timeout=timeout;
+            timer.reset();
+        }
         @Override
         public boolean run(TelemetryPacket telemetryPacket){
+            if (timer.milliseconds()>=timeout){
+                return false;
+            }
             return !turretAligned;
         }
     }

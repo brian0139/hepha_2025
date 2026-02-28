@@ -107,7 +107,7 @@ public class AutonRedPathV2 extends LinearOpMode {
 //                            .stopAndAdd(new TurretAutoAimUntilAligned(1,75,60,5000))
                             .stopAndAdd(new SetHoodEncoder(6060,75))
                             .stopAndAdd(new awaitSpinFlywheel(1531,50))
-                            .stopAndAdd(new TurretAutoAimUntilAligned(1,100,60,3500))
+                            .stopAndAdd(new TurretAutoAimUntilAligned(0.15,100,60,3500))
                             .stopAndAdd(new transferUp())
                             .stopAndAdd(new RunIntake())
                             .stopAndAdd(new rotateSpindexer())
@@ -155,7 +155,7 @@ public class AutonRedPathV2 extends LinearOpMode {
                     .stopAndAdd(new StopIntake())
 //                    .stopAndAdd(new SetIntakePower(-1))
                     .stopAndAdd(new toggleTurretAutoAim(false))
-                    .build(),new TurretAutoAimWhileTrue(1.5,150,60)));
+                    .build(),new TurretAutoAimWhileTrue(0.2,150,60)));
             //Second intake
             Actions.runBlocking(new ParallelAction(drive.actionBuilder(drive.localizer.getPose())
                     //Start Intake 2
@@ -163,6 +163,7 @@ public class AutonRedPathV2 extends LinearOpMode {
 //                    .stopAndAdd(new StopIntake())
 //                    .stopAndAdd(new RunIntake())
                     .strafeTo(new Vector2d(row2XPos, intakeFinishy+5))
+                    .strafeTo(new Vector2d(row2XPos, intakeFinishy+7))
 //                    .stopAndAdd(new ToggleSpindexer(true))
                     .build()
                     ,new SpinToIntake(-1,1)));
@@ -192,7 +193,7 @@ public class AutonRedPathV2 extends LinearOpMode {
                     .stopAndAdd(new stopspindexer())
                     .stopAndAdd(new toggleDisableTurretAutoAim(false))
 //                    .stopAndAdd(new SetIntakePower(-1))
-                    .build(),new TurretAutoAimWhileTrue(1.5,100,60)));
+                    .build(),new TurretAutoAimWhileTrue(0.2,100,60)));
 //            //Third intake
 //            Actions.runBlocking(new ParallelAction(drive.actionBuilder(drive.localizer.getPose())
 //                    //Start Intake 3
