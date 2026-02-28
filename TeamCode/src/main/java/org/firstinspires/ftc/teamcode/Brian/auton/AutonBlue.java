@@ -64,7 +64,7 @@ public class AutonBlue extends LinearOpMode {
         turret.setPower(0);
         drive=new MecanumDrive(hardwareMap,beginPose);
         intakeSensor=hardwareMap.get(NormalizedColorSensor.class,"intakeSensor");
-        outtake = new outtakeV3FittedAutolaunch(hardwareMap,"Red",true,drive);
+        outtake = new outtakeV3FittedAutolaunch(hardwareMap,"Blue",true,drive);
         outtake.setPipeLine(2);
         intakeSystem = new intake(hardwareMap,"intake","intakeSensor");
         spindexer=new spindexerColor(spindexerServo,intakeMotor,hardwareMap);
