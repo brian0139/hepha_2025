@@ -26,7 +26,7 @@ import org.firstinspires.ftc.teamcode.Stanley.finalizedClasses.outtakeV3FittedAu
 @Autonomous(name = "Decode Far Collect 6", group = "Autonomous")
 public class DecodeFarCollectSixAuto extends LinearOpMode {
     // ===== Tunable Parameters (AutonRedPathV2-style) =====
-    public static double START_X = 63.0;
+    public static double START_X = 72-11.9;
     public static double START_Y = 9.0;
     public static double START_HEADING_DEG = 180.0;
 
