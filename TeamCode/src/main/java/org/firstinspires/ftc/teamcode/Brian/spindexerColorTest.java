@@ -6,6 +6,7 @@ import com.qualcomm.robotcore.hardware.AnalogInput;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
 import org.firstinspires.ftc.teamcode.Alvin.colorSensor;
 import java.util.Vector;
@@ -14,11 +15,19 @@ import java.util.*;
 @TeleOp
 
 public class spindexerColorTest extends LinearOpMode{
+    public static double FLYWHEEL_TARGET_TPS = 1531;
+    public static double FLYWHEEL_TOLERANCE_TPS = 50;
+    public static double TRANSFER_UP_POWER = -1.0;
+    public static double TRANSFER_DOWN_POWER = 0.0;
+
     CRServo spindexer;
     colorSensor colorsensoroperator;
     spindexerColor spindexercolor;
     DcMotorEx spindexerAnalog;
     DcMotor intake;
+    DcMotor transfer;
+    DcMotorEx flywheel;
+    DcMotorEx flywheelR;
     int motifIndex=0;
 
     //main loop
@@ -29,6 +38,10 @@ public class spindexerColorTest extends LinearOpMode{
         colorsensoroperator=new colorSensor(hardwareMap,"outtakeSensor");
         spindexerAnalog=hardwareMap.get(DcMotorEx.class,"spindexerAnalog");
         intake=hardwareMap.get(DcMotor.class, "intake");
+        transfer = hardwareMap.get(DcMotor.class, "par1");
+        flywheel = hardwareMap.get(DcMotorEx.class, "flywheel");
+        flywheelR = hardwareMap.get(DcMotorEx.class, "flywheelR");
+        flywheelR.setDirection(DcMotorSimple.Direction.REVERSE);
 
 
         spindexercolor=new spindexerColor(spindexer,intake,hardwareMap);
@@ -53,9 +66,15 @@ public class spindexerColorTest extends LinearOpMode{
                 spintointaketoggle=!spintointaketoggle;
             }
             if (spintointaketoggle){
+                // Run sorter, flywheel, and transfer together while motif sorting is active.
                 spindexercolor.spinToMotif(motifIndex);
+                runFlywheelAtTarget(FLYWHEEL_TARGET_TPS, FLYWHEEL_TOLERANCE_TPS);
+                transfer.setPower(TRANSFER_UP_POWER);
             }else{
                 spindexercolor.spindexerServo.setPower(0);
+                flywheel.setPower(0);
+                flywheelR.setPower(0);
+                transfer.setPower(TRANSFER_DOWN_POWER);
             }
             telemetry.addData("spindexer slots", Arrays.toString(spindexercolor.motifPattern));
             telemetry.addData("current motif index", motifIndex);
@@ -81,6 +100,22 @@ public class spindexerColorTest extends LinearOpMode{
             telemetry.addData("detectioncnt",spindexercolor.detectioncnt);
             telemetry.addData("current slot",spindexercolor.currentSlot);
             telemetry.update();
+        }
+
+        spindexercolor.spindexerServo.setPower(0);
+        flywheel.setPower(0);
+        flywheelR.setPower(0);
+        transfer.setPower(TRANSFER_DOWN_POWER);
+    }
+
+    private void runFlywheelAtTarget(double targetTicksPerSec, double toleranceTicksPerSec) {
+        double avgVelocity = (Math.abs(flywheel.getVelocity()) + Math.abs(flywheelR.getVelocity())) / 2.0;
+        if (avgVelocity < targetTicksPerSec - toleranceTicksPerSec) {
+            flywheel.setPower(1.0);
+            flywheelR.setPower(1.0);
+        } else if (avgVelocity > targetTicksPerSec + toleranceTicksPerSec) {
+            flywheel.setPower(0.0);
+            flywheelR.setPower(0.0);
         }
     }
 }
