@@ -32,7 +32,7 @@ public class AutonBluePathFarV2 extends LinearOpMode {
     CRServo turret=null;
     DcMotor intakeMotor=null;
     CRServo hood=null;
-    Pose2d beginPose=new Pose2d(72-11.9, 9, Math.toRadians(180));
+    Pose2d beginPose=new Pose2d(72-11.9, -9, Math.toRadians(-180));
     MecanumDrive drive=null;
     NormalizedColorSensor intakeSensor;
     FtcDashboard dashboard;
@@ -78,8 +78,8 @@ public class AutonBluePathFarV2 extends LinearOpMode {
         final double waitTime=1;
         final double shootTime=3;
         final double row1XPos=-9;
-        final double row2XPos=16;
-        final double row3XPos=38;
+        final double row2XPos=13;
+        final double row3XPos=35;
 
         dashboard=FtcDashboard.getInstance();
         dashboardTelemetry=dashboard.getTelemetry();
@@ -106,10 +106,10 @@ public class AutonBluePathFarV2 extends LinearOpMode {
 //                            .stopAndAdd(new TurretAutoAimUntilAligned(1,75,60,5000))
 //                            .stopAndAdd(new SetHoodEncoder(4164,75))
 //                            .stopAndAdd(new awaitSpinFlywheel(2000,25))
-                            .stopAndAdd(new TurretAutoAimUntilAligned(0.6,100,60,2900))
+                            .stopAndAdd(new TurretAutoAimUntilAligned(0.1,100,60,3000))
                             .stopAndAdd(new transferUp())
                             .stopAndAdd(new RunIntake())
-                            .stopAndAdd(new rotateSpindexer())
+                            .stopAndAdd(new rotateSpindexer(9999))
                             //Stop Sequence 0
 //                            .stopAndAdd(new StopFlywheel())
                             .stopAndAdd(new transferOff())
@@ -120,15 +120,15 @@ public class AutonBluePathFarV2 extends LinearOpMode {
             //First intake
             Actions.runBlocking(new ParallelAction(drive.actionBuilder(drive.localizer.getPose())
                     //Start Intake Code 1
-                    .strafeToLinearHeading(new Vector2d(row3XPos-3, -intakeStarty+7), Math.toRadians(-360+265))
+                    .strafeToLinearHeading(new Vector2d(row3XPos-1, -intakeStarty+7), Math.toRadians(-87))
 //                    .stopAndAdd(new RunIntake())
 //                    .stopAndAdd(new startspindexer(1))
                     .stopAndAdd(new SpinFlywheel(2000,60))
-                    .strafeTo(new Vector2d(row3XPos, -intakeFinishy-7))
+                    .strafeTo(new Vector2d(row3XPos-1, -intakeFinishy-3))
                     .stopAndAdd(new awaitSpindexerIntake(2))
-                    .strafeTo(new Vector2d(row3XPos,-intakeFinishy-9))
+                    .strafeTo(new Vector2d(row3XPos-1,-intakeFinishy-11))
                     .build()
-                    ,new SpinToIntake(-1,1)));
+                    ,new SpinToIntake(6700,0.9)));
             //After first intake
             Actions.runBlocking(new ParallelAction(drive.actionBuilder(drive.localizer.getPose())
                     //Stop Intake 1
@@ -139,33 +139,33 @@ public class AutonBluePathFarV2 extends LinearOpMode {
 
                     //Start Flywheel 1
 //                    .stopAndAdd(new SpinFlywheel(1833,50))
-                    .strafeToLinearHeading(new Vector2d(72-13, -14),Math.toRadians(-180))
+                    .strafeToLinearHeading(new Vector2d(72-17, -14),Math.toRadians(-180))
                     //Shoot Sequence 1
 //                    .stopAndAdd(new TurretAutoAimUntilAligned(0.8,75,60,5000))
                     .stopAndAdd(new awaitTurretAutoAim(1000))
                     .stopAndAdd(new awaitTurretAutoAim(1000))
                     .stopAndAdd(new transferUp())
                     .stopAndAdd(new RunIntake())
-                    .stopAndAdd(new rotateSpindexer())
+                    .stopAndAdd(new rotateSpindexer(6000))
                     //Stop Sequence 1
 //                    .stopAndAdd(new StopFlywheel())
                     .stopAndAdd(new transferOff())
                     .stopAndAdd(new stopspindexer())
                     .stopAndAdd(new StopIntake())
-//                    .stopAndAdd(new SetIntakePower(-1))
+                    .stopAndAdd(new SetIntakePower(-1))
                     .stopAndAdd(new toggleTurretAutoAim(false))
                     .build(),new TurretAutoAimWhileTrue(0.6,150,60)));
             //Second intake
             Actions.runBlocking(new ParallelAction(drive.actionBuilder(drive.localizer.getPose())
                     //Start Intake 2
-                    .strafeToLinearHeading(new Vector2d(row2XPos-7, -intakeStarty+5), Math.toRadians(-93))
+                    .strafeToLinearHeading(new Vector2d(row2XPos+1, -intakeStarty+5), Math.toRadians(-86))
 //                    .stopAndAdd(new StopIntake())
 //                    .stopAndAdd(new RunIntake())
-                    .strafeTo(new Vector2d(row2XPos, -intakeFinishy-5))
-                    .strafeTo(new Vector2d(row2XPos, -intakeFinishy-7))
+                    .strafeTo(new Vector2d(row2XPos+1, -intakeFinishy-3))
+                    .strafeTo(new Vector2d(row2XPos+1, -intakeFinishy-10))
 //                    .stopAndAdd(new ToggleSpindexer(true))
                     .build()
-                    ,new SpinToIntake(20000,1)));
+                    ,new SpinToIntake(10000,0.9)));
             //After second intake
             Actions.runBlocking(new ParallelAction(drive.actionBuilder(drive.localizer.getPose())
                     .stopAndAdd(new ToggleSpindexer(false))
@@ -177,14 +177,14 @@ public class AutonBluePathFarV2 extends LinearOpMode {
                     //Start Flywheel 2
 //                    .stopAndAdd(new SpinFlywheel(1833,50))
                     .setReversed(true)
-                    .strafeToLinearHeading(new Vector2d(72-13, -14),Math.toRadians(-180))
+                    .strafeToLinearHeading(new Vector2d(72-17, -17),Math.toRadians(-180))
                     //Shoot Sequence 2
                     .stopAndAdd(new awaitTurretAutoAim(1000))
                     .stopAndAdd(new awaitTurretAutoAim(1000))
                     .stopAndAdd(new transferUp())
                     .stopAndAdd(new RunIntake())
-                    .stopAndAdd(new rotateSpindexer())
-                    .strafeToConstantHeading(new Vector2d(72-20,-19))
+                    .stopAndAdd(new rotateSpindexer(6000))
+                    .strafeToLinearHeading(new Vector2d(72-22,-21),Math.toRadians(-135))
 //                    .waitSeconds(shootTime)
                     //Stop Sequence 2
                     .stopAndAdd(new StopFlywheel())
@@ -314,9 +314,9 @@ public class AutonBluePathFarV2 extends LinearOpMode {
 
             // Check if aligned by examining heading error
             double headingError = Math.abs(outtake.apriltag.getYaw());
-            boolean flywheelAtSpeed=outtake.spin_flywheel(Double.parseDouble(this.optimalLaunch.get("velocity")),this.flywheelEpsilon);
+            boolean flywheelAtSpeed=outtake.spin_flywheel(Double.parseDouble(this.optimalLaunch.get("velocity"))-135,this.flywheelEpsilon);
             boolean hoodPos = outtake.setHoodEncoder(Double.parseDouble(this.optimalLaunch.get("angle")));
-            telemetry.addData("FlywheelTarget",Double.parseDouble(this.optimalLaunch.get("velocity")));
+            telemetry.addData("FlywheelTarget",Double.parseDouble(this.optimalLaunch.get("velocity"))-135);
             telemetry.addData("FlywheelReal",outtake.flywheelDriveR.getVelocity());
             telemetry.addData("hoodtarget",Double.parseDouble(this.optimalLaunch.get("angle")));
             telemetry.addData("Current",outtake.hoodEncoder.getCurrentPosition());
@@ -776,10 +776,19 @@ public class AutonBluePathFarV2 extends LinearOpMode {
     }
 
     public class rotateSpindexer implements Action{
+        ElapsedTime timer=new ElapsedTime();
+        double timeout;
         int startEncoder;
         boolean initialized=false;
+        public rotateSpindexer(double timeout){
+            timer.reset();
+            this.timeout=timeout;
+        }
         @Override
         public boolean run(TelemetryPacket packet) {
+            if (this.timer.milliseconds()>=this.timeout){
+                return false;
+            }
             if (!initialized){
                 startEncoder=spindexer.spindexerSensor.getCurrentPosition();
                 initialized=true;

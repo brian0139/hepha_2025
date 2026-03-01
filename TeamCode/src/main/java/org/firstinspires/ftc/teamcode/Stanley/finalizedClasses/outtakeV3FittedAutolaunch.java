@@ -332,8 +332,8 @@ public class outtakeV3FittedAutolaunch {
     public boolean spin_flywheel(double targetSpeed, int tolerance){
         flywheelDriveR.setVelocity(targetSpeed);
         flywheelDrive.setVelocity(targetSpeed);
-        flywheelDrive.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER,new PIDFCoefficients(Kflywheel[0],Kflywheel[1],Kflywheel[2],Kflywheel[3]));
-        flywheelDriveR.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER,new PIDFCoefficients(Kflywheel[0],Kflywheel[1],Kflywheel[2],Kflywheel[3]));
+//        flywheelDrive.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER,new PIDFCoefficients(Kflywheel[0],Kflywheel[1],Kflywheel[2],Kflywheel[3]));
+//        flywheelDriveR.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER,new PIDFCoefficients(Kflywheel[0],Kflywheel[1],Kflywheel[2],Kflywheel[3]));
         return Math.abs(flywheelDriveR.getVelocity()-targetSpeed)<=tolerance;
     }
 }
