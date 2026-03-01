@@ -165,7 +165,7 @@ public class AutonBluePathFarV2 extends LinearOpMode {
 //                    .build()
 //                    ,new SpinToIntake(10000,0.9)));
             //After second intake
-            Actions.runBlocking(new ParallelAction(drive.actionBuilder(drive.localizer.getPose())
+            Actions.runBlocking(drive.actionBuilder(drive.localizer.getPose())
 //                    .stopAndAdd(new ToggleSpindexer(false))
 //                    //Stop Intake 2
 //                    .stopAndAdd(new StopIntake())
@@ -188,7 +188,7 @@ public class AutonBluePathFarV2 extends LinearOpMode {
                     .stopAndAdd(new stopspindexer())
                     .stopAndAdd(new toggleDisableTurretAutoAim(false))
 //                    .stopAndAdd(new SetIntakePower(-1))
-                    .build(),new TurretAutoAimWhileTrue(0.6,100,60)));
+                    .build());
 //            //Third intake
 //            Actions.runBlocking(new ParallelAction(drive.actionBuilder(drive.localizer.getPose())
 //                    //Start Intake 3
@@ -438,7 +438,7 @@ public class AutonBluePathFarV2 extends LinearOpMode {
 
             // Check if aligned by examining heading error
             double headingError = Math.abs(outtake.apriltag.getYaw());
-            boolean flywheelAtSpeed=outtake.spin_flywheel(Double.parseDouble(this.optimalLaunch.get("velocity")),this.flywheelEpsilon);
+            boolean flywheelAtSpeed=outtake.spin_flywheel(Double.parseDouble(this.optimalLaunch.get("velocity"))-135,this.flywheelEpsilon);
             boolean hoodPos = outtake.setHoodEncoder(Double.parseDouble(this.optimalLaunch.get("angle")));
             telemetry.addData("hoodtarget",Double.parseDouble(this.optimalLaunch.get("angle")));
             telemetry.addData("Current",outtake.hoodEncoder.getCurrentPosition());
