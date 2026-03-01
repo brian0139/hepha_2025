@@ -237,7 +237,7 @@ public class outtakeV3FittedAutolaunch {
             }
             //Far
             if (distance<0.4){
-                velocity=(-20256.601162 * Math.pow(distance, 3)) + (20904.437702 * Math.pow(distance, 2)) + (-8786.779804 * distance) + (3367.117587);
+                velocity=(-20256.601162 * Math.pow(distance, 3)) + (20904.437702 * Math.pow(distance, 2)) + (-8786.779804 * distance) + (3367.117587)-135;
             }
             //Angle
             //Close

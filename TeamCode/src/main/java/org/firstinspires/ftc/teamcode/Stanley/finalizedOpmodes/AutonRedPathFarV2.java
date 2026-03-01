@@ -314,9 +314,9 @@ public class AutonRedPathFarV2 extends LinearOpMode {
 
             // Check if aligned by examining heading error
             double headingError = Math.abs(outtake.apriltag.getYaw());
-            boolean flywheelAtSpeed=outtake.spin_flywheel(Double.parseDouble(this.optimalLaunch.get("velocity"))-135,this.flywheelEpsilon);
+            boolean flywheelAtSpeed=outtake.spin_flywheel(Double.parseDouble(this.optimalLaunch.get("velocity")),this.flywheelEpsilon);
             boolean hoodPos = outtake.setHoodEncoder(Double.parseDouble(this.optimalLaunch.get("angle")));
-            telemetry.addData("FlywheelTarget",Double.parseDouble(this.optimalLaunch.get("velocity"))-135);
+            telemetry.addData("FlywheelTarget",Double.parseDouble(this.optimalLaunch.get("velocity")));
             telemetry.addData("FlywheelReal",outtake.flywheelDriveR.getVelocity());
             telemetry.addData("hoodtarget",Double.parseDouble(this.optimalLaunch.get("angle")));
             telemetry.addData("Current",outtake.hoodEncoder.getCurrentPosition());
@@ -443,7 +443,7 @@ public class AutonRedPathFarV2 extends LinearOpMode {
 
             // Check if aligned by examining heading error
             double headingError = Math.abs(outtake.apriltag.getYaw());
-            boolean flywheelAtSpeed=outtake.spin_flywheel(Double.parseDouble(this.optimalLaunch.get("velocity"))-135,this.flywheelEpsilon);
+            boolean flywheelAtSpeed=outtake.spin_flywheel(Double.parseDouble(this.optimalLaunch.get("velocity")),this.flywheelEpsilon);
             boolean hoodPos = outtake.setHoodEncoder(Double.parseDouble(this.optimalLaunch.get("angle")));
             telemetry.addData("hoodtarget",Double.parseDouble(this.optimalLaunch.get("angle")));
             telemetry.addData("Current",outtake.hoodEncoder.getCurrentPosition());
