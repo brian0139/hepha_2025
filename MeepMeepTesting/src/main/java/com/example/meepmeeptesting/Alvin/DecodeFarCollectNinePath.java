@@ -7,52 +7,61 @@ import com.noahbres.meepmeep.roadrunner.DefaultBotBuilder;
 import com.noahbres.meepmeep.roadrunner.entity.RoadRunnerBotEntity;
 
 public class DecodeFarCollectNinePath {
+
     public static void main(String[] args) {
-        MeepMeep meepMeep = new MeepMeep(800);
+        MeepMeep meepMeep = new MeepMeep(750);
 
-        final Pose2d beginPose = new Pose2d(57.5, -43.5, Math.toRadians(-54));
-        final Vector2d shootingPos = new Vector2d(34, -23);
-        final double shootingAngle = Math.toRadians(-40);
+        // ✅ Bottom of the RIGHTMOST white triangle (fixed)
+        final double TRI_X = 55;
+        final double TRI_Y = -16;
+        final double TRI_H = Math.toRadians(180);
+        final Pose2d beginPose = new Pose2d(TRI_X, TRI_Y, TRI_H);
 
-        final double intakeStartY = -13;
-        final double intakeFinishY = -50;
-        final double row1XPos = 9;
-        final double row2XPos = -16;
-        final double row3XPos = -38;
+        // ✅ Intake line Y’s (matches your screenshot)
+        final double approachY = -34;
+        final double intakeY = -52;
+
+        // ✅ EXACT intake post X’s from your marked image
+        final double leftPostX   = -7;
+        final double middlePostX = 11;
+        final double rightPostX  = 29;
 
         RoadRunnerBotEntity bot = new DefaultBotBuilder(meepMeep)
                 .setConstraints(50, 50, Math.toRadians(180), Math.toRadians(180), 15)
                 .build();
 
         bot.runAction(bot.getDrive().actionBuilder(beginPose)
-                // Preload shooting setup
-                .strafeToLinearHeading(shootingPos, shootingAngle)
-                .waitSeconds(1.5)
 
-                // Cycle 1: lane 1 intake and return to shoot
-                .strafeToLinearHeading(new Vector2d(row1XPos, intakeStartY), Math.toRadians(-80))
-                .strafeTo(new Vector2d(row1XPos, intakeFinishY - 4))
-                .strafeToLinearHeading(new Vector2d(row1XPos, intakeStartY + 10), shootingAngle)
-                .waitSeconds(1.5)
+                // ---------------- INTAKE 1 (LEFT POST) ----------------
+                .strafeToLinearHeading(new Vector2d(leftPostX, approachY), Math.toRadians(-90))
+                .strafeTo(new Vector2d(leftPostX, intakeY))
+                .waitSeconds(0.2)
 
-                // Cycle 2: lane 2 intake and spline return
-                .strafeToLinearHeading(new Vector2d(row2XPos, intakeStartY + 5), Math.toRadians(90))
-                .strafeTo(new Vector2d(row2XPos, intakeFinishY - 5))
-                .setReversed(true)
-                .splineToLinearHeading(
-                        new Pose2d(new Vector2d(row1XPos, intakeStartY + 10), shootingAngle),
-                        shootingAngle - Math.toRadians(90))
-                .setReversed(false)
-                .waitSeconds(1.5)
+                // ✅ Return to rightmost white triangle after intake
+                .strafeToLinearHeading(new Vector2d(TRI_X, TRI_Y), TRI_H)
+                .waitSeconds(0.2)
 
-                // Cycle 3: lane 3 intake and final return to shoot
-                .strafeToLinearHeading(new Vector2d(row3XPos, intakeStartY + 10), Math.toRadians(90))
-                .strafeTo(new Vector2d(row3XPos, intakeFinishY - 5))
-                .strafeToLinearHeading(new Vector2d(row1XPos, intakeStartY + 10), shootingAngle)
-                .waitSeconds(1.5)
+                // ---------------- INTAKE 2 (MIDDLE POST) ----------------
+                .strafeToLinearHeading(new Vector2d(middlePostX, approachY), Math.toRadians(-90))
+                .strafeTo(new Vector2d(middlePostX, intakeY))
+                .waitSeconds(0.2)
 
-                // Park
-                .strafeToLinearHeading(new Vector2d(48, -60), Math.toRadians(-90))
+                // ✅ Return to rightmost white triangle after intake
+                .strafeToLinearHeading(new Vector2d(TRI_X, TRI_Y), TRI_H)
+                .waitSeconds(0.2)
+
+                // ---------------- INTAKE 3 (RIGHT POST) ----------------
+                .strafeToLinearHeading(new Vector2d(rightPostX, approachY), Math.toRadians(-90))
+                .strafeTo(new Vector2d(rightPostX, intakeY))
+                .waitSeconds(0.2)
+
+                // ✅ Return to rightmost white triangle after intake
+                .strafeToLinearHeading(new Vector2d(TRI_X, TRI_Y), TRI_H)
+                .waitSeconds(0.2)
+
+                // Park (keep/change as you want)
+                .strafeToLinearHeading(new Vector2d(50, -30), Math.toRadians(-90))
+
                 .build());
 
         meepMeep.setBackground(MeepMeep.Background.FIELD_DECODE_OFFICIAL)

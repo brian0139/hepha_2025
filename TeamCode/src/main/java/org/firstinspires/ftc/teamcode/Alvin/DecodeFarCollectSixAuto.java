@@ -17,16 +17,15 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.NormalizedColorSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.Brian.spindexerColor;
 import org.firstinspires.ftc.teamcode.MecanumDrive;
 import org.firstinspires.ftc.teamcode.Stanley.finalizedClasses.opModeDataTransfer;
 import org.firstinspires.ftc.teamcode.Stanley.finalizedClasses.outtakeV3FittedAutolaunch;
 
 @Config
-@Autonomous(name = "Decode Far Collect 9", group = "Autonomous")
-public class DecodeFarCollectNineAuto extends LinearOpMode {
-    // ===== Tunable Parameters (reference style) =====
+@Autonomous(name = "Decode Far Collect 6", group = "Autonomous")
+public class DecodeFarCollectSixAuto extends LinearOpMode {
+    // ===== Tunable Parameters (AutonRedPathV2-style) =====
     public static double START_X = 57.5;
     public static double START_Y = -43.5;
     public static double START_HEADING_DEG = -54;
@@ -35,20 +34,13 @@ public class DecodeFarCollectNineAuto extends LinearOpMode {
     public static double SHOOT_Y = -23;
     public static double SHOOT_HEADING_DEG = -40;
 
-    public static double INTAKE_START_Y = -13;
-    public static double INTAKE_FINISH_Y = -50;
-
     public static double ROW1_X = 9;
-    public static double ROW2_X = -16;
-    public static double ROW3_X = -38;
+    public static double INTAKE_START_Y = -13;
+    public static double INTAKE_FINISH_Y = -54;
+    public static double INTAKE_HEADING_DEG = -80;
 
-    public static double ROW1_START_Y_OFFSET = 0;
-    public static double ROW2_START_Y_OFFSET = 5;
-    public static double ROW3_START_Y_OFFSET = 10;
-
-    public static double ROW1_FINISH_Y_OFFSET = -4;
-    public static double ROW2_FINISH_Y_OFFSET = -5;
-    public static double ROW3_FINISH_Y_OFFSET = -5;
+    public static double RETURN_X = 9;
+    public static double RETURN_Y = -3;
 
     public static double WAIT_TIME_S = 1.0;
     public static double SHOOT_TIME_S = 1.5;
@@ -60,12 +52,6 @@ public class DecodeFarCollectNineAuto extends LinearOpMode {
     public static double INIT_HOOD_ANGLE_DEG = 45.2;
     public static double CYCLE_HOOD_ENCODER = 8020;
 
-    public static double RETURN_X = 9;
-    public static double RETURN_Y = -3;
-
-    public static double INTAKE_ROW1_HEADING_DEG = -80;
-    public static double INTAKE_ROW23_HEADING_DEG = 90;
-
     public static double PARK_X = 48;
     public static double PARK_Y = -60;
     public static double PARK_HEADING_DEG = -90;
@@ -75,6 +61,7 @@ public class DecodeFarCollectNineAuto extends LinearOpMode {
 
     public static double TURRET_ALIGN_THRESHOLD_DEG = 2.0;
     public static double TURRET_TIMEOUT_MS = 3500;
+
     // ===== Subsystems =====
     outtakeV3FittedAutolaunch outtake;
     intake intakeSystem;
@@ -91,7 +78,6 @@ public class DecodeFarCollectNineAuto extends LinearOpMode {
     NormalizedColorSensor intakeSensor;
 
     FtcDashboard dashboard;
-    Telemetry dashboardTelemetry;
 
     boolean pauseSpindexer = false;
 
@@ -138,19 +124,14 @@ public class DecodeFarCollectNineAuto extends LinearOpMode {
 
         outtake = new outtakeV3FittedAutolaunch(hardwareMap, "Red", false, drive);
         outtake.setPipeLine(PIPELINE);
-
         intakeSystem = new intake(hardwareMap, "intake", "intakeSensor");
         spindexer = new spindexerColor(spindexerServo, intakeMotor, hardwareMap);
 
         flywheel.setDirection(DcMotorSimple.Direction.REVERSE);
 
         dashboard = FtcDashboard.getInstance();
-        dashboardTelemetry = dashboard.getTelemetry();
-        dashboardTelemetry.addData("Hood: Current Angle", 0);
-        dashboardTelemetry.addData("Power", 0);
-        dashboardTelemetry.addData("Voltage", 0);
-        dashboardTelemetry.update();
-
+        dashboard.getTelemetry().addData("Status", "Initialized");
+        dashboard.getTelemetry().update();
         telemetry.addData("Status", "Initialized");
         telemetry.update();
 
@@ -163,7 +144,7 @@ public class DecodeFarCollectNineAuto extends LinearOpMode {
         waitForStart();
         if (!opModeIsActive() || isStopRequested()) return;
 
-        // ===== Preload =====
+        // ===== Preload shoot (3 balls) =====
         runBlockingAbortable(
                 drive.actionBuilder(beginPose)
                         .stopAndAdd(new SpinFlywheel(PRELOAD_FLYWHEEL_TPS, FLYWHEEL_TOLERANCE_TPS))
@@ -180,101 +161,26 @@ public class DecodeFarCollectNineAuto extends LinearOpMode {
                         .stopAndAdd(new ToggleSpindexer(false))
                         .build());
 
-        // ===== Cycle 1 intake =====
+        // ===== Intake cycle 1 (3 balls) =====
         runBlockingAbortable(new ParallelAction(
                 drive.actionBuilder(drive.localizer.getPose())
                         .strafeToLinearHeading(
-                                new Vector2d(ROW1_X, INTAKE_START_Y + ROW1_START_Y_OFFSET),
-                                Math.toRadians(INTAKE_ROW1_HEADING_DEG))
+                                new Vector2d(ROW1_X, INTAKE_START_Y),
+                                Math.toRadians(INTAKE_HEADING_DEG))
                         .stopAndAdd(new StopIntake())
                         .stopAndAdd(new RunIntake())
-                        .strafeTo(new Vector2d(ROW1_X, INTAKE_FINISH_Y + ROW1_FINISH_Y_OFFSET))
+                        .strafeTo(new Vector2d(ROW1_X, INTAKE_FINISH_Y))
                         .stopAndAdd(new ToggleSpindexer(true))
                         .build(),
                 new SpinToIntake()));
 
-        // ===== Cycle 1 shoot =====
+        // ===== Shoot cycle 1 (total 6 balls) =====
         runBlockingAbortable(
                 drive.actionBuilder(drive.localizer.getPose())
                         .stopAndAdd(new ToggleSpindexer(false))
                         .waitSeconds(WAIT_TIME_S)
                         .stopAndAdd(new StopIntake())
                         .stopAndAdd(new stopspindexer())
-                        .stopAndAdd(new SetHoodEncoder(CYCLE_HOOD_ENCODER))
-                        .stopAndAdd(new SpinFlywheel(CYCLE_FLYWHEEL_TPS, FLYWHEEL_TOLERANCE_TPS))
-                        .strafeToLinearHeading(new Vector2d(RETURN_X, RETURN_Y), shootingAngle)
-                        .stopAndAdd(new TurretAutoAimUntilAligned())
-                        .stopAndAdd(new transferUp())
-                        .stopAndAdd(new RunIntake())
-                        .stopAndAdd(new startspindexer())
-                        .waitSeconds(SHOOT_TIME_S)
-                        .stopAndAdd(new StopFlywheel())
-                        .stopAndAdd(new transferOff())
-                        .stopAndAdd(new stopspindexer())
-                        .stopAndAdd(new StopIntake())
-                        .stopAndAdd(new SetIntakePower(-1))
-                        .build());
-
-        // ===== Cycle 2 intake =====
-        runBlockingAbortable(new ParallelAction(
-                drive.actionBuilder(drive.localizer.getPose())
-                        .strafeToLinearHeading(
-                                new Vector2d(ROW2_X, INTAKE_START_Y + ROW2_START_Y_OFFSET),
-                                Math.toRadians(INTAKE_ROW23_HEADING_DEG))
-                        .stopAndAdd(new StopIntake())
-                        .stopAndAdd(new RunIntake())
-                        .strafeTo(new Vector2d(ROW2_X, INTAKE_FINISH_Y + ROW2_FINISH_Y_OFFSET))
-                        .stopAndAdd(new ToggleSpindexer(true))
-                        .build(),
-                new SpinToIntake()));
-
-        // ===== Cycle 2 shoot =====
-        runBlockingAbortable(
-                drive.actionBuilder(drive.localizer.getPose())
-                        .stopAndAdd(new ToggleSpindexer(false))
-                        .waitSeconds(WAIT_TIME_S)
-                        .stopAndAdd(new StopIntake())
-                        .stopAndAdd(new stopspindexer())
-                        .stopAndAdd(new SetHoodEncoder(CYCLE_HOOD_ENCODER))
-                        .stopAndAdd(new SpinFlywheel(CYCLE_FLYWHEEL_TPS, FLYWHEEL_TOLERANCE_TPS))
-                        .setReversed(true)
-                        .splineToLinearHeading(
-                                new Pose2d(new Vector2d(RETURN_X, RETURN_Y), shootingAngle),
-                                shootingAngle - Math.toRadians(90))
-                        .stopAndAdd(new TurretAutoAimUntilAligned())
-                        .stopAndAdd(new transferUp())
-                        .stopAndAdd(new RunIntake())
-                        .stopAndAdd(new startspindexer())
-                        .waitSeconds(SHOOT_TIME_S)
-                        .stopAndAdd(new StopFlywheel())
-                        .stopAndAdd(new StopIntake())
-                        .stopAndAdd(new transferOff())
-                        .stopAndAdd(new stopspindexer())
-                        .stopAndAdd(new SetIntakePower(-1))
-                        .build());
-
-        // ===== Cycle 3 intake =====
-        runBlockingAbortable(new ParallelAction(
-                drive.actionBuilder(drive.localizer.getPose())
-                        .strafeToLinearHeading(
-                                new Vector2d(ROW3_X, INTAKE_START_Y + ROW3_START_Y_OFFSET),
-                                Math.toRadians(INTAKE_ROW23_HEADING_DEG))
-                        .stopAndAdd(new StopIntake())
-                        .stopAndAdd(new RunIntake())
-                        .strafeTo(new Vector2d(ROW3_X, INTAKE_FINISH_Y + ROW3_FINISH_Y_OFFSET))
-                        .stopAndAdd(new ToggleSpindexer(true))
-                        .build(),
-                new SpinToIntake()));
-
-        // ===== Cycle 3 shoot =====
-        runBlockingAbortable(
-                drive.actionBuilder(drive.localizer.getPose())
-                        .stopAndAdd(new ToggleSpindexer(false))
-                        .waitSeconds(WAIT_TIME_S)
-                        .stopAndAdd(new StopIntake())
-                        .stopAndAdd(new stopspindexer())
-                        .stopAndAdd(new SetIntakePower(-1))
-                        .stopAndAdd(new StopIntake())
                         .stopAndAdd(new SetHoodEncoder(CYCLE_HOOD_ENCODER))
                         .stopAndAdd(new SpinFlywheel(CYCLE_FLYWHEEL_TPS, FLYWHEEL_TOLERANCE_TPS))
                         .strafeToLinearHeading(new Vector2d(RETURN_X, RETURN_Y), shootingAngle)
@@ -363,11 +269,6 @@ public class DecodeFarCollectNineAuto extends LinearOpMode {
             }
 
             boolean atPosition = outtake.setHood(targetAngle);
-            telemetry.addData("Hood: Target", (66.81 - targetAngle) / outtake.servoDegPerRot * outtake.ticksPerRevHood);
-            telemetry.addData("Hood: Current Angle", outtake.hoodEncoder.getCurrentPosition());
-            telemetry.addData("Power", outtake.hoodPID.power);
-            telemetry.addData("Hood: At Position", atPosition);
-            telemetry.update();
             return !atPosition;
         }
     }
@@ -404,7 +305,6 @@ public class DecodeFarCollectNineAuto extends LinearOpMode {
         @Override
         public boolean run(TelemetryPacket packet) {
             outtake.spin_flywheel(targetSpeed, tolerance);
-            telemetry.addData("Flywheel: Current Speed", outtake.flywheelDriveR.getVelocity());
             return false;
         }
     }
@@ -445,20 +345,6 @@ public class DecodeFarCollectNineAuto extends LinearOpMode {
         @Override
         public boolean run(TelemetryPacket packet) {
             intakeSystem.stop();
-            return false;
-        }
-    }
-
-    public class SetIntakePower implements Action {
-        private final double power;
-
-        public SetIntakePower(double power) {
-            this.power = power;
-        }
-
-        @Override
-        public boolean run(TelemetryPacket packet) {
-            intakeSystem.setPower(power);
             return false;
         }
     }
