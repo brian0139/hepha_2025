@@ -218,7 +218,7 @@ public class outtakeV3FittedAutolaunch {
      * @return Map<string,string> with keys: angle, velocity(in encoder ticks/s)
      */
     public Map<String,String> findOptimalLaunch(double distance) {
-        if (distance > 3.68 || (0.4<=distance && distance<=0.47)){
+        if (distance > 3.68 || (0.4<=distance && distance<=0.75)){
             return new HashMap<>(Map.of(
                     "angle", Double.toString(-1.0),
                     "velocity", Double.toString(-1.0)
@@ -228,12 +228,12 @@ public class outtakeV3FittedAutolaunch {
             double angle;
             //Velocity
             //Close
-            if (distance>=1.114){
+            if (distance>=0.75){
                 //Closer
-                velocity=(-29.684398 * Math.pow(distance, 2)) + (65.533814 * distance) + (1587.83355);
+                velocity = (-29.684398 * Math.pow(distance, 2)) + (65.533814 * distance) + (1587.83355)-50;
             }else{
                 //Tip
-                velocity = (214.762125 * Math.pow(distance, 5)) + (-32.40516 * Math.pow(distance, 4)) + (-306.156954 * Math.pow(distance, 3)) + (-355.70856 * Math.pow(distance, 2)) + (336.819596 * distance) + (1794.920469);
+                velocity=(-370.879121 * distance) + (2037.159341)+10;
             }
             //Far
             if (distance<0.4){
@@ -241,12 +241,12 @@ public class outtakeV3FittedAutolaunch {
             }
             //Angle
             //Close
-            if (distance>=1.114){
+            if (distance>=0.75){
                 //Closer
-                angle = (107.192351 * Math.pow(distance, 2)) + (-98.057841 * distance) + (5809.211155);
+                angle = (107.192351 * Math.pow(distance, 2)) + (-98.057841 * distance) + (5809.211155)-90;
             }else{
                 //Tip
-                angle = (3386.176714 * Math.pow(distance, 2)) + (-2493.152075 * distance) + (4408.139655);
+                angle = (3818.681319 * distance) + (1578.989011)-70;
             }
             if (distance<0.4){
                 angle=(471046.845588 * Math.pow(distance, 3)) + (-374521.297098 * Math.pow(distance, 2)) + (110408.08753 * distance) + (-7602.113035);
