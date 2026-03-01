@@ -26,21 +26,22 @@ import org.firstinspires.ftc.teamcode.Stanley.finalizedClasses.outtakeV3FittedAu
 @Autonomous(name = "Decode Far Collect 6", group = "Autonomous")
 public class DecodeFarCollectSixAuto extends LinearOpMode {
     // ===== Tunable Parameters (AutonRedPathV2-style) =====
-    public static double START_X = 57.5;
-    public static double START_Y = -43.5;
-    public static double START_HEADING_DEG = -54;
+    public static double START_X = 63.0;
+    public static double START_Y = 9.0;
+    public static double START_HEADING_DEG = 180.0;
 
-    public static double SHOOT_X = 34;
-    public static double SHOOT_Y = -23;
-    public static double SHOOT_HEADING_DEG = -40;
+    public static double SHOOT_X = 62.0;
+    public static double SHOOT_Y = 10.0;
+    public static double SHOOT_HEADING_DEG = 180.0;
 
-    public static double ROW1_X = 9;
-    public static double INTAKE_START_Y = -13;
-    public static double INTAKE_FINISH_Y = -54;
-    public static double INTAKE_HEADING_DEG = -80;
+    // Nearest far-side column from the (63, 9) start.
+    public static double ROW1_X = 38.0;
+    public static double INTAKE_START_Y = 13.0;
+    public static double INTAKE_FINISH_Y = 36.0;
+    public static double INTAKE_HEADING_DEG = 270.0;
 
-    public static double RETURN_X = 9;
-    public static double RETURN_Y = -3;
+    public static double RETURN_X = 62.0;
+    public static double RETURN_Y = 10.0;
 
     public static double WAIT_TIME_S = 1.0;
     public static double SHOOT_TIME_S = 1.5;
@@ -52,9 +53,9 @@ public class DecodeFarCollectSixAuto extends LinearOpMode {
     public static double INIT_HOOD_ANGLE_DEG = 45.2;
     public static double CYCLE_HOOD_ENCODER = 8020;
 
-    public static double PARK_X = 48;
-    public static double PARK_Y = -60;
-    public static double PARK_HEADING_DEG = -90;
+    public static double PARK_X = 60.5;
+    public static double PARK_Y = -35.0;
+    public static double PARK_HEADING_DEG = 180.0;
 
     public static int PIPELINE = 2;
     public static double SPINDEXER_POWER = 0.7;
