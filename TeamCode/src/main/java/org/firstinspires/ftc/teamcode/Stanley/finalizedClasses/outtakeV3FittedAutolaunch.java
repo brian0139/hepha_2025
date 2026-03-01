@@ -233,7 +233,7 @@ public class outtakeV3FittedAutolaunch {
                 velocity = (-29.684398 * Math.pow(distance, 2)) + (65.533814 * distance) + (1587.83355)-50;
             }else{
                 //Tip
-                velocity=(-370.879121 * distance) + (2037.159341)+10;
+                velocity=(-370.879121 * distance) + (2037.159341)-70;
             }
             //Far
             if (distance<0.4){

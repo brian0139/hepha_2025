@@ -389,7 +389,7 @@ public class teleOpMainNewRed extends OpMode {
             }
         }
         else if (spindexerState==SpindexerState.OUTTAKE){
-            spindexer.setPower(0.9);
+            spindexer.setPower(0.95);
         }
         else if (spindexerState==SpindexerState.OUTTAKE_SORTED){
             spindexerOperator.spinToMotif(1);

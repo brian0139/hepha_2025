@@ -86,8 +86,6 @@ public class DecodeFarCollectSixAuto extends LinearOpMode {
     CRServo spindexerServo = null;
     DcMotor intakeMotor = null;
     DcMotorEx transfer = null;
-    DcMotorEx flywheel = null;
-    DcMotorEx flywheelR = null;
     CRServo hood = null;
 
     MecanumDrive drive = null;
@@ -134,8 +132,6 @@ public class DecodeFarCollectSixAuto extends LinearOpMode {
         spindexerServo = hardwareMap.get(CRServo.class, "spindexerServo");
         intakeMotor = hardwareMap.dcMotor.get("intake");
         transfer = (DcMotorEx) hardwareMap.dcMotor.get("par1");
-        flywheel = (DcMotorEx) hardwareMap.dcMotor.get("flywheel");
-        flywheelR = (DcMotorEx) hardwareMap.dcMotor.get("flywheelR");
         hood = hardwareMap.crservo.get("hoodServo");
 
         drive = new MecanumDrive(hardwareMap, beginPose);
@@ -146,19 +142,18 @@ public class DecodeFarCollectSixAuto extends LinearOpMode {
         intakeSystem = new intake(hardwareMap, "intake", "intakeSensor");
         spindexer = new spindexerColor(spindexerServo, intakeMotor, hardwareMap);
 
-        flywheel.setDirection(DcMotorSimple.Direction.REVERSE);
-
         dashboard = FtcDashboard.getInstance();
         dashboard.getTelemetry().addData("Status", "Initialized");
         dashboard.getTelemetry().update();
         telemetry.addData("Status", "Initialized");
         telemetry.update();
 
-        runBlockingAbortable(
-                drive.actionBuilder(beginPose)
-                        .stopAndAdd(new initHood())
-                        .stopAndAdd(new SetHoodAngle(INIT_HOOD_ANGLE_DEG))
-                        .build());
+//        runBlockingAbortable(
+//                drive.actionBuilder(beginPose)
+//                        .stopAndAdd(new initHood())
+//                        .stopAndAdd(new SetHoodAngle(INIT_HOOD_ANGLE_DEG))
+//                        .build());
+        outtake.resetHoodAngle();
 
         waitForStart();
         if (!opModeIsActive() || isStopRequested()) return;

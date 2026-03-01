@@ -32,7 +32,7 @@ public class AutonRedPathFarV2 extends LinearOpMode {
     CRServo turret=null;
     DcMotor intakeMotor=null;
     CRServo hood=null;
-    Pose2d beginPose=new Pose2d(72-11.9, 9, Math.toRadians(90));
+    Pose2d beginPose=new Pose2d(72-11.9, 9, Math.toRadians(180));
     MecanumDrive drive=null;
     NormalizedColorSensor intakeSensor;
     FtcDashboard dashboard;
@@ -65,7 +65,7 @@ public class AutonRedPathFarV2 extends LinearOpMode {
         drive=new MecanumDrive(hardwareMap,beginPose);
         intakeSensor=hardwareMap.get(NormalizedColorSensor.class,"intakeSensor");
         outtake = new outtakeV3FittedAutolaunch(hardwareMap,"Red",true,drive);
-        outtake.setPipeLine(0);
+        outtake.setPipeLine(6);
         intakeSystem = new intake(hardwareMap,"intake","intakeSensor");
         spindexer=new spindexerColor(spindexerServo,intakeMotor,hardwareMap);
         spindexer.spindexerSensor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -96,18 +96,17 @@ public class AutonRedPathFarV2 extends LinearOpMode {
 
         while (opModeIsActive()) {
             if (isStopRequested()) return;
-            Actions.runBlocking(new ParallelAction(
+            Actions.runBlocking(
                     drive.actionBuilder(beginPose)
                             //STARTPOSITION IS FACING THE WALL!!
                             //Start Flywheel 0
 //                            .stopAndAdd(new SpinFlywheel(1600,70))
-                            .stopAndAdd(new SpinFlywheel(9999,50))
-                            .strafeToLinearHeading(shootingPos, shootingAngle)
+//                            .stopAndAdd(new SpinFlywheel(9999,50))
                             //Shooting Sequence 0
 //                            .stopAndAdd(new TurretAutoAimUntilAligned(1,75,60,5000))
-                            .stopAndAdd(new SetHoodEncoder(6060,75))
-                            .stopAndAdd(new awaitSpinFlywheel(1531,25))
-                            .stopAndAdd(new TurretAutoAimUntilAligned(0.15,100,60,3500))
+//                            .stopAndAdd(new SetHoodEncoder(4164,75))
+//                            .stopAndAdd(new awaitSpinFlywheel(2000,25))
+                            .stopAndAdd(new TurretAutoAimUntilAligned(0.6,100,60,2900))
                             .stopAndAdd(new transferUp())
                             .stopAndAdd(new RunIntake())
                             .stopAndAdd(new rotateSpindexer())
@@ -117,17 +116,17 @@ public class AutonRedPathFarV2 extends LinearOpMode {
                             .stopAndAdd(new StopIntake())
                             .stopAndAdd(new ToggleSpindexer(false))
                             .stopAndAdd(new toggleTurretAutoAim(false))
-                            .build(),new awaitSpinFlywheel(1531,50),new SetHoodEncoder(6060,75)));
+                            .build());
             //First intake
             Actions.runBlocking(new ParallelAction(drive.actionBuilder(drive.localizer.getPose())
                     //Start Intake Code 1
                     .strafeToLinearHeading(new Vector2d(row3XPos-3, intakeStarty-7), Math.toRadians(360-265))
 //                    .stopAndAdd(new RunIntake())
 //                    .stopAndAdd(new startspindexer(1))
-                    .stopAndAdd(new SpinFlywheel(1570,60))
-                    .strafeTo(new Vector2d(row3XPos, intakeFinishy+5))
+                    .stopAndAdd(new SpinFlywheel(2000,60))
+                    .strafeTo(new Vector2d(row3XPos, intakeFinishy+7))
                     .stopAndAdd(new awaitSpindexerIntake(2))
-                    .strafeTo(new Vector2d(row3XPos,intakeFinishy+7))
+                    .strafeTo(new Vector2d(row3XPos,intakeFinishy+9))
                     .build()
                     ,new SpinToIntake(-1,1)));
             //After first intake
@@ -140,11 +139,11 @@ public class AutonRedPathFarV2 extends LinearOpMode {
 
                     //Start Flywheel 1
 //                    .stopAndAdd(new SpinFlywheel(1833,50))
-                    .strafeToLinearHeading(new Vector2d(row1XPos, intakeStarty-10), shootingAngle)
+                    .strafeToLinearHeading(new Vector2d(72-13, 14),Math.toRadians(180))
                     //Shoot Sequence 1
 //                    .stopAndAdd(new TurretAutoAimUntilAligned(0.8,75,60,5000))
-                    .stopAndAdd(new awaitTurretAutoAim(1250))
-                    .stopAndAdd(new awaitTurretAutoAim(1250))
+                    .stopAndAdd(new awaitTurretAutoAim(1000))
+                    .stopAndAdd(new awaitTurretAutoAim(1000))
                     .stopAndAdd(new transferUp())
                     .stopAndAdd(new RunIntake())
                     .stopAndAdd(new rotateSpindexer())
@@ -155,11 +154,11 @@ public class AutonRedPathFarV2 extends LinearOpMode {
                     .stopAndAdd(new StopIntake())
 //                    .stopAndAdd(new SetIntakePower(-1))
                     .stopAndAdd(new toggleTurretAutoAim(false))
-                    .build(),new TurretAutoAimWhileTrue(0.4,150,60)));
+                    .build(),new TurretAutoAimWhileTrue(0.6,150,60)));
             //Second intake
             Actions.runBlocking(new ParallelAction(drive.actionBuilder(drive.localizer.getPose())
                     //Start Intake 2
-                    .strafeToLinearHeading(new Vector2d(row2XPos-7, intakeStarty-5), Math.toRadians(360-270))
+                    .strafeToLinearHeading(new Vector2d(row2XPos-7, intakeStarty-5), Math.toRadians(93))
 //                    .stopAndAdd(new StopIntake())
 //                    .stopAndAdd(new RunIntake())
                     .strafeTo(new Vector2d(row2XPos, intakeFinishy+5))
@@ -178,13 +177,14 @@ public class AutonRedPathFarV2 extends LinearOpMode {
                     //Start Flywheel 2
 //                    .stopAndAdd(new SpinFlywheel(1833,50))
                     .setReversed(true)
-                    .splineToLinearHeading(new Pose2d(new Vector2d(row1XPos, intakeStarty-10),shootingAngle),shootingAngle+Math.toRadians(90))
+                    .strafeToLinearHeading(new Vector2d(72-13, 14),Math.toRadians(180))
                     //Shoot Sequence 2
-                    .stopAndAdd(new awaitTurretAutoAim(1250))
-                    .stopAndAdd(new awaitTurretAutoAim(1250))
+                    .stopAndAdd(new awaitTurretAutoAim(1000))
+                    .stopAndAdd(new awaitTurretAutoAim(1000))
                     .stopAndAdd(new transferUp())
                     .stopAndAdd(new RunIntake())
                     .stopAndAdd(new rotateSpindexer())
+                    .strafeToConstantHeading(new Vector2d(72-20,19))
 //                    .waitSeconds(shootTime)
                     //Stop Sequence 2
                     .stopAndAdd(new StopFlywheel())
@@ -193,7 +193,7 @@ public class AutonRedPathFarV2 extends LinearOpMode {
                     .stopAndAdd(new stopspindexer())
                     .stopAndAdd(new toggleDisableTurretAutoAim(false))
 //                    .stopAndAdd(new SetIntakePower(-1))
-                    .build(),new TurretAutoAimWhileTrue(0.4,100,60)));
+                    .build(),new TurretAutoAimWhileTrue(0.6,100,60)));
 //            //Third intake
 //            Actions.runBlocking(new ParallelAction(drive.actionBuilder(drive.localizer.getPose())
 //                    //Start Intake 3
@@ -316,6 +316,8 @@ public class AutonRedPathFarV2 extends LinearOpMode {
             double headingError = Math.abs(outtake.apriltag.getYaw());
             boolean flywheelAtSpeed=outtake.spin_flywheel(Double.parseDouble(this.optimalLaunch.get("velocity")),this.flywheelEpsilon);
             boolean hoodPos = outtake.setHoodEncoder(Double.parseDouble(this.optimalLaunch.get("angle")));
+            telemetry.addData("FlywheelTarget",Double.parseDouble(this.optimalLaunch.get("velocity")));
+            telemetry.addData("FlywheelReal",outtake.flywheelDriveR.getVelocity());
             telemetry.addData("hoodtarget",Double.parseDouble(this.optimalLaunch.get("angle")));
             telemetry.addData("Current",outtake.hoodEncoder.getCurrentPosition());
             telemetry.update();
@@ -635,6 +637,7 @@ public class AutonRedPathFarV2 extends LinearOpMode {
 
             telemetry.addData("Flywheel: Current Speed", outtake.flywheelDriveR.getVelocity());
             telemetry.addData("Flywheel: At Speed", atSpeed);
+            telemetry.update();
 
             // Return false when at speed (action complete)
             return !atSpeed;
